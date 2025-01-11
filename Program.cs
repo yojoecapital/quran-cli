@@ -1,4 +1,5 @@
 ﻿using System;
+using QuranCli.Data;
 
 namespace QuranCli
 {
@@ -7,7 +8,7 @@ namespace QuranCli
         [STAThread]
         public static void Main(string[] args)
         {
-            Repository.TestData();
+            using var _ = new Repository();
         }
     }
 }
