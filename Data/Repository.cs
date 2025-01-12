@@ -1,6 +1,6 @@
 using Microsoft.Data.Sqlite;
 using QuranCli.Data.Models;
-using QuranCli.Data.Utilities;
+using QuranCli.Utilities;
 using System;
 using System.IO;
 using Dapper;
@@ -13,7 +13,6 @@ namespace QuranCli.Data
 
         public Repository()
         {
-            Directory.CreateDirectory(Defaults.configurationPath);
             var shouldInitialize = !File.Exists(Defaults.databasePath);
             connection = new SqliteConnection($"Data Source={Defaults.databasePath}");
             connection.Open();
@@ -76,10 +75,10 @@ namespace QuranCli.Data
             connection.Execute(sql, surahNote);
         }
 
-        public void Create(Node node)
+        public void Create(Group node)
         {
             var sql = @"
-                INSERT INTO Node (name, text) 
+                INSERT INTO [Group] (name, text) 
                 VALUES (@Name, @Text);
             ";
             connection.Execute(sql, node);
@@ -88,10 +87,20 @@ namespace QuranCli.Data
         public void Create(Link link)
         {
             var sql = @"
-                INSERT INTO Link (nodeId, ayahId) 
-                VALUES (@NodeId, @AyahId);
+                INSERT INTO Link (nodeId, ayahId1, ayahId2, [from], [to]) 
+                VALUES (@NodeId, @AyahId1, @AyahId2, @From, @To);
             ";
             connection.Execute(sql, link);
+        }
+
+        public Surah GetSurahById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Surah GetSurahByName(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,7 +1,7 @@
 using System.IO;
 using System.Net.Http;
 
-namespace QuranCli.Data.Utilities
+namespace QuranCli.Utilities
 {
     internal static class Downloader
     {

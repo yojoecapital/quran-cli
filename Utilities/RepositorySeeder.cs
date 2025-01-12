@@ -1,8 +1,9 @@
 using System.IO;
 using System.Net.Http;
+using QuranCli.Data;
 using QuranCli.Data.Models;
 
-namespace QuranCli.Data.Utilities
+namespace QuranCli.Utilities
 {
     internal static class RepositorySeeder
     {
