@@ -78,7 +78,7 @@ namespace QuranCli.Arguments
                 var ayahId2 = surah2.EndAyahId;
                 return repository.GetAyatBetweenIds(ayahId1, ayahId2);
             }
-            if (rangeType == RangeType.SurahToSurah)
+            if (rangeType == RangeType.AyahToAyah)
             {
                 var surahIdentifier1 = tokens[0];
                 var ayahNumber1 = int.Parse(tokens[1]);

@@ -7,7 +7,7 @@ namespace QuranCli.Utilities
     {
         public static void Download(this HttpClient client, string url, string destinationPath)
         {
-            Logger.Message($"Downloading resource from '{url}'.");
+            Logger.Info($"Downloading resource from '{url}'.");
             using var response = client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).Result;
             response.EnsureSuccessStatusCode();
 

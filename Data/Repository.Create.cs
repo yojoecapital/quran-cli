@@ -1,52 +1,24 @@
-using Microsoft.Data.Sqlite;
 using QuranCli.Data.Models;
 using QuranCli.Utilities;
 using System;
-using System.IO;
 using Dapper;
 
 namespace QuranCli.Data
 {
     internal partial class Repository : IDisposable
     {
-        public readonly SqliteConnection connection;
-
-        public Repository()
+        public void PopulateAyahFts()
         {
-            var shouldInitialize = !File.Exists(Defaults.databasePath);
-            connection = new SqliteConnection($"Data Source={Defaults.databasePath}");
-            connection.Open();
-            if (shouldInitialize) Initialize();
-            else if (!HasSettingsTable()) throw new Exception("The database was not initialized correctly.");
-        }
-
-        public void Dispose()
-        {
-            connection.Close();
-            connection.Dispose();
-            GC.SuppressFinalize(this);
-        }
-
-        public void Initialize()
-        {
-            connection.CreateTables();
-            this.Seed();
             var command = connection.CreateCommand();
             command.CommandText = @"
-                CREATE TABLE IF NOT EXISTS Settings (
-                    id INTEGER PRIMARY KEY,
-                    value TEXT NOT NULL
-                );
+                INSERT INTO AyahFts(rowid, verse, translation)
+                SELECT id, verse, translation FROM Ayah
+                WHERE id NOT IN (SELECT rowid FROM AyahFts);
             ";
             command.ExecuteNonQuery();
         }
 
-        public bool HasSettingsTable()
-        {
-            const string sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='Settings';";
-            var result = connection.QueryFirstOrDefault<string>(sql);
-            return !string.IsNullOrEmpty(result);
-        }
+        public void CreateTables() => connection.CreateTables();
 
         public void Create(Ayah ayah)
         {

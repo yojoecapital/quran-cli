@@ -1,27 +1,26 @@
-using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
-using Microsoft.Data.Sqlite;
 using QuranCli.Data;
 using QuranCli.Data.Models;
 
 namespace QuranCli.Utilities
 {
-    internal static class RepositorySeeder
+    internal static class RepositoryBuilder
     {
         private static readonly string surahsFilePath = Path.Join(Defaults.temporaryPath, Defaults.surahsFileName);
         private static readonly string translationsFilePath = Path.Join(Defaults.temporaryPath, Defaults.translationsFileName);
-        private static readonly string versesFilePath = Path.Join(Defaults.temporaryPath, Defaults.versesFileName);
+        private static readonly string ayatFilePath = Path.Join(Defaults.temporaryPath, Defaults.ayatFileName);
 
-        public static void Seed(this Repository repository)
+        public static void Build(this Repository repository)
         {
+            repository.CreateTables();
             Directory.CreateDirectory(Defaults.temporaryPath);
-            // DownloadFiles();
+            DownloadFiles();
             Logger.Message("Seeding database. This may take a while.");
             ConsumeFiles(repository);
             Logger.Message("Syncing FTS table...");
-            PopulateAyahFts(repository.connection);
+            repository.PopulateAyahFts();
             Logger.Message("Seeding and FTS syncing complete.");
             Directory.Delete(Defaults.temporaryPath, true);
         }
@@ -31,7 +30,7 @@ namespace QuranCli.Utilities
             using var client = new HttpClient();
             client.Download($"{Defaults.resourceUrl}/{Defaults.surahsFileName}", surahsFilePath);
             client.Download($"{Defaults.resourceUrl}/{Defaults.translationsFileName}", translationsFilePath);
-            client.Download($"{Defaults.resourceUrl}/{Defaults.versesFileName}", versesFilePath);
+            client.Download($"{Defaults.resourceUrl}/{Defaults.ayatFileName}", ayatFilePath);
         }
 
         private static void ConsumeFiles(Repository repository)
@@ -39,7 +38,7 @@ namespace QuranCli.Utilities
             // Consume the files
             using var surahsReader = new StreamReader(surahsFilePath, Encoding.UTF8);
             using var translationsReader = new StreamReader(translationsFilePath, Encoding.UTF8);
-            using var versesReader = new StreamReader(versesFilePath, Encoding.UTF8);
+            using var versesReader = new StreamReader(ayatFilePath, Encoding.UTF8);
             int ayahId = 0, ayatLeftInSurah = 0, surahId = 0, totalAyat = 6236;
             Surah surah = null;
             string verse, translation, surahLine;
@@ -76,20 +75,9 @@ namespace QuranCli.Utilities
                 AyahCount = int.Parse(parts[0]),
                 StartAyahId = int.Parse(parts[1]),
                 Name = parts[2],
-                EnglishName = parts[3],
-                TransliterationName = parts[4]
+                TransliterationName = parts[3],
+                EnglishName = parts[4]
             };
-        }
-
-        public static void PopulateAyahFts(this SqliteConnection connection)
-        {
-            var command = connection.CreateCommand();
-            command.CommandText = @"
-                INSERT INTO AyahFts(rowid, verse, translation)
-                SELECT id, verse, translation FROM Ayah
-                WHERE id NOT IN (SELECT rowid FROM AyahFts);
-            ";
-            command.ExecuteNonQuery();
         }
     }
 }

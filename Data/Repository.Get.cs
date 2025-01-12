@@ -20,15 +20,14 @@ namespace QuranCli.Data
         {
             const string query = "SELECT * FROM Surah";
             var surahs = connection.Query<Surah>(query);
-            var ranking = surahs
+            var rankings = surahs
                 .Select(s => new RankedSurah
                 {
                     Surah = s,
                     Distance = StringExtensions.ComputeLevenshteinDistance(name, s.TransliterationName)
                 })
-                .OrderBy(rs => rs.Distance)
-                .FirstOrDefault();
-            return ranking.Surah;
+                .OrderBy(rs => rs.Distance);
+            return rankings.First().Surah;
         }
 
         public IEnumerable<Ayah> GetAyatInSurahById(int id)
