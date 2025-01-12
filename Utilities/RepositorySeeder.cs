@@ -1,5 +1,8 @@
+using System;
 using System.IO;
 using System.Net.Http;
+using System.Text;
+using Microsoft.Data.Sqlite;
 using QuranCli.Data;
 using QuranCli.Data.Models;
 
@@ -14,10 +17,12 @@ namespace QuranCli.Utilities
         public static void Seed(this Repository repository)
         {
             Directory.CreateDirectory(Defaults.temporaryPath);
-            DownloadFiles();
+            // DownloadFiles();
             Logger.Message("Seeding database. This may take a while.");
             ConsumeFiles(repository);
-            Logger.Message("Seeding complete.");
+            Logger.Message("Syncing FTS table...");
+            PopulateAyahFts(repository.connection);
+            Logger.Message("Seeding and FTS syncing complete.");
             Directory.Delete(Defaults.temporaryPath, true);
         }
 
@@ -32,9 +37,9 @@ namespace QuranCli.Utilities
         private static void ConsumeFiles(Repository repository)
         {
             // Consume the files
-            using var surahsReader = new StreamReader(surahsFilePath);
-            using var translationsReader = new StreamReader(translationsFilePath);
-            using var versesReader = new StreamReader(versesFilePath);
+            using var surahsReader = new StreamReader(surahsFilePath, Encoding.UTF8);
+            using var translationsReader = new StreamReader(translationsFilePath, Encoding.UTF8);
+            using var versesReader = new StreamReader(versesFilePath, Encoding.UTF8);
             int ayahId = 0, ayatLeftInSurah = 0, surahId = 0, totalAyat = 6236;
             Surah surah = null;
             string verse, translation, surahLine;
@@ -74,6 +79,17 @@ namespace QuranCli.Utilities
                 EnglishName = parts[3],
                 TransliterationName = parts[4]
             };
+        }
+
+        public static void PopulateAyahFts(this SqliteConnection connection)
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = @"
+                INSERT INTO AyahFts(rowid, verse, translation)
+                SELECT id, verse, translation FROM Ayah
+                WHERE id NOT IN (SELECT rowid FROM AyahFts);
+            ";
+            command.ExecuteNonQuery();
         }
     }
 }

@@ -8,5 +8,9 @@ namespace QuranCli.Data.Models
         public string Name { get; set; }
         public string EnglishName { get; set; }
         public string TransliterationName { get; set; }
+        public int EndAyahId
+        {
+            get => StartAyahId + AyahCount - 1;
+        }
     }
 }

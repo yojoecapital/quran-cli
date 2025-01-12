@@ -2,7 +2,9 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.IO;
+using System.Text;
 using QuranCli.Arguments;
+using QuranCli.Data;
 
 namespace QuranCli
 {
@@ -11,6 +13,8 @@ namespace QuranCli
         [STAThread]
         public static int Main(string[] args)
         {
+            Console.InputEncoding = Console.OutputEncoding = Encoding.UTF8;
+
             // Make sure the configuration directory exists
             Directory.CreateDirectory(Defaults.configurationPath);
 
@@ -20,7 +24,7 @@ namespace QuranCli
             {
                 selectionArgument
             };
-            verseCommand.SetHandler(selection => selection.Log(), selectionArgument);
+            verseCommand.SetHandler(VerseHandler, selectionArgument);
             // #endregion
 
             var rootCommand = new RootCommand($"The {Defaults.applicationName} is a...")
@@ -28,6 +32,14 @@ namespace QuranCli
                 verseCommand
             };
             return rootCommand.Invoke(args);
+        }
+
+        private static void VerseHandler(QuranSelection selection)
+        {
+            foreach (var ayah in selection.GetAyat(new Repository()))
+            {
+                Logger.Message(ayah.Verse);
+            }
         }
     }
 }

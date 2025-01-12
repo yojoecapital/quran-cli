@@ -7,9 +7,9 @@ using Dapper;
 
 namespace QuranCli.Data
 {
-    internal class Repository : IDisposable
+    internal partial class Repository : IDisposable
     {
-        private readonly SqliteConnection connection;
+        public readonly SqliteConnection connection;
 
         public Repository()
         {
@@ -43,14 +43,14 @@ namespace QuranCli.Data
 
         public bool HasSettingsTable()
         {
-            var sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='Settings';";
+            const string sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='Settings';";
             var result = connection.QueryFirstOrDefault<string>(sql);
             return !string.IsNullOrEmpty(result);
         }
 
         public void Create(Ayah ayah)
         {
-            var sql = @"
+            const string sql = @"
                 INSERT INTO Ayah (id, surahId, ayahNumber, verse, translation) 
                 VALUES (@Id, @SurahId, @AyahNumber, @Verse, @Translation);
             ";
@@ -59,7 +59,7 @@ namespace QuranCli.Data
 
         public void Create(Surah surah)
         {
-            var sql = @"
+            const string sql = @"
                 INSERT INTO Surah (id, ayahCount, startAyahId, name, englishName, transliterationName) 
                 VALUES (@Id, @AyahCount, @StartAyahId, @Name, @EnglishName, @TransliterationName);
             ";
@@ -68,7 +68,7 @@ namespace QuranCli.Data
 
         public void Create(SurahNote surahNote)
         {
-            var sql = @"
+            const string sql = @"
                 INSERT INTO SurahNote (surahId, text) 
                 VALUES (@SurahId, @Text);
             ";
@@ -77,7 +77,7 @@ namespace QuranCli.Data
 
         public void Create(Group node)
         {
-            var sql = @"
+            const string sql = @"
                 INSERT INTO [Group] (name, text) 
                 VALUES (@Name, @Text);
             ";
@@ -86,21 +86,11 @@ namespace QuranCli.Data
 
         public void Create(Link link)
         {
-            var sql = @"
+            const string sql = @"
                 INSERT INTO Link (nodeId, ayahId1, ayahId2, [from], [to]) 
                 VALUES (@NodeId, @AyahId1, @AyahId2, @From, @To);
             ";
             connection.Execute(sql, link);
-        }
-
-        public Surah GetSurahById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Surah GetSurahByName(string name)
-        {
-            throw new NotImplementedException();
         }
     }
 }

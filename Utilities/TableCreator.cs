@@ -7,19 +7,23 @@ namespace QuranCli.Utilities
         public static void CreateTables(this SqliteConnection connection)
         {
             var command = connection.CreateCommand();
+
+            // Create the Surah table
             command.CommandText = @"
-                CREATE TABLE Surah (
+                CREATE TABLE IF NOT EXISTS Surah (
                     id INTEGER PRIMARY KEY,
                     ayahCount INTEGER NOT NULL,
                     startAyahId INTEGER NOT NULL,
-                    name TEXT NOT NULL,
-                    englishName TEXT NOT NULL,
-                    transliterationName TEXT NOT NULL
+                    name VARCHAR NOT NULL,
+                    englishName VARCHAR NOT NULL,
+                    transliterationName VARCHAR NOT NULL
                 );
             ";
             command.ExecuteNonQuery();
+
+            // Create the Ayah table
             command.CommandText = @"
-                CREATE TABLE Ayah (
+                CREATE TABLE IF NOT EXISTS Ayah (
                     id INTEGER PRIMARY KEY,
                     surahId INTEGER NOT NULL,
                     ayahNumber INTEGER NOT NULL,
@@ -29,12 +33,27 @@ namespace QuranCli.Utilities
                 );
             ";
             command.ExecuteNonQuery();
+
+            // Create the Ayah FTS table for fuzzy search
             command.CommandText = @"
-                CREATE INDEX idx_ayah_surahId_ayahNumber ON Ayah(surahId, ayahNumber);
+                CREATE VIRTUAL TABLE IF NOT EXISTS AyahFts USING fts5(
+                    verse, 
+                    translation, 
+                    content='Ayah',
+                    content_rowid='id'
+                );
             ";
             command.ExecuteNonQuery();
+
+            // Index for Ayah table
             command.CommandText = @"
-                CREATE TABLE SurahNote (
+                CREATE INDEX IF NOT EXISTS idx_ayah_surahId_ayahNumber ON Ayah(surahId, ayahNumber);
+            ";
+            command.ExecuteNonQuery();
+
+            // Create the SurahNote table
+            command.CommandText = @"
+                CREATE TABLE IF NOT EXISTS SurahNote (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     surahId INTEGER NOT NULL,
                     text TEXT NOT NULL,
@@ -42,24 +61,32 @@ namespace QuranCli.Utilities
                 );
             ";
             command.ExecuteNonQuery();
+
+            // Index for SurahNote table
             command.CommandText = @"
-                CREATE INDEX idx_surahNote_surahId ON SurahNote(surahId);
+                CREATE INDEX IF NOT EXISTS idx_surahNote_surahId ON SurahNote(surahId);
             ";
             command.ExecuteNonQuery();
+
+            // Create the Group table
             command.CommandText = @"
-                CREATE TABLE [Group] (
+                CREATE TABLE IF NOT EXISTS [Group] (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT,
                     text TEXT
                 );
             ";
             command.ExecuteNonQuery();
+
+            // Index for Group table
             command.CommandText = @"
-                CREATE INDEX idx_group_name ON [Group](name);
+                CREATE INDEX IF NOT EXISTS idx_group_name ON [Group](name);
             ";
             command.ExecuteNonQuery();
+
+            // Create the Link table
             command.CommandText = @"
-                CREATE TABLE Link (
+                CREATE TABLE IF NOT EXISTS Link (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     groupId INTEGER NOT NULL,
                     ayahId1 INTEGER NOT NULL,
@@ -72,9 +99,11 @@ namespace QuranCli.Utilities
                 );
             ";
             command.ExecuteNonQuery();
+
+            // Indexes for Link table
             command.CommandText = @"
-                CREATE INDEX idx_link_ayahId1 ON Link(ayahId1);
-                CREATE INDEX idx_link_ayahId2 ON Link(ayahId2);
+                CREATE INDEX IF NOT EXISTS idx_link_ayahId1 ON Link(ayahId1);
+                CREATE INDEX IF NOT EXISTS idx_link_ayahId2 ON Link(ayahId2);
             ";
             command.ExecuteNonQuery();
         }
