@@ -21,20 +21,16 @@ namespace QuranCli.Arguments
             SurahToSurah // <surah>..<surah>
         }
 
-        private Type type;
-        private string[] tokens;
+        private readonly Type type;
+        private readonly string[] tokens;
 
-        public void Log()
+        public string GetLog()
         {
             var builder = new StringBuilder();
             builder.Append($"Parsed selection as '{type}'");
-            if (type == Type.All)
-            {
-                Logger.Info(builder.Append('.'));
-                return;
-            }
+            if (type == Type.All) return builder.Append('.').ToString();
             var tokensString = $" with tokens [{string.Join(", ", tokens)}]";
-            Logger.Info(builder.Append(tokensString).Append('.'));
+            return builder.Append(tokensString).Append('.').ToString();
         }
 
 

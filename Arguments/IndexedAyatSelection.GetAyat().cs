@@ -1,17 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using QuranCli.Data;
 using QuranCli.Data.Models;
 
 namespace QuranCli.Arguments
 {
-    internal partial class AyatSelection
+    internal partial class IndexedAyatSelection
     {
-        public IEnumerable<Ayah> GetSubsectionOfAyat()
+        public override IEnumerable<Ayah> GetAyat()
         {
-            Log();
-            var ayat = GetAyat();
+            var ayat = base.GetAyat();
             if (!IsIndexed)
             {
                 foreach (var ayah in ayat) yield return ayah;

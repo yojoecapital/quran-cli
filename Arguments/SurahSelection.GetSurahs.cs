@@ -10,7 +10,6 @@ namespace QuranCli.Arguments
     {
         public IEnumerable<Surah> GetSurahs()
         {
-            Log();
             if (type == Type.All)
             {
                 return Repository.Instance.GetSurahs();

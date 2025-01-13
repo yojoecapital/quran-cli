@@ -1,6 +1,5 @@
 using QuranCli.Data.Models;
 using QuranCli.Utilities;
-using System;
 using Dapper;
 
 namespace QuranCli.Data
@@ -38,35 +37,5 @@ namespace QuranCli.Data
             ";
             connection.Execute(sql, surah);
         }
-
-        public void Create(SurahNote surahNote)
-        {
-            const string sql = @"
-                INSERT INTO SurahNote (SurahId, Text) 
-                VALUES (@SurahId, @Text);
-            ";
-            connection.Execute(sql, surahNote);
-        }
-
-        public int Create(Group node)
-        {
-            const string sql = @"
-                INSERT INTO [Group] (Name, Text) 
-                VALUES (@Name, @Text);
-                SELECT LAST_INSERT_ROWID();
-            ";
-            return connection.QuerySingle<int>(sql, node);
-        }
-
-
-        public void Create(Link link)
-        {
-            const string sql = @"
-                INSERT INTO Link (GroupId, AyahId1, AyahId2) 
-                VALUES (@GroupId, @AyahId1, @AyahId2);
-            ";
-            connection.Execute(sql, link);
-        }
-
     }
 }

@@ -43,37 +43,42 @@ namespace QuranCli.Utilities
             ";
             command.ExecuteNonQuery();
             command.CommandText = @"
+                CREATE TABLE IF NOT EXISTS AyatNote (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    AyahId1 INTEGER NOT NULL,
+                    AyahId2 INTEGER NOT NULL,
+                    Note TEXT NOT NULL,
+                    FOREIGN KEY (AyahId1) REFERENCES Ayah(Id),
+                    FOREIGN KEY (AyahId2) REFERENCES Ayah(Id),
+                    UNIQUE (AyahId1, AyahId2)
+                );
+            ";
+            command.CommandText = @"
                 CREATE TABLE IF NOT EXISTS SurahNote (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     SurahId INTEGER NOT NULL,
-                    Text TEXT NOT NULL,
-                    FOREIGN KEY (SurahId) REFERENCES Surah(Id)
+                    Note TEXT NOT NULL,
+                    FOREIGN KEY (SurahId) REFERENCES Surah(Id),
+                    UNIQUE (SurahId)
                 );
             ";
             command.ExecuteNonQuery();
             command.CommandText = @"
-                CREATE INDEX IF NOT EXISTS idx_SurahNote_SurahId ON SurahNote(SurahId);
-            ";
-            command.ExecuteNonQuery();
-            command.CommandText = @"
-                CREATE TABLE IF NOT EXISTS [Group] (
+                CREATE TABLE IF NOT EXISTS Grouping (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Name TEXT,
-                    Text TEXT
+                    Note TEXT,
+                    UNIQUE (Name)
                 );
             ";
             command.ExecuteNonQuery();
             command.CommandText = @"
-                CREATE INDEX IF NOT EXISTS idx_Group_Name ON [Group](Name);
-            ";
-            command.ExecuteNonQuery();
-            command.CommandText = @"
-                CREATE TABLE IF NOT EXISTS Link (
+                CREATE TABLE IF NOT EXISTS GroupingLink (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     GroupId INTEGER NOT NULL,
                     AyahId1 INTEGER NOT NULL,
                     AyahId2 INTEGER NOT NULL,
-                    FOREIGN KEY (GroupId) REFERENCES [Group](Id),
+                    FOREIGN KEY (GroupId) REFERENCES Grouping(Id),
                     FOREIGN KEY (AyahId1) REFERENCES Ayah(Id),
                     FOREIGN KEY (AyahId2) REFERENCES Ayah(Id),
                     UNIQUE (AyahId1, AyahId2, GroupId)
@@ -81,9 +86,19 @@ namespace QuranCli.Utilities
             ";
             command.ExecuteNonQuery();
             command.CommandText = @"
-                CREATE INDEX IF NOT EXISTS idx_Link_GroupId1 ON Link(GroupId);
-                CREATE INDEX IF NOT EXISTS idx_Link_AyahId1 ON Link(AyahId1);
-                CREATE INDEX IF NOT EXISTS idx_Link_AyahId2 ON Link(AyahId2);
+                CREATE TABLE IF NOT EXISTS DirectLink (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Note TEXT,
+                    AyahId1 INTEGER NOT NULL,
+                    AyahId2 INTEGER NOT NULL,
+                    AyahId3 INTEGER NOT NULL,
+                    AyahId4 INTEGER NOT NULL,
+                    FOREIGN KEY (AyahId1) REFERENCES Ayah(Id),
+                    FOREIGN KEY (AyahId2) REFERENCES Ayah(Id),
+                    FOREIGN KEY (AyahId3) REFERENCES Ayah(Id),
+                    FOREIGN KEY (AyahId4) REFERENCES Ayah(Id),
+                    UNIQUE (AyahId1, AyahId2, AyahId3, AyahId4)
+                );
             ";
             command.ExecuteNonQuery();
         }

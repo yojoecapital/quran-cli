@@ -7,7 +7,7 @@ namespace QuranCli.Arguments
 {
     internal partial class AyatSelection
     {
-        public IEnumerable<Ayah> GetAyat()
+        public virtual IEnumerable<Ayah> GetAyat()
         {
             if (mainType == MainType.All) return Repository.Instance.GetAyat();
             if (mainType == MainType.Surah)

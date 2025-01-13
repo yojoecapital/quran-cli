@@ -1,12 +1,14 @@
 using System;
-using System.Linq;
 
 namespace QuranCli
 {
     internal static class Logger
     {
+        public static bool verbose;
+
         public static void Info(object message)
         {
+            if (!verbose) return;
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.Error.WriteLine($"[INFO] {message}".PadRight(Console.WindowWidth));
             Console.ResetColor();
