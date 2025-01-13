@@ -91,17 +91,17 @@ namespace QuranCli.Utilities
                     groupId INTEGER NOT NULL,
                     ayahId1 INTEGER NOT NULL,
                     ayahId2 INTEGER NOT NULL,
-                    [from] INTEGER,
-                    [to] INTEGER,
                     FOREIGN KEY (groupId) REFERENCES [Group](id),
                     FOREIGN KEY (ayahId1) REFERENCES Ayah(id),
-                    FOREIGN KEY (ayahId2) REFERENCES Ayah(id)
+                    FOREIGN KEY (ayahId2) REFERENCES Ayah(id),
+                    UNIQUE (ayahId1, ayahId2, groupId)
                 );
             ";
             command.ExecuteNonQuery();
 
             // Indexes for Link table
             command.CommandText = @"
+                CREATE INDEX IF NOT EXISTS idx_link_groupId1 ON Link(groupId);
                 CREATE INDEX IF NOT EXISTS idx_link_ayahId1 ON Link(ayahId1);
                 CREATE INDEX IF NOT EXISTS idx_link_ayahId2 ON Link(ayahId2);
             ";

@@ -87,6 +87,18 @@ namespace QuranCli.Arguments
             return null;
         }
 
+        public static AyatSelection ArgumentParseWithoutIndex(ArgumentResult result)
+        {
+            var selection = ArgumentParse(result);
+            if (selection == null) return null;
+            if (selection.IsIndexed)
+            {
+                result.ErrorMessage = "Indexes should not be included for this argument.";
+                return null;
+            }
+            return selection;
+        }
+
         public static bool TryParse(string value, out AyatSelection selection)
         {
             selection = null;
@@ -94,7 +106,7 @@ namespace QuranCli.Arguments
             int? from = null, to = null;
             bool isIndexed = false;
             if (!TryGetTokens(split.First, out var mainType, out var rangeType, out var tokens)) return false;
-            if (splitArity == SplitArity.Two)
+            if (splitArity == Splitter.Arity.Two)
             {
                 if (!TryGetIndexRange(split.Last, out from, out to)) return false;
                 isIndexed = true;
@@ -143,10 +155,10 @@ namespace QuranCli.Arguments
             mainType = default;
             rangeType = default;
             var splitArity = Splitter.GetSplit(value, "..", out var split);
-            if (splitArity == SplitArity.One)
+            if (splitArity == Splitter.Arity.One)
             {
                 splitArity = Splitter.GetSplit(split.First, ":", out split);
-                if (splitArity == SplitArity.One)
+                if (splitArity == Splitter.Arity.One)
                 {
                     if (split.First.ToLower().Equals("all"))
                     {
@@ -160,14 +172,14 @@ namespace QuranCli.Arguments
                         return true;
                     }
                 }
-                else if (splitArity == SplitArity.Two && split.First.IsSurahIdentifier() && split.Last.IsNumeric())
+                else if (splitArity == Splitter.Arity.Two && split.First.IsSurahIdentifier() && split.Last.IsNumeric())
                 {
                     mainType = MainType.Ayah;
                     tokens = [split.First, split.Last];
                     return true;
                 }
             }
-            else if (splitArity == SplitArity.Two) return TryGetTokens(split, out mainType, out rangeType, out tokens);
+            else if (splitArity == Splitter.Arity.Two) return TryGetTokens(split, out mainType, out rangeType, out tokens);
             return false;
         }
 
@@ -178,9 +190,9 @@ namespace QuranCli.Arguments
             mainType = MainType.Range;
             var splitArity1 = Splitter.GetSplit(split.First, ":", out var split1);
             var splitArity2 = Splitter.GetSplit(split.Last, ":", out var split2);
-            if (splitArity1 == SplitArity.Empty)
+            if (splitArity1 == Splitter.Arity.Empty)
             {
-                if (splitArity2 == SplitArity.One)
+                if (splitArity2 == Splitter.Arity.One)
                 {
                     // ..<surah>
                     if (split2.First.IsSurahIdentifier())
@@ -190,7 +202,7 @@ namespace QuranCli.Arguments
                         return true;
                     }
                 }
-                else if (splitArity2 == SplitArity.Two)
+                else if (splitArity2 == Splitter.Arity.Two)
                 {
                     // ..<surah>:<ayah>
                     if (split2.First.IsSurahIdentifier() && split2.Last.IsNumeric())
@@ -201,9 +213,9 @@ namespace QuranCli.Arguments
                     }
                 }
             }
-            else if (splitArity2 == SplitArity.Empty)
+            else if (splitArity2 == Splitter.Arity.Empty)
             {
-                if (splitArity1 == SplitArity.One)
+                if (splitArity1 == Splitter.Arity.One)
                 {
                     // <surah>..
                     if (split1.First.IsSurahIdentifier())
@@ -213,7 +225,7 @@ namespace QuranCli.Arguments
                         return true;
                     }
                 }
-                else if (splitArity1 == SplitArity.Two)
+                else if (splitArity1 == Splitter.Arity.Two)
                 {
                     // <surah>:<ayah>..
                     if (split1.First.IsSurahIdentifier() && split1.Last.IsNumeric())
@@ -224,7 +236,7 @@ namespace QuranCli.Arguments
                     }
                 }
             }
-            else if (splitArity1 == SplitArity.One && splitArity2 == SplitArity.Two)
+            else if (splitArity1 == Splitter.Arity.One && splitArity2 == Splitter.Arity.Two)
             {
                 // <surah>..<surah>:<ayah>
                 if (split1.First.IsSurahIdentifier() && split2.First.IsSurahIdentifier() && split2.Last.IsNumeric())
@@ -234,7 +246,7 @@ namespace QuranCli.Arguments
                     return true;
                 }
             }
-            else if (splitArity1 == SplitArity.Two && splitArity2 == SplitArity.One)
+            else if (splitArity1 == Splitter.Arity.Two && splitArity2 == Splitter.Arity.One)
             {
                 // <surah>:<ayah>..<ayah>
                 if (split1.First.IsSurahIdentifier() && split1.Last.IsNumeric() && split2.First.IsNumeric())
@@ -251,7 +263,7 @@ namespace QuranCli.Arguments
                     return true;
                 }
             }
-            else if (splitArity1 == SplitArity.One && splitArity2 == SplitArity.One)
+            else if (splitArity1 == Splitter.Arity.One && splitArity2 == Splitter.Arity.One)
             {
                 // <surah>..<surah>
                 if (split1.First.IsSurahIdentifier() && split2.First.IsSurahIdentifier())
@@ -261,7 +273,7 @@ namespace QuranCli.Arguments
                     return true;
                 }
             }
-            else if (splitArity1 == SplitArity.Two && splitArity2 == SplitArity.Two)
+            else if (splitArity1 == Splitter.Arity.Two && splitArity2 == Splitter.Arity.Two)
             {
                 // <surah>:<ayah>..<surah>:<ayah>
                 if (split1.First.IsSurahIdentifier() && split1.Last.IsNumeric() && split2.First.IsSurahIdentifier() && split2.Last.IsNumeric())
@@ -278,7 +290,7 @@ namespace QuranCli.Arguments
         {
             from = to = null;
             var splitArity = Splitter.GetSplit(value, "..", out var split);
-            if (splitArity == SplitArity.One)
+            if (splitArity == Splitter.Arity.One)
             {
                 // [<index>]
                 if (uint.TryParse(split.First, out var index))
@@ -287,7 +299,7 @@ namespace QuranCli.Arguments
                     return true;
                 }
             }
-            else if (splitArity == SplitArity.Two)
+            else if (splitArity == Splitter.Arity.Two)
             {
                 if (split.First.Length == 0)
                 {

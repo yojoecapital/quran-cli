@@ -8,7 +8,7 @@ namespace QuranCli.Commands
     {
         public static void Handle(SurahSelection selection)
         {
-            foreach (var surah in selection.GetSurahs(Repository.Instance))
+            foreach (var surah in selection.GetSurahs())
             {
                 Console.WriteLine($"- id: {surah.Id}");
                 Console.WriteLine($"  name: {surah.Name}");
@@ -16,6 +16,7 @@ namespace QuranCli.Commands
                 Console.WriteLine($"  englishName: {surah.EnglishName}");
                 Console.WriteLine($"  ayahCount: {surah.AyahCount}");
             }
+            Repository.Instance.Dispose();
         }
     }
 }

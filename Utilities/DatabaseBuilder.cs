@@ -6,21 +6,21 @@ using QuranCli.Data.Models;
 
 namespace QuranCli.Utilities
 {
-    internal static class RepositoryBuilder
+    internal static class DatabaseBuilder
     {
         private static readonly string surahsFilePath = Path.Join(Defaults.temporaryPath, Defaults.surahsFileName);
         private static readonly string translationsFilePath = Path.Join(Defaults.temporaryPath, Defaults.translationsFileName);
         private static readonly string ayatFilePath = Path.Join(Defaults.temporaryPath, Defaults.ayatFileName);
 
-        public static void Build(this Repository repository)
+        public static void Build()
         {
-            repository.CreateTables();
+            Repository.Instance.CreateTables();
             Directory.CreateDirectory(Defaults.temporaryPath);
             DownloadFiles();
             Logger.Message("Seeding database. This may take a while.");
-            ConsumeFiles(repository);
+            ConsumeFiles();
             Logger.Message("Syncing FTS table...");
-            repository.PopulateAyahFts();
+            Repository.Instance.PopulateAyahFts();
             Logger.Message("Seeding and FTS syncing complete.");
             Directory.Delete(Defaults.temporaryPath, true);
         }
@@ -33,7 +33,7 @@ namespace QuranCli.Utilities
             client.Download($"{Defaults.resourceUrl}/{Defaults.ayatFileName}", ayatFilePath);
         }
 
-        private static void ConsumeFiles(Repository repository)
+        private static void ConsumeFiles()
         {
             // Consume the files
             using var surahsReader = new StreamReader(surahsFilePath, Encoding.UTF8);
@@ -49,7 +49,7 @@ namespace QuranCli.Utilities
                     surahId++;
                     surah = GetSurah(surahId, surahLine);
                     ayatLeftInSurah = surah.AyahCount;
-                    repository.Create(surah);
+                    Repository.Instance.Create(surah);
                 }
                 ayahId++;
                 ayatLeftInSurah--;
@@ -61,7 +61,7 @@ namespace QuranCli.Utilities
                     Verse = verse,
                     Translation = translation
                 };
-                repository.Create(ayah);
+                Repository.Instance.Create(ayah);
                 Logger.Percent(ayahId, totalAyat);
             }
         }

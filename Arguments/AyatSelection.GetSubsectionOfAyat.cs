@@ -8,10 +8,10 @@ namespace QuranCli.Arguments
 {
     internal partial class AyatSelection
     {
-        public IEnumerable<Ayah> GetSubsectionOfAyat(Repository repository)
+        public IEnumerable<Ayah> GetSubsectionOfAyat()
         {
             Log();
-            var ayat = GetAyat(repository);
+            var ayat = GetAyat();
             if (!IsIndexed)
             {
                 foreach (var ayah in ayat) yield return ayah;

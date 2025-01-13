@@ -1,27 +1,27 @@
 namespace QuranCli.Utilities
 {
-    internal enum SplitArity : byte
-    {
-        Empty,
-        One, // <value>
-        Two // <value>:<value>
-    }
-
     internal static class Splitter
     {
-        public static SplitArity GetSplit(string value, string seperator, out (string First, string Last) split)
+        internal enum Arity : byte
+        {
+            Empty,
+            One, // <value>
+            Two // <value>:<value>
+        }
+
+        public static Arity GetSplit(string value, string seperator, out (string First, string Last) split)
         {
             split = default;
-            if (value.Length == 0) return SplitArity.Empty;
+            if (value.Length == 0) return Arity.Empty;
             var index = value.IndexOf(seperator);
             if (index != -1)
             {
                 split.First = value[..index].TrimEnd();
                 split.Last = value[(index + seperator.Length)..].TrimStart();
-                return SplitArity.Two;
+                return Arity.Two;
             }
             split.First = split.Last = value;
-            return SplitArity.One;
+            return Arity.One;
         }
     }
 }

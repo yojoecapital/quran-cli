@@ -9,8 +9,8 @@ namespace QuranCli.Commands
         public static void Handle()
         {
             File.Delete(Defaults.databasePath);
-            var repository = Repository.Instance;
-            repository.Build();
+            DatabaseBuilder.Build();
+            Repository.Instance.Dispose();
         }
 
     }

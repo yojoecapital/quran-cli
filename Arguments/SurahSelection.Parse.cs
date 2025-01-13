@@ -51,7 +51,7 @@ namespace QuranCli.Arguments
             type = default;
             tokens = null;
             var splitArity = Splitter.GetSplit(value, "..", out var split);
-            if (splitArity == SplitArity.One)
+            if (splitArity == Splitter.Arity.One)
             {
                 if (split.First.ToLower().Equals("all"))
                 {
@@ -65,7 +65,7 @@ namespace QuranCli.Arguments
                     return true;
                 }
             }
-            else if (splitArity == SplitArity.Two)
+            else if (splitArity == Splitter.Arity.Two)
             {
                 if (split.First.Length == 0 && split.Last.IsSurahIdentifier())
                 {

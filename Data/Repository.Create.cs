@@ -5,7 +5,7 @@ using Dapper;
 
 namespace QuranCli.Data
 {
-    internal partial class Repository : IDisposable
+    internal partial class Repository
     {
         public void PopulateAyahFts()
         {

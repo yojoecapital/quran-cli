@@ -80,5 +80,38 @@ namespace QuranCli.Data
             if (surahs.FirstOrDefault() == null) throw new Exception($"No Surah found between '{surahId1}..{surahId2}'");
             return surahs;
         }
+
+        public bool TryGetGroupByName(string name, out Group group)
+        {
+            const string query = @"
+                SELECT * FROM Group
+                WHERE name = @name;
+            ";
+            group = connection.QuerySingleOrDefault<Group>(query, new { name });
+            if (group == null) return false;
+            return true;
+        }
+
+        public IEnumerable<Link> GetLinksBetweenAyahIds(int ayahId1, int ayahId2)
+        {
+            if (ayahId2 < ayahId1) throw new Exception("Ending position cannot be less than starting position.");
+            const string query = @"
+                SELECT * 
+                FROM Link
+                WHERE NOT (ayahId2 < @ayahId1 OR ayahId1 > @ayahId1)
+            ";
+            return connection.Query<Link>(query, new { ayahId1, ayahId2 });
+        }
+
+        public Link GetLinkByAyahIds(int ayahId1, int ayahId2)
+        {
+            if (ayahId2 < ayahId1) throw new Exception("Ending position cannot be less than starting position.");
+            const string query = @"
+                SELECT * 
+                FROM Link
+                WHERE ayahId2 = @ayahId1 AND ayahId1 = @ayahId1
+            ";
+            return connection.QuerySingleOrDefault<Link>(query, new { ayahId1, ayahId2 });
+        }
     }
 }

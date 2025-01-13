@@ -11,13 +11,14 @@ namespace QuranCli.Commands
         public static void Handle(AyatSelection selection, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
         {
             foreach (var line in GetLines(selection, shouldIndex, shouldTranslate, shouldIncludeNumbers)) Console.WriteLine(line);
+            Repository.Instance.Dispose();
         }
 
         public static IEnumerable<string> GetLines(AyatSelection selection, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
         {
             var index = 0;
             if (selection.IsIndexed && !selection.IsFromStart) index = selection.From;
-            foreach (var ayah in selection.GetSubsectionOfAyat(Repository.Instance))
+            foreach (var ayah in selection.GetSubsectionOfAyat())
             {
                 string verse;
                 if (shouldIndex)
