@@ -14,39 +14,39 @@ namespace QuranCli.Arguments
             if (mainType == MainType.Surah)
             {
                 var surahIdentifier = tokens[0];
-                var surahId = GetSurahIdByIdentifier(repository, surahIdentifier);
+                var surahId = SurahIdentifierHelpers.GetSurahIdByIdentifier(repository, surahIdentifier);
                 return repository.GetAyatInSurahById(surahId);
             }
             if (mainType == MainType.Ayah)
             {
                 var surahIdentifier = tokens[0];
                 var ayahNumber = int.Parse(tokens[1]);
-                return [GetAyahByOffset(repository, surahIdentifier, ayahNumber)];
+                return [SurahIdentifierHelpers.GetAyahByOffset(repository, surahIdentifier, ayahNumber)];
             }
             if (rangeType == RangeType.SurahFromStart)
             {
                 var surahIdentifier = tokens[0];
-                var surah = GetSurahByIdentifier(repository, surahIdentifier);
+                var surah = SurahIdentifierHelpers.GetSurahByIdentifier(repository, surahIdentifier);
                 return repository.GetAyatBetweenIds(1, surah.EndAyahId);
             }
             if (rangeType == RangeType.AyahFromStart)
             {
                 var surahIdentifier = tokens[0];
                 var ayahNumber = int.Parse(tokens[1]);
-                var ayahId = GetAyahIdByOffset(repository, surahIdentifier, ayahNumber);
+                var ayahId = SurahIdentifierHelpers.GetAyahIdByOffset(repository, surahIdentifier, ayahNumber);
                 return repository.GetAyatBetweenIds(1, ayahId);
             }
             if (rangeType == RangeType.SurahToEnd)
             {
                 var surahIdentifier = tokens[0];
-                var surah = GetSurahByIdentifier(repository, surahIdentifier);
+                var surah = SurahIdentifierHelpers.GetSurahByIdentifier(repository, surahIdentifier);
                 return repository.GetAyatBetweenIds(surah.StartAyahId, 6236);
             }
             if (rangeType == RangeType.AyahToEnd)
             {
                 var surahIdentifier = tokens[0];
                 var ayahNumber = int.Parse(tokens[1]);
-                var ayahId = GetAyahIdByOffset(repository, surahIdentifier, ayahNumber);
+                var ayahId = SurahIdentifierHelpers.GetAyahIdByOffset(repository, surahIdentifier, ayahNumber);
                 return repository.GetAyatBetweenIds(ayahId, 6236);
             }
             if (rangeType == RangeType.LeftRange)
@@ -54,17 +54,17 @@ namespace QuranCli.Arguments
                 var surahIdentifier1 = tokens[0];
                 var surahIdentifier2 = tokens[1];
                 var ayahNumber = int.Parse(tokens[2]);
-                var surah = GetSurahByIdentifier(repository, surahIdentifier1);
+                var surah = SurahIdentifierHelpers.GetSurahByIdentifier(repository, surahIdentifier1);
                 var ayahId1 = surah.StartAyahId;
-                var ayahId2 = GetAyahIdByOffset(repository, surahIdentifier2, ayahNumber);
+                var ayahId2 = SurahIdentifierHelpers.GetAyahIdByOffset(repository, surahIdentifier2, ayahNumber);
                 return repository.GetAyatBetweenIds(ayahId1, ayahId2);
             }
             if (rangeType == RangeType.SurahToAyah)
             {
                 var surahIdentifier = tokens[0];
                 var ayahNumber = int.Parse(tokens[1]);
-                var ayahId1 = GetAyahIdByOffset(repository, surahIdentifier, 1);
-                var ayahId2 = GetAyahIdByOffset(repository, surahIdentifier, ayahNumber);
+                var ayahId1 = SurahIdentifierHelpers.GetAyahIdByOffset(repository, surahIdentifier, 1);
+                var ayahId2 = SurahIdentifierHelpers.GetAyahIdByOffset(repository, surahIdentifier, ayahNumber);
                 return repository.GetAyatBetweenIds(ayahId1, ayahId2);
             }
             if (rangeType == RangeType.RightRange)
@@ -72,16 +72,16 @@ namespace QuranCli.Arguments
                 var surahIdentifier = tokens[0];
                 var ayahNumber1 = int.Parse(tokens[1]);
                 var ayahNumber2 = int.Parse(tokens[2]);
-                var ayahId1 = GetAyahIdByOffset(repository, surahIdentifier, ayahNumber1);
-                var ayahId2 = GetAyahIdByOffset(repository, surahIdentifier, ayahNumber2);
+                var ayahId1 = SurahIdentifierHelpers.GetAyahIdByOffset(repository, surahIdentifier, ayahNumber1);
+                var ayahId2 = SurahIdentifierHelpers.GetAyahIdByOffset(repository, surahIdentifier, ayahNumber2);
                 return repository.GetAyatBetweenIds(ayahId1, ayahId2);
             }
             if (rangeType == RangeType.SurahToSurah)
             {
                 var surahIdentifier1 = tokens[0];
                 var surahIdentifier2 = tokens[1];
-                var surah1 = GetSurahByIdentifier(repository, surahIdentifier1);
-                var surah2 = GetSurahByIdentifier(repository, surahIdentifier2);
+                var surah1 = SurahIdentifierHelpers.GetSurahByIdentifier(repository, surahIdentifier1);
+                var surah2 = SurahIdentifierHelpers.GetSurahByIdentifier(repository, surahIdentifier2);
                 var ayahId1 = surah1.StartAyahId;
                 var ayahId2 = surah2.EndAyahId;
                 return repository.GetAyatBetweenIds(ayahId1, ayahId2);
@@ -92,37 +92,11 @@ namespace QuranCli.Arguments
                 var ayahNumber1 = int.Parse(tokens[1]);
                 var surahIdentifier2 = tokens[2];
                 var ayahNumber2 = int.Parse(tokens[3]);
-                var ayahId1 = GetAyahIdByOffset(repository, surahIdentifier1, ayahNumber1);
-                var ayahId2 = GetAyahIdByOffset(repository, surahIdentifier2, ayahNumber2);
+                var ayahId1 = SurahIdentifierHelpers.GetAyahIdByOffset(repository, surahIdentifier1, ayahNumber1);
+                var ayahId2 = SurahIdentifierHelpers.GetAyahIdByOffset(repository, surahIdentifier2, ayahNumber2);
                 return repository.GetAyatBetweenIds(ayahId1, ayahId2);
             }
             throw new Exception("Parse case not found.");
-        }
-
-        private static int GetSurahIdByIdentifier(Repository repository, string surahIdentifier)
-        {
-            if (surahIdentifier.IsSurahName()) return repository.GetSurahByName(surahIdentifier).Id;
-            return int.Parse(surahIdentifier);
-        }
-
-        private static Surah GetSurahByIdentifier(Repository repository, string surahIdentifier)
-        {
-            if (surahIdentifier.IsSurahName()) return repository.GetSurahByName(surahIdentifier);
-            return repository.GetSurahById(int.Parse(surahIdentifier));
-        }
-
-        private static int GetAyahIdByOffset(Repository repository, string surahIdentifier, int ayahNumber)
-        {
-            var surah = GetSurahByIdentifier(repository, surahIdentifier);
-            var ayahId = surah.StartAyahId + ayahNumber - 1;
-            if (ayahId < surah.StartAyahId || ayahId > surah.EndAyahId) throw new Exception($"No Ayah found for '{surah.Id}:{ayahNumber}'");
-            return ayahId;
-        }
-
-        private static Ayah GetAyahByOffset(Repository repository, string surahIdentifier, int ayahNumber)
-        {
-            var surahId = GetSurahIdByIdentifier(repository, surahIdentifier);
-            return repository.GetAyahByOffset(surahId, ayahNumber);
         }
     }
 }

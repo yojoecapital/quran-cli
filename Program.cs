@@ -22,28 +22,40 @@ namespace QuranCli
             Initialize();
 
             // #region verse
-            var selectionArgument = new Argument<AyatSelection>("selection", AyatSelection.ArgumentParse, false, "A selection from the Quran.");
+            var ayatSelectionArgument = new Argument<AyatSelection>("selection", AyatSelection.ArgumentParse, false, "A selection of verses from the Quran.");
             var indexOption = new Option<bool>(["--index", "-i"], "Display indexes above every word in each verse.");
             var translationOption = new Option<bool>(["--translation", "-t"], "Include the translation in the output.");
             var numberOption = new Option<bool>(["--number", "-n"], "Include the verse number alongside each verse.");
             var verseCommand = new Command("verse", "Output a verse or range of verses from the Quran.")
             {
-                selectionArgument,
+                ayatSelectionArgument,
                 indexOption,
                 numberOption,
                 translationOption
             };
-            verseCommand.SetHandler(VerseHandler.Handle, selectionArgument, indexOption, translationOption, numberOption);
+            verseCommand.SetHandler(VerseHandler.Handle, ayatSelectionArgument, indexOption, translationOption, numberOption);
             verseCommand.AddAlias("ayah");
+            // #endregion
+
+            // #region chapter
+            var surahsSelectionArgument = new Argument<SurahSelection>("selection", SurahSelection.ArgumentParse, false, "A selection of chapters from the Quran.");
+            var chapterCommand = new Command("chapter", "Output information for a chapter or range of chapters from the Quran.")
+            {
+                surahsSelectionArgument
+            };
+            chapterCommand.AddAlias("surah");
+            chapterCommand.SetHandler(ChapterHandler.Handle, surahsSelectionArgument);
             // #endregion
 
             // #region build-db
             var buildDatabaseCommand = new Command("build-db", "Download the resource files and rebuild the SQLite database.");
             buildDatabaseCommand.SetHandler(BuildDatabaseHandler.Handle);
             // #endregion
+
             var rootCommand = new RootCommand($"The {Defaults.applicationName} is a...")
             {
                 verseCommand,
+                chapterCommand,
                 buildDatabaseCommand
             };
             return rootCommand.Invoke(args);

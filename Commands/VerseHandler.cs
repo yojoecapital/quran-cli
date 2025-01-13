@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using QuranCli.Arguments;
 using QuranCli.Data;
-using QuranCli.Data.Models;
 
 namespace QuranCli.Commands
 {

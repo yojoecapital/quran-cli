@@ -44,6 +44,12 @@ namespace QuranCli.Data
             return connection.Query<Ayah>(query);
         }
 
+        public IEnumerable<Surah> GetSurahs()
+        {
+            const string query = "SELECT * FROM Surah";
+            return connection.Query<Surah>(query);
+        }
+
         public Ayah GetAyahByOffset(int surahId, int ayahNumber)
         {
             const string query = "SELECT * FROM Ayah WHERE surahId = @surahId AND ayahNumber = @ayahNumber";
