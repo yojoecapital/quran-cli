@@ -1,3 +1,5 @@
+using System;
+using System.CommandLine;
 using System.CommandLine.Parsing;
 using QuranCli.Data;
 using QuranCli.Data.Models;
@@ -37,6 +39,7 @@ namespace QuranCli.Arguments
             if (result.Tokens.Count > 0)
             {
                 var value = result.Tokens[0].ToString();
+                Console.WriteLine(value);
                 if (Repository.Instance.TryGetGroupByName(value, out var group))
                 {
                     result.OnlyTake(1);

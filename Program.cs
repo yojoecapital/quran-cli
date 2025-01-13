@@ -47,6 +47,24 @@ namespace QuranCli
             chapterCommand.SetHandler(ChapterHandler.Handle, surahsSelectionArgument);
             // #endregion
 
+            // #region note
+            var textArgument = new Argument<string>("text", "The text to include in the message")
+            {
+                Arity = ArgumentArity.ZeroOrOne
+            };
+            var selectionOrGroupArgument = new Argument<AyatSelectionOrGroup>("selection|group", AyatSelectionOrGroup.ArgumentParse, false, "TODO: add description...")
+            {
+                Arity = ArgumentArity.ZeroOrOne
+            };
+            var noteCommand = new Command("note", "TODO: add description...")
+            {
+                ayatSelectionArgument, // TODO: use a different argument for this to exclude indexes
+                textArgument,
+                selectionOrGroupArgument
+            };
+            noteCommand.SetHandler(NoteHandler.Handle, ayatSelectionArgument, textArgument, selectionOrGroupArgument);
+            // #endregion
+
             // #region build-db
             var buildDatabaseCommand = new Command("build-db", "Download the resource files and rebuild the SQLite database.");
             buildDatabaseCommand.SetHandler(BuildDatabaseHandler.Handle);
@@ -56,6 +74,7 @@ namespace QuranCli
             {
                 verseCommand,
                 chapterCommand,
+                noteCommand,
                 buildDatabaseCommand
             };
             return rootCommand.Invoke(args);

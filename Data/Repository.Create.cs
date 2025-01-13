@@ -11,19 +11,20 @@ namespace QuranCli.Data
         {
             var command = connection.CreateCommand();
             command.CommandText = @"
-                INSERT INTO AyahFts(rowid, verse, translation)
-                SELECT id, verse, translation FROM Ayah
-                WHERE id NOT IN (SELECT rowid FROM AyahFts);
+                INSERT INTO AyahFts(rowid, Verse, Translation)
+                SELECT Id, Verse, Translation FROM Ayah
+                WHERE Id NOT IN (SELECT rowid FROM AyahFts);
             ";
             command.ExecuteNonQuery();
         }
 
         public void CreateTables() => connection.CreateTables();
 
+
         public void Create(Ayah ayah)
         {
             const string sql = @"
-                INSERT INTO Ayah (id, surahId, ayahNumber, verse, translation) 
+                INSERT INTO Ayah (Id, SurahId, AyahNumber, Verse, Translation) 
                 VALUES (@Id, @SurahId, @AyahNumber, @Verse, @Translation);
             ";
             connection.Execute(sql, ayah);
@@ -32,7 +33,7 @@ namespace QuranCli.Data
         public void Create(Surah surah)
         {
             const string sql = @"
-                INSERT INTO Surah (id, ayahCount, startAyahId, name, englishName, transliterationName) 
+                INSERT INTO Surah (Id, AyahCount, StartAyahId, Name, EnglishName, TransliterationName) 
                 VALUES (@Id, @AyahCount, @StartAyahId, @Name, @EnglishName, @TransliterationName);
             ";
             connection.Execute(sql, surah);
@@ -41,28 +42,31 @@ namespace QuranCli.Data
         public void Create(SurahNote surahNote)
         {
             const string sql = @"
-                INSERT INTO SurahNote (surahId, text) 
+                INSERT INTO SurahNote (SurahId, Text) 
                 VALUES (@SurahId, @Text);
             ";
             connection.Execute(sql, surahNote);
         }
 
-        public void Create(Group node)
+        public int Create(Group node)
         {
             const string sql = @"
-                INSERT INTO [Group] (name, text) 
+                INSERT INTO [Group] (Name, Text) 
                 VALUES (@Name, @Text);
+                SELECT LAST_INSERT_ROWID();
             ";
-            connection.Execute(sql, node);
+            return connection.QuerySingle<int>(sql, node);
         }
+
 
         public void Create(Link link)
         {
             const string sql = @"
-                INSERT INTO Link (nodeId, ayahId1, ayahId2, [from], [to]) 
-                VALUES (@NodeId, @AyahId1, @AyahId2, @From, @To);
+                INSERT INTO Link (GroupId, AyahId1, AyahId2) 
+                VALUES (@GroupId, @AyahId1, @AyahId2);
             ";
             connection.Execute(sql, link);
         }
+
     }
 }
