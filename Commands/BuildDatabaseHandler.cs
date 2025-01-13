@@ -4,7 +4,7 @@ using QuranCli.Utilities;
 
 namespace QuranCli.Commands
 {
-    internal static class RecompileDatabaseHandler
+    internal static class BuildDatabaseHandler
     {
         public static void Handle()
         {

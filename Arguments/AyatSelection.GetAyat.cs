@@ -6,7 +6,7 @@ using QuranCli.Utilities;
 
 namespace QuranCli.Arguments
 {
-    internal partial class QuranSelection
+    internal partial class AyatSelection
     {
         public IEnumerable<Ayah> GetAyat(Repository repository)
         {
@@ -57,6 +57,14 @@ namespace QuranCli.Arguments
                 var surah = GetSurahByIdentifier(repository, surahIdentifier1);
                 var ayahId1 = surah.StartAyahId;
                 var ayahId2 = GetAyahIdByOffset(repository, surahIdentifier2, ayahNumber);
+                return repository.GetAyatBetweenIds(ayahId1, ayahId2);
+            }
+            if (rangeType == RangeType.SurahToAyah)
+            {
+                var surahIdentifier = tokens[0];
+                var ayahNumber = int.Parse(tokens[1]);
+                var ayahId1 = GetAyahIdByOffset(repository, surahIdentifier, 1);
+                var ayahId2 = GetAyahIdByOffset(repository, surahIdentifier, ayahNumber);
                 return repository.GetAyatBetweenIds(ayahId1, ayahId2);
             }
             if (rangeType == RangeType.RightRange)

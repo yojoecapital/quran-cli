@@ -56,13 +56,23 @@ namespace QuranCli.Data
             if (ayahId2 < ayahId1) throw new Exception("Ending position cannot be less than starting position.");
             const string query = @"
                 SELECT * FROM Ayah
-                WHERE id BETWEEN @ayahId1 AND @ayahId2
-                ORDER BY id;
+                WHERE id BETWEEN @ayahId1 AND @ayahId2;
             ";
             var ayat = connection.Query<Ayah>(query, new { ayahId1, ayahId2 });
             if (ayat.FirstOrDefault() == null) throw new Exception($"No Ayat found between '{ayahId1}..{ayahId2}'");
             return ayat;
         }
 
+        public IEnumerable<Surah> GetSurahsBetweenId(int surahId1, int surahId2)
+        {
+            if (surahId2 < surahId1) throw new Exception("Ending position cannot be less than starting position.");
+            const string query = @"
+                SELECT * FROM Surah
+                WHERE id BETWEEN @surahId1 AND @surahId2;
+            ";
+            var surahs = connection.Query<Surah>(query, new { surahId1, surahId2 });
+            if (surahs.FirstOrDefault() == null) throw new Exception($"No Surah found between '{surahId1}..{surahId2}'");
+            return surahs;
+        }
     }
 }

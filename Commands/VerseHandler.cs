@@ -9,16 +9,16 @@ namespace QuranCli.Commands
 {
     internal static class VerseHandler
     {
-        public static void Handle(QuranSelection selection, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
+        public static void Handle(AyatSelection selection, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
         {
             foreach (var line in GetLines(selection, shouldIndex, shouldTranslate, shouldIncludeNumbers)) Console.WriteLine(line);
         }
 
-        public static IEnumerable<string> GetLines(QuranSelection selection, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
+        public static IEnumerable<string> GetLines(AyatSelection selection, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
         {
             var index = 0;
-            var number = 0;
-            foreach (var ayah in selection.GetAyat(Repository.Instance))
+            if (selection.IsIndexed && !selection.IsFromStart) index = selection.From;
+            foreach (var ayah in selection.GetSubsectionOfAyat(Repository.Instance))
             {
                 string verse;
                 if (shouldIndex)
@@ -27,17 +27,16 @@ namespace QuranCli.Commands
                     verse = indexedLine;
                 }
                 else verse = ayah.Verse;
-                if (shouldIncludeNumbers) yield return $"{verse} ({number})";
+                if (shouldIncludeNumbers) yield return $"{verse} ({ayah.AyahNumber})";
                 else yield return verse;
                 if (shouldTranslate) yield return ayah.Translation;
-                number++;
             }
         }
 
         public static int GetNextIndex(string input, int start, out string result)
         {
             var words = input.Split(' ');
-            result = string.Join(" ", words.Select((word, index) => $"[{start + index}] {word}"));
+            result = string.Join(" ", words.Select((word, index) => $"{word} [{start + index}]"));
             return start + words.Length;
         }
 

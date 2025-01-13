@@ -1,12 +1,13 @@
+using System;
 using System.CommandLine.Parsing;
 using System.Text;
 using QuranCli.Utilities;
 
 namespace QuranCli.Arguments
 {
-    internal partial class QuranSelection
+    internal partial class AyatSelection
     {
-        private QuranSelection
+        private AyatSelection
         (
             MainType mainType,
             RangeType rangeType,
@@ -63,7 +64,7 @@ namespace QuranCli.Arguments
             return builder.ToString();
         }
 
-        public static QuranSelection ArgumentParse(ArgumentResult result)
+        public static AyatSelection ArgumentParse(ArgumentResult result)
         {
             var validSelections = @"Valid selections include:  
   - <surah>
@@ -86,10 +87,10 @@ namespace QuranCli.Arguments
             return null;
         }
 
-        public static bool TryParse(string value, out QuranSelection selection)
+        public static bool TryParse(string value, out AyatSelection selection)
         {
             selection = null;
-            var splitArity = GetSplit(value.Trim(), "_", out var split);
+            var splitArity = Splitter.GetSplit(value.Trim(), "_", out var split);
             int? from = null, to = null;
             bool isIndexed = false;
             if (!TryGetTokens(split.First, out var mainType, out var rangeType, out var tokens)) return false;
@@ -118,13 +119,6 @@ namespace QuranCli.Arguments
             Range // <position>:<position>
         }
 
-        private enum SplitArity : byte
-        {
-            Empty,
-            One, // <value>
-            Two // <value>:<value>
-        }
-
         private enum RangeType : byte
         {
             None,
@@ -133,6 +127,7 @@ namespace QuranCli.Arguments
             SurahToEnd, // <surah>..
             AyahToEnd, // <surah>:<ayah>..
             LeftRange, // <surah>..<surah>:<ayah>
+            SurahToAyah, // <surah>:..<ayah>
             RightRange, // <surah>:<ayah>..<ayah>
             SurahToSurah, // <surah>..<surah>
             AyahToAyah // <surah>:<ayah>..<surah>:<ayah>
@@ -147,10 +142,10 @@ namespace QuranCli.Arguments
             tokens = default;
             mainType = default;
             rangeType = default;
-            var splitArity = GetSplit(value, "..", out var split);
+            var splitArity = Splitter.GetSplit(value, "..", out var split);
             if (splitArity == SplitArity.One)
             {
-                splitArity = GetSplit(split.First, ":", out split);
+                splitArity = Splitter.GetSplit(split.First, ":", out split);
                 if (splitArity == SplitArity.One)
                 {
                     if (split.First.ToLower().Equals("all"))
@@ -181,8 +176,8 @@ namespace QuranCli.Arguments
             tokens = default;
             rangeType = default;
             mainType = MainType.Range;
-            var splitArity1 = GetSplit(split.First, ":", out var split1);
-            var splitArity2 = GetSplit(split.Last, ":", out var split2);
+            var splitArity1 = Splitter.GetSplit(split.First, ":", out var split1);
+            var splitArity2 = Splitter.GetSplit(split.Last, ":", out var split2);
             if (splitArity1 == SplitArity.Empty)
             {
                 if (splitArity2 == SplitArity.One)
@@ -248,10 +243,17 @@ namespace QuranCli.Arguments
                     rangeType = RangeType.RightRange;
                     return true;
                 }
+                // <surah>:..<ayah>
+                if (split1.First.IsSurahIdentifier() && split1.Last.Length == 0 && split2.First.IsNumeric())
+                {
+                    tokens = [split1.First, split2.First];
+                    rangeType = RangeType.SurahToAyah;
+                    return true;
+                }
             }
             else if (splitArity1 == SplitArity.One && splitArity2 == SplitArity.One)
             {
-                // <surah>:<ayah>..<surah>:<ayah>
+                // <surah>..<surah>
                 if (split1.First.IsSurahIdentifier() && split2.First.IsSurahIdentifier())
                 {
                     tokens = [split1.First, split2.First];
@@ -272,31 +274,16 @@ namespace QuranCli.Arguments
             return false;
         }
 
-        private static SplitArity GetSplit(string value, string seperator, out (string First, string Last) split)
-        {
-            split = default;
-            if (value.Length == 0) return SplitArity.Empty;
-            var index = value.IndexOf(seperator);
-            if (index != -1)
-            {
-                split.First = value[..index].TrimEnd();
-                split.Last = value[(index + seperator.Length)..].TrimStart();
-                return SplitArity.Two;
-            }
-            split.First = split.Last = value;
-            return SplitArity.One;
-        }
-
         private static bool TryGetIndexRange(string value, out int? from, out int? to)
         {
             from = to = null;
-            var splitArity = GetSplit(value, "..", out var split);
+            var splitArity = Splitter.GetSplit(value, "..", out var split);
             if (splitArity == SplitArity.One)
             {
                 // [<index>]
-                if (int.TryParse(split.First, out var index))
+                if (uint.TryParse(split.First, out var index))
                 {
-                    from = to = index;
+                    from = to = (int?)index;
                     return true;
                 }
             }
@@ -305,26 +292,27 @@ namespace QuranCli.Arguments
                 if (split.First.Length == 0)
                 {
                     // [..<to>]
-                    if (int.TryParse(split.Last, out var toValue))
+                    if (uint.TryParse(split.Last, out var toValue))
                     {
-                        to = toValue;
+                        to = (int?)toValue;
                         return true;
                     }
                 }
                 else if (split.Last.Length == 0)
                 {
                     // [<from>..]
-                    if (int.TryParse(split.First, out var fromValue))
+                    if (uint.TryParse(split.First, out var fromValue))
                     {
-                        from = fromValue;
+                        from = (int?)fromValue;
                         return true;
                     }
                 }
-                else if (int.TryParse(split.First, out var fromValue) && int.TryParse(split.Last, out var toValue))
+                else if (uint.TryParse(split.First, out var fromValue) && int.TryParse(split.Last, out var toValue))
                 {
                     // [<from>..<to>]
                     to = toValue;
-                    from = fromValue;
+                    from = (int?)fromValue;
+                    if (to < from) return false;
                     return true;
                 }
             }

@@ -21,8 +21,8 @@ namespace QuranCli
         {
             Initialize();
 
-            // #region get
-            var selectionArgument = new Argument<QuranSelection>("selection", QuranSelection.ArgumentParse, true, "A selection from the Quran.");
+            // #region verse
+            var selectionArgument = new Argument<AyatSelection>("selection", AyatSelection.ArgumentParse, false, "A selection from the Quran.");
             var indexOption = new Option<bool>(["--index", "-i"], "Display indexes above every word in each verse.");
             var translationOption = new Option<bool>(["--translation", "-t"], "Include the translation in the output.");
             var numberOption = new Option<bool>(["--number", "-n"], "Include the verse number alongside each verse.");
@@ -34,16 +34,17 @@ namespace QuranCli
                 translationOption
             };
             verseCommand.SetHandler(VerseHandler.Handle, selectionArgument, indexOption, translationOption, numberOption);
+            verseCommand.AddAlias("ayah");
             // #endregion
 
-            // #region recompile-db
-            var recompileDatabaseCommand = new Command("recompile-db", "Download the resource files and rebuild the SQLite database.");
-            recompileDatabaseCommand.SetHandler(RecompileDatabaseHandler.Handle);
+            // #region build-db
+            var buildDatabaseCommand = new Command("build-db", "Download the resource files and rebuild the SQLite database.");
+            buildDatabaseCommand.SetHandler(BuildDatabaseHandler.Handle);
             // #endregion
             var rootCommand = new RootCommand($"The {Defaults.applicationName} is a...")
             {
                 verseCommand,
-                recompileDatabaseCommand
+                buildDatabaseCommand
             };
             return rootCommand.Invoke(args);
         }
