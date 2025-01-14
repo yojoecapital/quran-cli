@@ -12,8 +12,8 @@ namespace QuranCli.Commands
         {
             if (!IndexedAyatSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
             Logger.Info(selection.GetLog());
-            foreach (var line in GetLines(selection, shouldIndex, shouldTranslate, shouldIncludeNumbers)) Console.WriteLine(line);
-            Repository.Instance.Dispose();
+            foreach (var line in GetLines(selection, shouldIndex, shouldTranslate, shouldIncludeNumbers)) Logger.Message(line);
+            Repository.DisposeOfInstance();
         }
 
         public static IEnumerable<string> GetLines(IndexedAyatSelection selection, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)

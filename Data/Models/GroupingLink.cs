@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 
 namespace QuranCli.Data.Models
 {
@@ -13,16 +12,9 @@ namespace QuranCli.Data.Models
 
         protected override IEnumerable<(string name, object value)> GetProperties()
         {
-            yield return ("id", Id);
+            yield return ("id", $"G{Id}");
             yield return ("for", Repository.Instance.GetDisplayName(AyahId1, AyahId2));
+            if (Grouping != null) yield return ("group", Grouping);
         }
-    }
-
-    public class NestedGroupingLink
-    {
-        public int NestedId { get; set; }
-        public int NestedGroupId { get; set; }
-        public int NestedAyahId1 { get; set; }
-        public int NestedAyahId2 { get; set; }
     }
 }

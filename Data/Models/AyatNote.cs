@@ -11,9 +11,9 @@ namespace QuranCli.Data.Models
 
         protected override IEnumerable<(string name, object value)> GetProperties()
         {
-            yield return ("id", Id);
+            yield return ("id", $"A{Id}");
             yield return ("for", Repository.Instance.GetDisplayName(AyahId1, AyahId2));
-            yield return ("note", Note);
+            if (!string.IsNullOrWhiteSpace(Note)) yield return ("note", Note);
         }
     }
 }

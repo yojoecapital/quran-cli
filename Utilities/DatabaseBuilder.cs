@@ -16,7 +16,9 @@ namespace QuranCli.Utilities
         {
             Repository.Instance.CreateTables();
             Directory.CreateDirectory(Defaults.temporaryPath);
+#if !DEBUG
             DownloadFiles();
+#endif
             Logger.Message("Seeding database. This may take a while.");
             ConsumeFiles();
             Logger.Message("Syncing FTS table...");

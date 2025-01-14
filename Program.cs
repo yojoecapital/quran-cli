@@ -77,22 +77,61 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
             // #endregion
 
             // #region note
-            var deleteOption = new Option<int?>("--delete", "FIXME")
+            var noteArgument = new Argument<string>("note", "Include a note to create or edit.")
             {
                 Arity = ArgumentArity.ZeroOrOne
             };
-            var noteArgument = new Argument<string>("note", "FIXME")
-            {
-                Arity = ArgumentArity.ZeroOrOne
-            };
-            deleteOption.SetDefaultValue(-1);
-            var noteCommand = new Command("note")
+            var noteCommand = new Command("note", "Output, create, or edit a note on a selection of verses or chapters.")
             {
                 selectionArgument,
-                noteArgument,
-                deleteOption
+                noteArgument
             };
-            noteCommand.SetHandler(NoteHandler.Handle, selectionArgument, noteArgument, deleteOption);
+            noteCommand.SetHandler(NoteHandler.Handle, selectionArgument, noteArgument);
+            // #endregion
+
+            // #region link
+            var selectionOrGroupArgument = new Argument<string>(
+                "selection|group",
+                "Either a selection or group name."
+            );
+            var noteOption = new Option<string>(["--note", "-n"], "Optionally include a note.");
+            var linkCommand = new Command("link", "Output, create, or edit links between verses or groups.")
+            {
+                selectionArgument,
+                selectionOrGroupArgument,
+                noteOption
+            };
+            linkCommand.SetHandler(LinkHandler.Handle, selectionArgument, selectionOrGroupArgument, noteOption);
+            // #endregion
+
+            // #region group
+            var groupArgument = new Argument<string>(
+                "name",
+                "A group name."
+            )
+            {
+                Arity = ArgumentArity.ZeroOrOne
+            };
+            var groupCommand = new Command("group", "Output, create, or edit groups.")
+            {
+                groupArgument,
+                noteOption
+            }; ;
+            groupCommand.SetHandler(GroupHandler.Handle, groupArgument, noteOption);
+            // #endregion
+
+            // #region remove
+            var idToRemoveArgument = new Argument<string[]>(
+                "id(s)",
+                "The ID of the notes, links, or groups to remove."
+            );
+            var removeCommand = new Command("remove", "Remove notes, links, or groups.")
+            {
+                idToRemoveArgument
+            };
+            removeCommand.AddAlias("delete");
+            removeCommand.AddAlias("rm");
+            removeCommand.SetHandler(RemoveHandler.Handle, idToRemoveArgument);
             // #endregion
 
             // #region build-db
@@ -100,11 +139,14 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
             buildDatabaseCommand.SetHandler(BuildDatabaseHandler.Handle);
             // #endregion
 
-            var rootCommand = new RootCommand($"The {Defaults.applicationName} is a...")
+            var rootCommand = new RootCommand($"The {Defaults.applicationName} is a tool to output and annotate verses from the Noble book.")
             {
                 verseCommand,
                 chapterCommand,
                 noteCommand,
+                linkCommand,
+                groupCommand,
+                removeCommand,
                 buildDatabaseCommand
             };
             rootCommand.AddGlobalOption(verboseOption);
@@ -131,6 +173,9 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
         private static void ExceptionHandler(Exception ex, InvocationContext context)
         {
             Logger.Error(ex.Message);
+#if DEBUG
+            Console.WriteLine(ex.StackTrace);
+#endif
             context.ExitCode = 1;
         }
     }

@@ -57,10 +57,12 @@ namespace QuranCli.Utilities
             command.CommandText = @"
                 CREATE TABLE IF NOT EXISTS SurahNote (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    SurahId INTEGER NOT NULL,
+                    SurahId1 INTEGER NOT NULL,
+                    SurahId2 INTEGER NOT NULL,
                     Note TEXT NOT NULL,
-                    FOREIGN KEY (SurahId) REFERENCES Surah(Id),
-                    UNIQUE (SurahId)
+                    FOREIGN KEY (SurahId1) REFERENCES Surah(Id),
+                    FOREIGN KEY (SurahId2) REFERENCES Surah(Id),
+                    UNIQUE (SurahId1, SurahId2)
                 );
             ";
             command.ExecuteNonQuery();

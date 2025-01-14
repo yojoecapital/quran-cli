@@ -23,8 +23,6 @@ namespace QuranCli.Data.Models
             yield return ("name", Name);
             yield return ("transliteration", TransliterationName);
             yield return ("translation", EnglishName);
-            // yield return ("ayat", Repository.Instance.GetAyatBetweenIds(1, 7));
-            // yield return ("numbers", new int[] { 1, 2, 3, 4, 5, 6 });
         }
     }
 }

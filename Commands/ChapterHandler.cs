@@ -21,26 +21,26 @@ namespace QuranCli.Commands
                     switch (field.Value)
                     {
                         case SurahField.Number:
-                            Console.WriteLine(surah.Id);
+                            Logger.Message(surah.Id);
                             break;
                         case SurahField.Name:
-                            Console.WriteLine(surah.Name);
+                            Logger.Message(surah.Name);
                             break;
                         case SurahField.Transliteration:
-                            Console.WriteLine(surah.TransliterationName);
+                            Logger.Message(surah.TransliterationName);
                             break;
                         case SurahField.Translation:
-                            Console.WriteLine(surah.EnglishName);
+                            Logger.Message(surah.EnglishName);
                             break;
                         case SurahField.Count:
-                            Console.WriteLine(surah.AyahCount);
+                            Logger.Message(surah.AyahCount);
                             break;
                     }
                     continue;
                 }
             }
-            else Console.WriteLine(YamlSerializable.ToYaml(surahs));
-            Repository.Instance.Dispose();
+            else Logger.Message(YamlSerializable.ToYaml(surahs));
+            Repository.DisposeOfInstance();
         }
     }
 }

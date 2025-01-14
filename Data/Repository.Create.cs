@@ -8,17 +8,15 @@ namespace QuranCli.Data
     {
         public void PopulateAyahFts()
         {
-            var command = connection.CreateCommand();
-            command.CommandText = @"
+            const string sql = @"
                 INSERT INTO AyahFts(rowid, Verse, Translation)
                 SELECT Id, Verse, Translation FROM Ayah
                 WHERE Id NOT IN (SELECT rowid FROM AyahFts);
             ";
-            command.ExecuteNonQuery();
+            connection.Execute(sql);
         }
 
         public void CreateTables() => connection.CreateTables();
-
 
         public void Create(Ayah ayah)
         {

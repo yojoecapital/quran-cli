@@ -1,4 +1,5 @@
 using System;
+using QuranCli.Data;
 using QuranCli.Utilities;
 
 namespace QuranCli.Arguments
@@ -9,8 +10,7 @@ namespace QuranCli.Arguments
         {
             if (rangeType == RangeType.SurahFromStart)
             {
-                var surahIdentifier = tokens[0];
-                var surah = SurahIdentifierHelpers.GetSurahByIdentifier(surahIdentifier);
+                var surah = Repository.Instance.GetSurahById(surahId2);
                 return (1, surah.EndAyahId);
             }
             if (rangeType == RangeType.AyahFromStart)
@@ -22,8 +22,7 @@ namespace QuranCli.Arguments
             }
             if (rangeType == RangeType.SurahToEnd)
             {
-                var surahIdentifier = tokens[0];
-                var surah = SurahIdentifierHelpers.GetSurahByIdentifier(surahIdentifier);
+                var surah = Repository.Instance.GetSurahById(surahId1);
                 return (surah.StartAyahId, 6236);
             }
             if (rangeType == RangeType.AyahToEnd)
@@ -62,10 +61,8 @@ namespace QuranCli.Arguments
             }
             if (rangeType == RangeType.SurahToSurah)
             {
-                var surahIdentifier1 = tokens[0];
-                var surahIdentifier2 = tokens[1];
-                var surah1 = SurahIdentifierHelpers.GetSurahByIdentifier(surahIdentifier1);
-                var surah2 = SurahIdentifierHelpers.GetSurahByIdentifier(surahIdentifier2);
+                var surah1 = Repository.Instance.GetSurahById(surahId1);
+                var surah2 = Repository.Instance.GetSurahById(surahId2);
                 var ayahId1 = surah1.StartAyahId;
                 var ayahId2 = surah2.EndAyahId;
                 return (ayahId1, ayahId2);
@@ -83,8 +80,7 @@ namespace QuranCli.Arguments
             if (mainType == MainType.All) return (1, 6236);
             if (mainType == MainType.Surah)
             {
-                var surahIdentifier = tokens[0];
-                var surah = SurahIdentifierHelpers.GetSurahByIdentifier(surahIdentifier);
+                var surah = Repository.Instance.GetSurahById(surahId1);
                 return (surah.StartAyahId, surah.EndAyahId);
             }
             if (mainType == MainType.Ayah)

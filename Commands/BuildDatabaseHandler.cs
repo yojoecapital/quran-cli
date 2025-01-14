@@ -10,7 +10,7 @@ namespace QuranCli.Commands
         {
             File.Delete(Defaults.databasePath);
             DatabaseBuilder.Build();
-            Repository.Instance.Dispose();
+            Repository.DisposeOfInstance();
         }
 
     }

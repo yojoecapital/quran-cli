@@ -25,6 +25,8 @@ namespace QuranCli.Data
             Logger.Info($"Connected to database at '{Defaults.databasePath}'.");
         }
 
+        public static void DisposeOfInstance() => instance?.Dispose();
+
         public void Dispose()
         {
             instance = null;

@@ -23,7 +23,11 @@ namespace QuranCli
             Console.ResetColor();
         }
 
-        public static void Message(object message) => Console.WriteLine(message.ToString().PadRight(Console.WindowWidth));
+        public static void Message(object message)
+        {
+            if (string.IsNullOrWhiteSpace(message.ToString())) return;
+            Console.WriteLine(message.ToString().PadRight(Console.WindowWidth));
+        }
 
         public static void Percent(long current, long total)
         {

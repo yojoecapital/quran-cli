@@ -15,7 +15,43 @@ namespace QuranCli.Arguments
             this.mainType = mainType;
             this.rangeType = rangeType;
             this.tokens = tokens;
+            if (mainType == MainType.All)
+            {
+                surahId1 = 1;
+                surahId2 = 114;
+                isSurahSelection = true;
+            }
+            else if (mainType == MainType.Surah)
+            {
+                surahId1 = surahId2 = int.Parse(tokens[0]);
+                isSurahSelection = true;
+            }
+            else if (mainType == MainType.Range)
+            {
+                if (rangeType == RangeType.SurahFromStart)
+                {
+                    surahId1 = 1;
+                    surahId2 = int.Parse(tokens[0]);
+                    isSurahSelection = true;
+                }
+                else if (rangeType == RangeType.SurahToEnd)
+                {
+                    surahId1 = int.Parse(tokens[0]);
+                    surahId2 = 114;
+                    isSurahSelection = true;
+                }
+                else if (rangeType == RangeType.SurahToSurah)
+                {
+                    surahId1 = int.Parse(tokens[0]);
+                    surahId2 = int.Parse(tokens[1]);
+                    isSurahSelection = true;
+                }
+            }
         }
+
+        public readonly int surahId1;
+        public readonly int surahId2;
+        public readonly bool isSurahSelection;
 
         public virtual string GetLog()
         {

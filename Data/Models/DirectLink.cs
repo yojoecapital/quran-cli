@@ -2,18 +2,6 @@ using System.Collections.Generic;
 
 namespace QuranCli.Data.Models
 {
-    internal class Pair : YamlSerializable
-    {
-        public string From { get; set; }
-        public string To { get; set; }
-
-        protected override IEnumerable<(string name, object value)> GetProperties()
-        {
-            yield return ("from", From);
-            yield return ("to", To);
-        }
-    }
-
     internal class DirectLink : YamlSerializable
     {
         public int Id { get; set; }
@@ -25,14 +13,14 @@ namespace QuranCli.Data.Models
 
         protected override IEnumerable<(string name, object value)> GetProperties()
         {
-            yield return ("id", Id);
-            var pair = new Pair()
+            yield return ("id", $"D{Id}");
+            if (AyahId1 != AyahId3 || AyahId2 != AyahId4)
             {
-                From = Repository.Instance.GetDisplayName(AyahId1, AyahId2),
-                To = Repository.Instance.GetDisplayName(AyahId3, AyahId4)
-            };
-            yield return ("for", pair);
-            yield return ("note", Note);
+                yield return ("from", Repository.Instance.GetDisplayName(AyahId1, AyahId2));
+                yield return ("to", Repository.Instance.GetDisplayName(AyahId3, AyahId4));
+            }
+            else yield return ("for", Repository.Instance.GetDisplayName(AyahId1, AyahId2));
+            if (!string.IsNullOrWhiteSpace(Note)) yield return ("note", Note);
         }
     }
 }

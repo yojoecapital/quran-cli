@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,6 +90,7 @@ namespace QuranCli.Data.Models
         private static string ToYamlString(string value, string indent)
         {
             if (string.IsNullOrEmpty(value)) return "\"\"";
+            if (string.IsNullOrWhiteSpace(value)) return $"\"{new string(' ', value.Length)}\"";
             if (value.Contains('\n'))
             {
                 var builder = new StringBuilder();
