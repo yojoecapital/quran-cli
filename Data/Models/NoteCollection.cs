@@ -11,9 +11,9 @@ namespace QuranCli.Data.Models
 
         protected override IEnumerable<(string name, object value)> GetProperties()
         {
-            if (Groupings.Any()) yield return ("GROUPINGS", Groupings);
-            if (Links.Any()) yield return ("LINKS", Links);
-            if (Notes.Any()) yield return ("NOTES", Notes);
+            if (Groupings != null && Groupings.Any()) yield return ("GROUPINGS", Groupings);
+            if (Links != null && Links.Any()) yield return ("LINKS", Links);
+            if (Notes != null && Notes.Any()) yield return ("NOTES", Notes);
         }
 
         public static IEnumerable<YamlSerializable> Join(IEnumerable<YamlSerializable> notes1, IEnumerable<YamlSerializable> notes2)
