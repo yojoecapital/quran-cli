@@ -38,7 +38,7 @@ namespace QuranCli.Commands
                 }
             }
             var notes = NoteCollection.Join(
-                Repository.Instance.GetSurahNotesBetween(selection.surahId1, selection.surahId2),
+                Repository.Instance.GetAyatNotesBetween(ayahId1, ayahId2),
                 Repository.Instance.GetSurahNotesBetween(selection.surahId1, selection.surahId2)
             );
             var links = Repository.Instance.GetDirectLinksBetween(ayahId1, ayahId2);
