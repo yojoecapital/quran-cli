@@ -1,4 +1,5 @@
 using System.Text;
+using QuranCli.Data;
 using QuranCli.Utilities;
 
 namespace QuranCli.Arguments
@@ -23,7 +24,7 @@ namespace QuranCli.Arguments
             }
             else if (mainType == MainType.Surah)
             {
-                surahId1 = surahId2 = int.Parse(tokens[0]);
+                surahId1 = surahId2 = GetSurahId(tokens[0]);
                 isSurahSelection = true;
             }
             else if (mainType == MainType.Range)
@@ -31,22 +32,28 @@ namespace QuranCli.Arguments
                 if (rangeType == RangeType.SurahFromStart)
                 {
                     surahId1 = 1;
-                    surahId2 = int.Parse(tokens[0]);
+                    surahId2 = GetSurahId(tokens[0]);
                     isSurahSelection = true;
                 }
                 else if (rangeType == RangeType.SurahToEnd)
                 {
-                    surahId1 = int.Parse(tokens[0]);
+                    surahId1 = GetSurahId(tokens[0]);
                     surahId2 = 114;
                     isSurahSelection = true;
                 }
                 else if (rangeType == RangeType.SurahToSurah)
                 {
-                    surahId1 = int.Parse(tokens[0]);
-                    surahId2 = int.Parse(tokens[1]);
+                    surahId1 = GetSurahId(tokens[0]);
+                    surahId2 = GetSurahId(tokens[1]);
                     isSurahSelection = true;
                 }
             }
+        }
+
+        private static int GetSurahId(string surahIdentifier)
+        {
+            if (surahIdentifier.IsSurahName()) return Repository.Instance.GetSurahByName(surahIdentifier).Id;
+            else return int.Parse(surahIdentifier);
         }
 
         public readonly int surahId1;
