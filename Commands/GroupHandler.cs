@@ -1,3 +1,4 @@
+using System;
 using QuranCli.Data;
 using QuranCli.Data.Models;
 using QuranCli.Utilities;
@@ -8,6 +9,7 @@ namespace QuranCli.Commands
     {
         public static void Handle(string name, string note)
         {
+            if (Console.IsInputRedirected) note = Console.In.ReadToEnd();
             if (name == null)
             {
                 var groupings = Repository.Instance.GetGroupings();

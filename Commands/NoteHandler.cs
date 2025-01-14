@@ -14,6 +14,7 @@ namespace QuranCli.Commands
         {
             if (!AyatSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
             Logger.Info(selection.GetLog());
+            if (Console.IsInputRedirected) note = Console.In.ReadToEnd();
             var (ayahId1, ayahId2) = selection.GetAyahIds();
             if (note != null)
             {

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using QuranCli.Arguments;
 using QuranCli.Data;
 using QuranCli.Data.Models;
@@ -15,6 +14,7 @@ namespace QuranCli.Commands
             if (!AyatSelection.TryParse(selectionString1, out var selection1)) throw new Exception("Could not parse selection");
             Logger.Info(selection1.GetLog());
             var grouping = Repository.Instance.GetGroupingByName(selectionString2);
+            if (Console.IsInputRedirected) note = Console.In.ReadToEnd();
             var (ayahId1, ayahId2) = selection1.GetAyahIds();
             if (grouping == null)
             {
