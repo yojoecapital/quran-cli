@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using QuranCli.Arguments;
+using QuranCli.Data;
 
 namespace QuranCli.Utilities
 {
@@ -23,6 +23,7 @@ namespace QuranCli.Utilities
                 var text = match.Groups[1].Value;
                 if (IndexedAyatSelection.TryParse(text, out var selection))
                 {
+                    if (selection.isSurahSelection) return Repository.Instance.GetSurahDisplayName(selection.surahId1, selection.surahId2);
                     var ayat = string.Join('\n', selection.GetAyat().Select(ayah => ayah.Verse));
                     return ayat;
                 }
