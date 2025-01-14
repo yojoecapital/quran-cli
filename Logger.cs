@@ -29,11 +29,17 @@ namespace QuranCli
             Console.WriteLine(message.ToString().PadRight(Console.WindowWidth));
         }
 
-        public static void Percent(long current, long total)
+        public static void Percent(long current, long total, bool newLine = false)
         {
-            var percent = Math.Max(0, Math.Min(0.9999f, (float)current / total)) * 100;
-            if (float.IsNaN(percent)) percent = 0;
+            Percent((double)current / total, newLine);
+        }
+
+        public static void Percent(double fraction, bool newLine = false)
+        {
+            var percent = Math.Max(0, Math.Min(1, fraction)) * 100;
+            if (double.IsNaN(percent)) percent = 0;
             Console.Write($"{percent:F2} %".PadRight(Console.WindowWidth) + '\r');
+            if (newLine) Console.WriteLine();
         }
     }
 }

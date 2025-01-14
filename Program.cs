@@ -95,26 +95,16 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
                 "selection",
                 "A second selection to compare to."
             );
-            var nGramOption = new Option<ushort>(["--ngram", "-n"], "Specify the n-gram for comparison.");
+            var nGramOption = new Option<int>(["--ngram", "-n"], "Specify the n-gram for comparison.");
             nGramOption.SetDefaultValue(2);
-            var compareCommand = new Command("command", "Output a Jaccard similarity score for 2 selections of verses")
+            var compareCommand = new Command("compare", @$"Output a Jaccard similarity score for 2 selections of verses.
+If there are less than {Defaults.maxLevenshteinCount} characters, a Levenshtein score is used.")
             {
                 selectionArgument,
                 selection2Argument,
                 nGramOption
             };
             compareCommand.SetHandler(CompareHandler.Handle, selectionArgument, selection2Argument, nGramOption);
-            // #endregion
-
-            // #region top
-            var topArgument = new Argument<ushort>("n", "Specify the number of verse pairs to output.");
-            topArgument.SetDefaultValue(3);
-            var topCommand = new Command("top", "Output the top most similar verses in a selection of verses.")
-            {
-                selectionArgument,
-                topArgument
-            };
-            topCommand.SetHandler(TopHandler.Handle, selectionArgument, topArgument);
             // #endregion
 
             // #region note
@@ -185,7 +175,7 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
                 verseCommand,
                 chapterCommand,
                 searchCommand,
-                topCommand,
+                compareCommand,
                 noteCommand,
                 linkCommand,
                 groupCommand,

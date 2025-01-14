@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using QuranCli.Arguments;
 
 namespace QuranCli.Utilities
@@ -51,54 +52,30 @@ namespace QuranCli.Utilities
             return d[m, n];
         }
 
-        public static IEnumerable<(string BaseString, string SimilarString, double Score)> FindTopNSimilar(
-            IEnumerable<string> collection,
-            int topN
-        )
-        {
-            var results = new List<(string, List<(string, double)>)>();
-            foreach (var str1 in collection)
-            {
-                var similarities = collection
-                    .Where(str2 => str2 != str1)
-                    .Select(str2 => (str2, JaccardSimilarity(str1, str2)))
-                    .OrderByDescending(pair => pair.Item2)
-                    .Take(topN)
-                    .ToList();
-                results.Add((str1, similarities));
-            }
-            return results.SelectMany(result => result.Item2.Select(similarity =>
-                (BaseString: result.Item1, SimilarString: similarity.Item1, Score: similarity.Item2)));
-        }
-
-        // bi-gram
-        public static double JaccardSimilarity(string text1, string text2) => JaccardSimilarity(text1, text2, 2);
-
         public static double JaccardSimilarity(string text1, string text2, int n)
         {
             var set1 = GenerateNGrams(text1, n);
             var set2 = GenerateNGrams(text2, n);
             var intersection = set1.Intersect(set2).Count();
             var union = set1.Union(set2).Count();
-            if (union == 0)
-                return 0;
+            if (union == 0) return 0;
             return (double)intersection / union;
         }
 
         public static HashSet<string> GenerateNGrams(string text, int n)
         {
-            var tokens = Tokenize(text).ToList();
+            var tokens = Tokenize(text);
             var nGrams = new HashSet<string>();
             for (int i = 0; i <= tokens.Count - n; i++)
             {
-                nGrams.Add(string.Join(" ", tokens.Skip(i).Take(n)));
+                nGrams.Add(string.Join(' ', tokens.Skip(i).Take(n)));
             }
             return nGrams;
         }
 
         public static HashSet<string> Tokenize(string text)
         {
-            var words = text.Split(new[] { ' ', '،', '.', '!', '?', '؛', 'ْ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             return [.. words];
         }
     }
