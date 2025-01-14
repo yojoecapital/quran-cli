@@ -12,8 +12,6 @@
     <SelfContained>true</SelfContained> 
     <!-- This disables the generation of the .pdb file -->
     <DebugType>none</DebugType>
-    <!-- Trim the application-->
-    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
 
