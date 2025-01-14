@@ -53,6 +53,7 @@ namespace QuranCli.Utilities
                     UNIQUE (AyahId1, AyahId2)
                 );
             ";
+            command.ExecuteNonQuery();
             command.CommandText = @"
                 CREATE TABLE IF NOT EXISTS SurahNote (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,

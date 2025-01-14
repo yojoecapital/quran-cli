@@ -77,13 +77,22 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
             // #endregion
 
             // #region note
-            var deleteOption = new Option<string>("--delete", @"Only get this attribute.")
+            var deleteOption = new Option<int?>("--delete", "FIXME")
             {
                 Arity = ArgumentArity.ZeroOrOne
             };
-            deleteOption.SetDefaultValue(string.Empty);
-            var noteCommand = new Command("note") { deleteOption };
-            // noteCommand.SetHandler(NoteHandler.Handle, deleteOption);
+            var noteArgument = new Argument<string>("note", "FIXME")
+            {
+                Arity = ArgumentArity.ZeroOrOne
+            };
+            deleteOption.SetDefaultValue(-1);
+            var noteCommand = new Command("note")
+            {
+                selectionArgument,
+                noteArgument,
+                deleteOption
+            };
+            noteCommand.SetHandler(NoteHandler.Handle, selectionArgument, noteArgument, deleteOption);
             // #endregion
 
             // #region build-db

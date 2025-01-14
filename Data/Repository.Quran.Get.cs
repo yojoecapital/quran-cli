@@ -89,20 +89,24 @@ namespace QuranCli.Data
 
         public string GetDisplayName(int ayahId1, int ayahId2)
         {
-            if (ayahId1 == ayahId2)
-            {
-                var ayah = GetAyahById(ayahId1);
-                var surah = GetSurahById(ayah.Id);
-                return $"{surah.TransliterationName} ayah {ayah.AyahNumber}";
-            }
+            if (ayahId1 == ayahId2) return GetDisplayName(ayahId1);
             var ayah1 = GetAyahById(ayahId1);
-            var surah1 = GetSurahById(ayah1.Id);
+            var surah1 = GetSurahById(ayah1.SurahId);
             var ayah2 = GetAyahById(ayahId2);
-            var surah2 = GetSurahById(ayah2.Id);
+            var surah2 = GetSurahById(ayah2.SurahId);
             if (surah1.Id == surah2.Id)
             {
-                if (ayah)
+                if (ayah1.Id == surah1.StartAyahId && ayah2.Id == surah2.EndAyahId) return surah1.TransliterationName;
+                return $"{surah1.TransliterationName} {ayah1.AyahNumber} to {ayah2.AyahNumber}";
             }
+            return $"{surah1.TransliterationName} {ayah1.AyahNumber} to {surah2.TransliterationName} {ayah2.AyahNumber}";
+        }
+
+        public string GetDisplayName(int ayahId)
+        {
+            var ayah = GetAyahById(ayahId);
+            var surah = GetSurahById(ayah.SurahId);
+            return $"{surah.TransliterationName} ayah {ayah.AyahNumber}";
         }
     }
 }

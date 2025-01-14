@@ -1,6 +1,7 @@
 using System;
 using QuranCli.Arguments;
 using QuranCli.Data;
+using QuranCli.Data.Models;
 using QuranCli.Utilities;
 
 namespace QuranCli.Commands
@@ -11,10 +12,12 @@ namespace QuranCli.Commands
         {
             if (!SurahSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
             Logger.Info(selection.GetLog());
-            foreach (var surah in selection.GetSurahs())
+            var surahs = selection.GetSurahs();
+            if (field.HasValue)
             {
-                if (field.HasValue)
+                foreach (var surah in surahs)
                 {
+
                     switch (field.Value)
                     {
                         case SurahField.Number:
@@ -35,12 +38,8 @@ namespace QuranCli.Commands
                     }
                     continue;
                 }
-                Console.WriteLine($"- id: {surah.Id}");
-                Console.WriteLine($"  name: {surah.Name}");
-                Console.WriteLine($"  transliterationName: {surah.TransliterationName}");
-                Console.WriteLine($"  englishName: {surah.EnglishName}");
-                Console.WriteLine($"  ayahCount: {surah.AyahCount}");
             }
+            else Console.WriteLine(YamlSerializable.ToYaml(surahs));
             Repository.Instance.Dispose();
         }
     }
