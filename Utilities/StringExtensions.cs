@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using QuranCli.Arguments;
 
 namespace QuranCli.Utilities
 {
@@ -10,6 +13,24 @@ namespace QuranCli.Utilities
         public static bool IsSurahName(this string s) => s.Length > 0 && s.All(c => char.IsLetter(c) || char.IsWhiteSpace(c) || c == '-');
 
         public static bool IsSurahIdentifier(this string s) => s.IsNumeric() || s.IsSurahName();
+
+        public static string ExpandSelectionAnnotations(this string text)
+        {
+            var pattern = @"\{\{(.*?)\}\}";
+            return Regex.Replace(text.Trim(), pattern, match =>
+            {
+                var text = match.Groups[1].Value;
+                if (IndexedAyatSelection.TryParse(text, out var selection))
+                {
+                    var ayat = string.Join('\n', selection.GetAyat().Select(ayah => ayah.Verse));
+                    return ayat;
+                }
+                else
+                {
+                    return match.Value;
+                }
+            });
+        }
 
         public static int ComputeLevenshteinDistance(string s, string t)
         {
@@ -28,6 +49,57 @@ namespace QuranCli.Utilities
                 }
             }
             return d[m, n];
+        }
+
+        public static IEnumerable<(string BaseString, string SimilarString, double Score)> FindTopNSimilar(
+            IEnumerable<string> collection,
+            int topN
+        )
+        {
+            var results = new List<(string, List<(string, double)>)>();
+            foreach (var str1 in collection)
+            {
+                var similarities = collection
+                    .Where(str2 => str2 != str1)
+                    .Select(str2 => (str2, JaccardSimilarity(str1, str2)))
+                    .OrderByDescending(pair => pair.Item2)
+                    .Take(topN)
+                    .ToList();
+                results.Add((str1, similarities));
+            }
+            return results.SelectMany(result => result.Item2.Select(similarity =>
+                (BaseString: result.Item1, SimilarString: similarity.Item1, Score: similarity.Item2)));
+        }
+
+        // bi-gram
+        public static double JaccardSimilarity(string text1, string text2) => JaccardSimilarity(text1, text2, 2);
+
+        public static double JaccardSimilarity(string text1, string text2, int n)
+        {
+            var set1 = GenerateNGrams(text1, n);
+            var set2 = GenerateNGrams(text2, n);
+            var intersection = set1.Intersect(set2).Count();
+            var union = set1.Union(set2).Count();
+            if (union == 0)
+                return 0;
+            return (double)intersection / union;
+        }
+
+        public static HashSet<string> GenerateNGrams(string text, int n)
+        {
+            var tokens = Tokenize(text).ToList();
+            var nGrams = new HashSet<string>();
+            for (int i = 0; i <= tokens.Count - n; i++)
+            {
+                nGrams.Add(string.Join(" ", tokens.Skip(i).Take(n)));
+            }
+            return nGrams;
+        }
+
+        public static HashSet<string> Tokenize(string text)
+        {
+            var words = text.Split(new[] { ' ', '،', '.', '!', '?', '؛', 'ْ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            return [.. words];
         }
     }
 }

@@ -6,8 +6,8 @@ using System.CommandLine.Parsing;
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using QuranCli.Arguments;
 using QuranCli.Commands;
-using QuranCli.Data;
 using QuranCli.Utilities;
 
 namespace QuranCli
@@ -45,13 +45,12 @@ These indexes can optionally be used to select a subsection from the selection a
                 "verse",
                 "Display a verse or range of verses from the Quran."
             )
-{
-    selectionArgument,
-    indexOption,
-    numberOption,
-    translationOption
-};
-
+            {
+                selectionArgument,
+                indexOption,
+                numberOption,
+                translationOption
+            };
             verseCommand.SetHandler(VerseHandler.Handle, selectionArgument, indexOption, translationOption, numberOption);
             verseCommand.AddAlias("ayah");
             // #endregion
@@ -74,6 +73,48 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
             };
             chapterCommand.AddAlias("surah");
             chapterCommand.SetHandler(ChapterHandler.Handle, surahsSelectionArgument, getOption);
+            // #endregion
+
+            // #region search
+            var searchTermArgument = new Argument<string>("term", "A search term.");
+            var searchByOption = new Option<SearchByOption>("--by", "Search by verse or translation.");
+            searchByOption.SetDefaultValue(SearchByOption.Verse);
+            var searchCommand = new Command("search", "Search a range of verses by a given term.")
+            {
+                selectionArgument,
+                searchTermArgument,
+                searchByOption,
+                translationOption,
+                numberOption
+            };
+            searchCommand.SetHandler(SearchHandler.Handle, selectionArgument, searchTermArgument, searchByOption, translationOption, numberOption);
+            // #endregion
+
+            // #region compare
+            var selection2Argument = new Argument<string>(
+                "selection",
+                "A second selection to compare to."
+            );
+            var nGramOption = new Option<ushort>(["--ngram", "-n"], "Specify the n-gram for comparison.");
+            nGramOption.SetDefaultValue(2);
+            var compareCommand = new Command("command", "Output a Jaccard similarity score for 2 selections of verses")
+            {
+                selectionArgument,
+                selection2Argument,
+                nGramOption
+            };
+            compareCommand.SetHandler(CompareHandler.Handle, selectionArgument, selection2Argument, nGramOption);
+            // #endregion
+
+            // #region top
+            var topArgument = new Argument<ushort>("n", "Specify the number of verse pairs to output.");
+            topArgument.SetDefaultValue(3);
+            var topCommand = new Command("top", "Output the top most similar verses in a selection of verses.")
+            {
+                selectionArgument,
+                topArgument
+            };
+            topCommand.SetHandler(TopHandler.Handle, selectionArgument, topArgument);
             // #endregion
 
             // #region note
@@ -143,6 +184,8 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
             {
                 verseCommand,
                 chapterCommand,
+                searchCommand,
+                topCommand,
                 noteCommand,
                 linkCommand,
                 groupCommand,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using QuranCli.Arguments;
 using QuranCli.Data;
+using QuranCli.Data.Models;
 
 namespace QuranCli.Commands
 {
@@ -12,15 +13,15 @@ namespace QuranCli.Commands
         {
             if (!IndexedAyatSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
             Logger.Info(selection.GetLog());
-            foreach (var line in GetLines(selection, shouldIndex, shouldTranslate, shouldIncludeNumbers)) Logger.Message(line);
+            var index = 0;
+            if (selection.IsIndexed && !selection.IsFromStart) index = selection.From;
+            foreach (var line in GetLines(selection.GetAyat(), shouldIndex, shouldTranslate, shouldIncludeNumbers, index)) Logger.Message(line);
             Repository.DisposeOfInstance();
         }
 
-        public static IEnumerable<string> GetLines(IndexedAyatSelection selection, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
+        public static IEnumerable<string> GetLines(IEnumerable<Ayah> ayat, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers, int index)
         {
-            var index = 0;
-            if (selection.IsIndexed && !selection.IsFromStart) index = selection.From;
-            foreach (var ayah in selection.GetAyat())
+            foreach (var ayah in ayat)
             {
                 string verse;
                 if (shouldIndex)
@@ -35,7 +36,7 @@ namespace QuranCli.Commands
             }
         }
 
-        public static int GetNextIndex(string input, int start, out string result)
+        private static int GetNextIndex(string input, int start, out string result)
         {
             var words = input.Split(' ');
             result = string.Join(" ", words.Select((word, index) => $"{word} [{start + index}]"));

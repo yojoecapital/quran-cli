@@ -4,6 +4,7 @@ using System.Linq;
 using QuranCli.Arguments;
 using QuranCli.Data;
 using QuranCli.Data.Models;
+using QuranCli.Utilities;
 
 namespace QuranCli.Commands
 {
@@ -35,7 +36,7 @@ namespace QuranCli.Commands
                 AyahId3 = ayahId3,
                 AyahId4 = ayahId4,
             };
-            if (note != null) link.Note = note;
+            if (note != null) link.Note = note.ExpandSelectionAnnotations();
             Repository.Instance.CreateOrEdit(link);
             var links = Repository.Instance.GetDirectLinksBetween(ayahId1, ayahId2, ayahId3, ayahId4);
             var links1 = Repository.Instance.GetGroupingLinksBetween(ayahId1, ayahId2);
@@ -67,7 +68,7 @@ namespace QuranCli.Commands
                 Repository.Instance.Edit(new Grouping()
                 {
                     Name = grouping.Name,
-                    Note = note.Trim()
+                    Note = note.ExpandSelectionAnnotations()
                 });
             }
             Repository.Instance.PopulateGrouping(grouping);

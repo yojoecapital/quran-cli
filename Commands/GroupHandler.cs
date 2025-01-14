@@ -1,5 +1,6 @@
 using QuranCli.Data;
 using QuranCli.Data.Models;
+using QuranCli.Utilities;
 
 namespace QuranCli.Commands
 {
@@ -19,7 +20,7 @@ namespace QuranCli.Commands
                 grouping = new Grouping()
                 {
                     Name = name,
-                    Note = note?.Trim()
+                    Note = note?.ExpandSelectionAnnotations()
                 };
                 Repository.Instance.Create(grouping);
             }
@@ -28,7 +29,7 @@ namespace QuranCli.Commands
                 grouping = new Grouping()
                 {
                     Name = name,
-                    Note = note?.Trim()
+                    Note = note?.ExpandSelectionAnnotations()
                 };
                 Repository.Instance.Edit(grouping);
             }

@@ -17,13 +17,14 @@ namespace QuranCli.Commands
             var (ayahId1, ayahId2) = selection.GetAyahIds();
             if (note != null)
             {
+                note = note.ExpandSelectionAnnotations();
                 if (selection.isSurahSelection)
                 {
                     Repository.Instance.CreateOrEdit(new SurahNote()
                     {
                         SurahId1 = selection.surahId1,
                         SurahId2 = selection.surahId2,
-                        Note = note.Trim()
+                        Note = note
                     });
                 }
                 else
@@ -32,7 +33,7 @@ namespace QuranCli.Commands
                     {
                         AyahId1 = ayahId1,
                         AyahId2 = ayahId2,
-                        Note = note.Trim()
+                        Note = note
                     });
                 }
             }
