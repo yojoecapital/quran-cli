@@ -12,13 +12,7 @@ namespace QuranCli.Data.Models
         protected override IEnumerable<(string name, object value)> GetProperties()
         {
             yield return ("id", $"S{Id}");
-            if (SurahId1 == SurahId2) yield return ("for", Repository.Instance.GetSurahById(SurahId1).TransliterationName);
-            else if (SurahId1 == 1 && SurahId2 == 114) yield return ("for", "The Noble Quran");
-            else yield return
-            (
-                "for",
-                $"{Repository.Instance.GetSurahById(SurahId1).TransliterationName} to {Repository.Instance.GetSurahById(SurahId2).TransliterationName}"
-            );
+            yield return ("for", Repository.Instance.GetSurahTransliterationDisplayName(SurahId1, SurahId2));
             yield return ("note", Note);
         }
     }

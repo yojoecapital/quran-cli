@@ -108,5 +108,19 @@ namespace QuranCli.Data
             var surah = GetSurahById(ayah.SurahId);
             return $"{surah.TransliterationName} ayah {ayah.AyahNumber}";
         }
+
+        public string GetSurahDisplayName(int surahId1, int surahId2)
+        {
+            if (surahId1 == surahId2) return GetSurahById(surahId2).Name;
+            else if (surahId1 == 1 && surahId2 == 114) return "القرآن الكريم";
+            else return $"{GetSurahById(surahId1).Name} to {GetSurahById(surahId2).Name}";
+        }
+
+        public string GetSurahTransliterationDisplayName(int surahId1, int surahId2)
+        {
+            if (surahId1 == surahId2) return GetSurahById(surahId2).TransliterationName;
+            else if (surahId1 == 1 && surahId2 == 114) return "The Noble Quran";
+            else return $"{GetSurahById(surahId1).TransliterationName} to {GetSurahById(surahId2).TransliterationName}";
+        }
     }
 }
