@@ -6,7 +6,6 @@ using System.CommandLine.Parsing;
 using System.IO;
 using System.Net.Http;
 using System.Text;
-using QuranCli.Arguments;
 using QuranCli.Commands;
 using QuranCli.Utilities;
 
@@ -73,21 +72,6 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
             };
             chapterCommand.AddAlias("surah");
             chapterCommand.SetHandler(ChapterHandler.Handle, surahsSelectionArgument, getOption);
-            // #endregion
-
-            // #region search
-            var searchTermArgument = new Argument<string>("term", "A search term.");
-            var searchByOption = new Option<SearchByOption>("--by", "Search by verse or translation.");
-            searchByOption.SetDefaultValue(SearchByOption.Verse);
-            var searchCommand = new Command("search", "Search a range of verses by a given term.")
-            {
-                selectionArgument,
-                searchTermArgument,
-                searchByOption,
-                translationOption,
-                numberOption
-            };
-            searchCommand.SetHandler(SearchHandler.Handle, selectionArgument, searchTermArgument, searchByOption, translationOption, numberOption);
             // #endregion
 
             // #region compare
@@ -174,7 +158,6 @@ If there are less than {Defaults.maxLevenshteinCount} characters, a Levenshtein 
             {
                 verseCommand,
                 chapterCommand,
-                searchCommand,
                 compareCommand,
                 noteCommand,
                 linkCommand,

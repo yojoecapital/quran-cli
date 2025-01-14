@@ -21,9 +21,7 @@ namespace QuranCli.Utilities
 #endif
             Logger.Message("Seeding database. This may take a while.");
             ConsumeFiles();
-            Logger.Message("Syncing FTS table...");
-            Repository.Instance.PopulateAyahFts();
-            Logger.Message("Seeding and FTS syncing complete.");
+            Logger.Message("Seeding complete.");
             Directory.Delete(Defaults.temporaryPath, true);
         }
 

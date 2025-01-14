@@ -30,19 +30,6 @@ namespace QuranCli.Utilities
             ";
             command.ExecuteNonQuery();
             command.CommandText = @"
-                CREATE VIRTUAL TABLE IF NOT EXISTS AyahFts USING fts5(
-                    Verse, 
-                    Translation, 
-                    Content='Ayah',
-                    Content_Rowid='Id'
-                );
-            ";
-            command.ExecuteNonQuery();
-            command.CommandText = @"
-                CREATE INDEX IF NOT EXISTS idx_Ayah_SurahId_AyahNumber ON Ayah(SurahId, AyahNumber);
-            ";
-            command.ExecuteNonQuery();
-            command.CommandText = @"
                 CREATE TABLE IF NOT EXISTS AyatNote (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     AyahId1 INTEGER NOT NULL,

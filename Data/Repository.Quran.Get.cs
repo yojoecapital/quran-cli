@@ -108,27 +108,5 @@ namespace QuranCli.Data
             var surah = GetSurahById(ayah.SurahId);
             return $"{surah.TransliterationName} ayah {ayah.AyahNumber}";
         }
-
-        public IEnumerable<Ayah> SearchAyahByVerse(string term, int ayahId1, int ayahId2)
-        {
-            string query = @"
-                SELECT a.Id, a.SurahId, a.AyahNumber, a.Verse, a.Translation  
-                FROM AyahFts AS fts
-                JOIN Ayah AS a ON fts.rowid = a.Id
-                WHERE fts.rowid >= @ayahId1 AND fts.rowid <= @ayahId2 fts.Verse MATCH @term;
-            ";
-            return connection.Query<Ayah>(query, new { term, ayahId1, ayahId2 });
-        }
-
-        public IEnumerable<Ayah> SearchAyahByTranslation(string term, int ayahId1, int ayahId2)
-        {
-            string query = @"
-                SELECT a.Id, a.SurahId, a.AyahNumber, a.Verse, a.Translation  
-                FROM AyahFts AS fts
-                JOIN Ayah AS a ON fts.rowid = a.Id
-                WHERE fts.rowid >= @ayahId1 AND fts.rowid <= @ayahId2 fts.Translation MATCH @term;
-            ";
-            return connection.Query<Ayah>(query, new { term, ayahId1, ayahId2 });
-        }
     }
 }

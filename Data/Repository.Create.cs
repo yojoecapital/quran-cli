@@ -6,16 +6,6 @@ namespace QuranCli.Data
 {
     internal partial class Repository
     {
-        public void PopulateAyahFts()
-        {
-            const string sql = @"
-                INSERT INTO AyahFts(rowid, Verse, Translation)
-                SELECT Id, Verse, Translation FROM Ayah
-                WHERE Id NOT IN (SELECT rowid FROM AyahFts);
-            ";
-            connection.Execute(sql);
-        }
-
         public void CreateTables() => connection.CreateTables();
 
         public void Create(Ayah ayah)
