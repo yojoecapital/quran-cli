@@ -66,7 +66,7 @@ namespace QuranCli.Utilities
             command.CommandText = @"
                 CREATE TABLE IF NOT EXISTS Grouping (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Name TEXT,
+                    Name VARCHAR,
                     Note TEXT,
                     UNIQUE (Name)
                 );
@@ -88,11 +88,11 @@ namespace QuranCli.Utilities
             command.CommandText = @"
                 CREATE TABLE IF NOT EXISTS DirectLink (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Note TEXT,
                     AyahId1 INTEGER NOT NULL,
                     AyahId2 INTEGER NOT NULL,
                     AyahId3 INTEGER NOT NULL,
                     AyahId4 INTEGER NOT NULL,
+                    Note TEXT,
                     FOREIGN KEY (AyahId1) REFERENCES Ayah(Id),
                     FOREIGN KEY (AyahId2) REFERENCES Ayah(Id),
                     FOREIGN KEY (AyahId3) REFERENCES Ayah(Id),

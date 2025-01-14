@@ -40,8 +40,14 @@ namespace QuranCli.Data
 
         public IEnumerable<Ayah> GetAyat()
         {
-            const string query = "SELECT * FROM Ayah";
+            const string query = "SELECT * FROM Ayah;";
             return connection.Query<Ayah>(query);
+        }
+
+        public Ayah GetAyahById(int id)
+        {
+            const string query = "SELECT * FROM Ayah WHERE Id = @id;";
+            return connection.QueryFirstOrDefault<Ayah>(query, new { id });
         }
 
         public IEnumerable<Surah> GetSurahs()
@@ -79,6 +85,24 @@ namespace QuranCli.Data
             var surahs = connection.Query<Surah>(query, new { surahId1, surahId2 });
             if (surahs.FirstOrDefault() == null) throw new Exception($"No Surah found between '{surahId1}..{surahId2}'");
             return surahs;
+        }
+
+        public string GetDisplayName(int ayahId1, int ayahId2)
+        {
+            if (ayahId1 == ayahId2)
+            {
+                var ayah = GetAyahById(ayahId1);
+                var surah = GetSurahById(ayah.Id);
+                return $"{surah.TransliterationName} ayah {ayah.AyahNumber}";
+            }
+            var ayah1 = GetAyahById(ayahId1);
+            var surah1 = GetSurahById(ayah1.Id);
+            var ayah2 = GetAyahById(ayahId2);
+            var surah2 = GetSurahById(ayah2.Id);
+            if (surah1.Id == surah2.Id)
+            {
+                if (ayah)
+            }
         }
     }
 }

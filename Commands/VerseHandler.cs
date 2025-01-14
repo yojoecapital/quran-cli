@@ -8,9 +8,9 @@ namespace QuranCli.Commands
 {
     internal static class VerseHandler
     {
-        public static void Handle(string input, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
+        public static void Handle(string selectionString, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
         {
-            if (!IndexedAyatSelection.TryParse(input, out var selection)) throw new Exception("Could not parse selection");
+            if (!IndexedAyatSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
             Logger.Info(selection.GetLog());
             foreach (var line in GetLines(selection, shouldIndex, shouldTranslate, shouldIncludeNumbers)) Console.WriteLine(line);
             Repository.Instance.Dispose();

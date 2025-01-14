@@ -7,9 +7,9 @@ namespace QuranCli.Commands
 {
     internal static class ChapterHandler
     {
-        public static void Handle(string input, SurahField? field)
+        public static void Handle(string selectionString, SurahField? field)
         {
-            if (!SurahSelection.TryParse(input, out var selection)) throw new Exception("Could not parse selection");
+            if (!SurahSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
             Logger.Info(selection.GetLog());
             foreach (var surah in selection.GetSurahs())
             {

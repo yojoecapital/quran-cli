@@ -16,8 +16,10 @@ namespace QuranCli
 
         public static void Error(object message)
         {
+            var s = message.ToString().Trim();
+            s = s.EndsWith('.') ? s : s + '.';
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine($"[ERROR] {message}".PadRight(Console.WindowWidth));
+            Console.Error.WriteLine($"[ERROR] {s}".PadRight(Console.WindowWidth));
             Console.ResetColor();
         }
 
