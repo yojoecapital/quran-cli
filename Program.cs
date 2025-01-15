@@ -74,23 +74,6 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
             chapterCommand.SetHandler(ChapterHandler.Handle, surahsSelectionArgument, getOption);
             // #endregion
 
-            // #region compare
-            var selection2Argument = new Argument<string>(
-                "selection",
-                "A second selection to compare to."
-            );
-            var nGramOption = new Option<int>(["--ngram", "-n"], "Specify the n-gram for comparison.");
-            nGramOption.SetDefaultValue(2);
-            var compareCommand = new Command("compare", @$"Output a Jaccard similarity score for 2 selections of verses.
-If there are less than {Defaults.maxLevenshteinCount} characters, a Levenshtein score is used.")
-            {
-                selectionArgument,
-                selection2Argument,
-                nGramOption
-            };
-            compareCommand.SetHandler(CompareHandler.Handle, selectionArgument, selection2Argument, nGramOption);
-            // #endregion
-
             // #region note
             var noteArgument = new Argument<string>("note", "Include a note to create or edit.")
             {
@@ -158,7 +141,6 @@ If there are less than {Defaults.maxLevenshteinCount} characters, a Levenshtein 
             {
                 verseCommand,
                 chapterCommand,
-                compareCommand,
                 noteCommand,
                 linkCommand,
                 groupCommand,
