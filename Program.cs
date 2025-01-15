@@ -93,7 +93,7 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
                 "Either a selection or group name."
             );
             var noteOption = new Option<string>(["--note", "-n"], "Optionally include a note.");
-            var linkCommand = new Command("link", "Output, create, or edit links between verses or groups.")
+            var linkCommand = new Command("link", "Create or edit links between verses or groups.")
             {
                 selectionArgument,
                 selectionOrGroupArgument,
