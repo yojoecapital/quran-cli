@@ -18,7 +18,7 @@ namespace QuranCli.Commands
             var (ayahId1, ayahId2) = selection1.GetAyahIds();
             if (grouping == null)
             {
-                if (!AyatSelection.TryParse(selectionString1, out var selection2)) throw new Exception("No group exists and could not parse selection");
+                if (!AyatSelection.TryParse(selectionString2, out var selection2)) throw new Exception("No group exists and could not parse selection");
                 Logger.Info(selection2.GetLog());
                 var (ayahId3, ayahId4) = selection2.GetAyahIds();
                 HandleDirectLink(ayahId1, ayahId2, ayahId3, ayahId4, note);

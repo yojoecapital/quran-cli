@@ -82,6 +82,7 @@ namespace QuranCli.Data
                 SELECT * FROM Surah
                 WHERE Id BETWEEN @surahId1 AND @surahId2;
             ";
+            connection.CreateCommand();
             var surahs = connection.Query<Surah>(sql, new { surahId1, surahId2 });
             if (surahs.FirstOrDefault() == null) throw new Exception($"No Surah found between '{surahId1}..{surahId2}'");
             return surahs;
@@ -106,7 +107,7 @@ namespace QuranCli.Data
         {
             var ayah = GetAyahById(ayahId);
             var surah = GetSurahById(ayah.SurahId);
-            return $"{surah.TransliterationName} ayah {ayah.AyahNumber}";
+            return $"{surah.TransliterationName} {ayah.AyahNumber}";
         }
 
         public string GetSurahDisplayName(int surahId1, int surahId2)
