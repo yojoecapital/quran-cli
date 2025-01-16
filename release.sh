@@ -54,9 +54,9 @@ if git rev-parse "$VERSION" >/dev/null 2>&1; then
 fi
 
 echo "Committing version update and creating new tag..."
+git tag "$VERSION"
 git add .
 git commit -m "Release version $VERSION"
-git tag "$VERSION"
 git push origin --tags
 
 # Create new GitHub release
