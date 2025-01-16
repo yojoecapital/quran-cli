@@ -13,7 +13,7 @@ namespace QuranCli
 {
     internal static partial class Program
     {
-		private static readonly version = "0.0.1-beta";
+        private static readonly string version = "0.0.1-beta";
         private static readonly Option verboseOption = new Option<bool>("--verbose", "Output [INFO] level messages.");
 
         [STAThread]
