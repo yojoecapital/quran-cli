@@ -52,32 +52,5 @@ namespace QuranCli.Utilities
             }
             return d[m, n];
         }
-
-        public static double JaccardSimilarity(string text1, string text2, int n)
-        {
-            var set1 = GenerateNGrams(text1, n);
-            var set2 = GenerateNGrams(text2, n);
-            var intersection = set1.Intersect(set2).Count();
-            var union = set1.Union(set2).Count();
-            if (union == 0) return 0;
-            return (double)intersection / union;
-        }
-
-        public static HashSet<string> GenerateNGrams(string text, int n)
-        {
-            var tokens = Tokenize(text);
-            var nGrams = new HashSet<string>();
-            for (int i = 0; i <= tokens.Count - n; i++)
-            {
-                nGrams.Add(string.Join(' ', tokens.Skip(i).Take(n)));
-            }
-            return nGrams;
-        }
-
-        public static HashSet<string> Tokenize(string text)
-        {
-            var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            return [.. words];
-        }
     }
 }

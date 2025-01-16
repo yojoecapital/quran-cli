@@ -2,22 +2,21 @@
 
   <PropertyGroup>
     <Version>1.0.0</Version>
-    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <AssemblyName>quran</AssemblyName>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <!-- Specify the platform (e.g., win-x64, linux-x64, osx-x64) -->
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-    <!-- Ensures all dependencies are included in the single file -->
-    <SelfContained>true</SelfContained> 
-    <!-- This disables the generation of the .pdb file -->
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
     <DebugType>none</DebugType>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.10" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
   </ItemGroup>
 

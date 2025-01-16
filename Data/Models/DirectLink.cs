@@ -14,12 +14,15 @@ namespace QuranCli.Data.Models
         protected override IEnumerable<(string name, object value)> GetProperties()
         {
             yield return ("id", $"D{Id}");
-            if (AyahId1 != AyahId3 || AyahId2 != AyahId4)
+            if (AyahId1 == AyahId3 && AyahId2 == AyahId4)
+            {
+                yield return ("for", Repository.Instance.GetDisplayName(AyahId1, AyahId2));
+            }
+            else
             {
                 yield return ("from", Repository.Instance.GetDisplayName(AyahId1, AyahId2));
                 yield return ("to", Repository.Instance.GetDisplayName(AyahId3, AyahId4));
             }
-            else yield return ("for", Repository.Instance.GetDisplayName(AyahId1, AyahId2));
             if (!string.IsNullOrWhiteSpace(Note)) yield return ("note", Note);
         }
     }

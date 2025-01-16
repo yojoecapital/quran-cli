@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using Dapper;
 using QuranCli.Data.Models;
-using SQLitePCL;
 
 namespace QuranCli.Data
 {
@@ -26,6 +24,15 @@ namespace QuranCli.Data
             connection.Execute(sql, new { id });
         }
 
+        public DirectLink GetDirectLink(int ayahId1, int ayahId2, int ayahId3, int ayahId4)
+        {
+            const string query = @"
+                SELECT * FROM DirectLink 
+                WHERE AyahId1 = @ayahId1 AND AyahId2 = @ayahId2
+                AND AyahId3 = @ayahId3 AND AyahId4 = @ayahId4;
+            ";
+            return connection.QueryFirstOrDefault<DirectLink>(query, new { ayahId1, ayahId2, ayahId3, ayahId4 });
+        }
         public IEnumerable<DirectLink> GetDirectLinksBetween(int ayahId1, int ayahId2)
         {
             const string query = @"
