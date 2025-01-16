@@ -3,7 +3,7 @@
 # Project Requirements:
 # The script should be executed from within the project directory, not from outside.
 # The project directory must contain:
-#  - A `.version` file, which should define the `VERSION` variable and a `FILES` variable with comma-seperated paths to files that should be uploaded.
+#  - A `.version` file, which should define the `VERSION` variable and a `FILES` variable with comma-separated paths to files that should be uploaded.
 #  - `.csproj` files (C# project files) to update version information in the version tag.
 #  - A `Program.cs` file that contains a line to update a version string (e.g., `private static readonly string version = "X.X.X";`).
 #  - Git initialized in the project directory (repository should be initialized with `git init`).
@@ -44,11 +44,13 @@ if [ "$1" != "YES" ]; then
     exit 0
 fi
 
+# Check for existing tag/release
 echo "Checking for existing tag/release..."
 if git rev-parse "$VERSION" >/dev/null 2>&1; then
-  echo "Tag $VERSION exists. Deleting existing tag..."
+  echo "Tag $VERSION exists. Deleting existing tag and release..."
   git tag -d "$VERSION"
   git push origin --delete "$VERSION"
+  gh release delete "$VERSION" --yes
 fi
 
 echo "Committing version update and creating new tag..."
@@ -57,6 +59,7 @@ git commit -m "Release version $VERSION"
 git tag "$VERSION"
 git push origin --tags
 
+# Create new GitHub release
 if [ -f "RELEASE.md" ]; then
   echo "Publishing GitHub release..."
   gh release create "$VERSION" $FILES_TO_UPLOAD --notes-file "RELEASE.md"
