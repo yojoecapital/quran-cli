@@ -60,6 +60,7 @@ namespace QuranCli.Data.Yaml
             }
             else if (property.value is ColoredString cs)
             {
+                // FIXME
                 process($"{property.name}: ");
                 ProcessColoredString(process, cs, indent);
             }
@@ -89,15 +90,11 @@ namespace QuranCli.Data.Yaml
                     ProcessYamlString(process, item, nestedIndent);
                 }
             }
-            else if (property.value is IEnumerable<ColoredString> coloredStrings)
+            else if (property.value is ColoredString[] coloredStrings)
             {
-                var nestedIndent = indent + "  ";
-                process($"{property.name}:");
-                foreach (var item in coloredStrings)
-                {
-                    process($"\n{indent}- ");
-                    ProcessColoredString(process, item, nestedIndent);
-                }
+                // FIXME
+                process($"{property.name}: ");
+                foreach (var item in coloredStrings) ProcessColoredString(process, item, indent);
             }
             else if (property.value is IEnumerable items)
             {
@@ -129,7 +126,7 @@ namespace QuranCli.Data.Yaml
         private static void ProcessColoredString(Action<string> process, ColoredString value, string indent)
         {
             Console.ForegroundColor = value.color;
-            ProcessYamlString(process, value.text, indent);
+            // ProcessYamlString(process, value.text, indent);
             Console.ResetColor();
         }
 
