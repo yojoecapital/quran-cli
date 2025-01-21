@@ -47,6 +47,9 @@ namespace QuranCli.Data.Models
                     {nameof(Transliteration)} VARCHAR NOT NULL
                 );
             ";
+#if DEBUG
+            Logger.Message(command.CommandText);
+#endif
             command.ExecuteNonQuery();
         }
 

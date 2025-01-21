@@ -40,6 +40,9 @@ namespace QuranCli.Data.Models
                     FOREIGN KEY({nameof(Chapter)}) REFERENCES {nameof(Models.Chapter)}({nameof(Models.Chapter.Number)})
                 );
             ";
+#if DEBUG
+            Logger.Message(command.CommandText);
+#endif
             command.ExecuteNonQuery();
         }
 
@@ -59,7 +62,7 @@ namespace QuranCli.Data.Models
                 VALUES (@{nameof(Id)}, @{nameof(Chapter)}, @{nameof(Number)}, @{nameof(Text)}, @{nameof(Translation)});
             ";
             command.Parameters.AddWithValue($"@{nameof(Id)}", Id);
-            command.Parameters.AddWithValue($"@{nameof(Chapter)}", Id);
+            command.Parameters.AddWithValue($"@{nameof(Chapter)}", Chapter);
             command.Parameters.AddWithValue($"@{nameof(Number)}", Number);
             command.Parameters.AddWithValue($"@{nameof(Text)}", Text);
             command.Parameters.AddWithValue($"@{nameof(Translation)}", Translation);
@@ -72,7 +75,7 @@ namespace QuranCli.Data.Models
             command.CommandText = @$"
                 SELECT {propertiesString}
                 FROM {nameof(Verse)}
-                WHERE {nameof(Chapter)} = @{nameof(chapterNumber)} AND {nameof(Number)} = @{verseNumber};
+                WHERE {nameof(Chapter)} = @{nameof(chapterNumber)} AND {nameof(Number)} = @{nameof(verseNumber)};
             ";
             command.Parameters.AddWithValue($"@{nameof(chapterNumber)}", chapterNumber);
             command.Parameters.AddWithValue($"@{nameof(verseNumber)}", verseNumber);

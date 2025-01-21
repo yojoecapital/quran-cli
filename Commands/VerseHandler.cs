@@ -28,7 +28,7 @@ namespace QuranCli.Commands
                     text = indexedLine;
                 }
                 else text = verse.Text;
-                if (shouldIncludeNumbers) yield return $"{verse} ({verse.Number})";
+                if (shouldIncludeNumbers) yield return $"{text} ({verse.Number})";
                 else yield return text;
                 if (shouldTranslate) yield return verse.Translation;
             }
