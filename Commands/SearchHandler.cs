@@ -22,7 +22,7 @@ namespace QuranCli.Commands
                 Verse = match.Value,
                 Score = match.Score
             });
-            Logger.Message(YamlSerializer.Serialze(matches));
+            YamlProcessor.Write(matches);
         }
     }
 }
