@@ -44,8 +44,11 @@ if [ "$1" != "YES" ]; then
     exit 0
 fi
 
-# Check for existing tag/release
+# Make sure the project is up to date
 git fetch
+git pull
+
+# Check for existing tag/release
 echo "Checking for existing tag/release..."
 if git rev-parse "$VERSION" >/dev/null 2>&1; then
   echo "Tag $VERSION exists. Deleting existing tag and release..."
@@ -67,9 +70,9 @@ git push origin --tags
 # Create new GitHub release
 echo "Publishing GitHub release..."
 if [ -f "RELEASE.md" ]; then
-  gh release create "$VERSION" $FILES_TO_UPLOAD --notes-file "RELEASE.md" --title "v$VERSION"
+  gh release create "$VERSION" $FILES_TO_UPLOAD --notes-file "RELEASE.md" --title "$VERSION"
 else
-  gh release create "$VERSION" $FILES_TO_UPLOAD --title "v$VERSION"
+  gh release create "$VERSION" $FILES_TO_UPLOAD --title "$VERSION"
 fi
 
 echo "Release $VERSION deployed successfully!"
