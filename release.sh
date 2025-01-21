@@ -65,12 +65,11 @@ fi
 git push origin --tags
 
 # Create new GitHub release
+echo "Publishing GitHub release..."
 if [ -f "RELEASE.md" ]; then
-  echo "Publishing GitHub release..."
-  gh release create "$VERSION" $FILES_TO_UPLOAD --notes-file "RELEASE.md"
+  gh release create "$VERSION" $FILES_TO_UPLOAD --notes-file "RELEASE.md" --title "v$VERSION"
 else
-  echo "Release file RELEASE.md not found. Skipping release notes."
-  gh release create "$VERSION" $FILES_TO_UPLOAD
+  gh release create "$VERSION" $FILES_TO_UPLOAD --title "v$VERSION"
 fi
 
 echo "Release $VERSION deployed successfully!"
