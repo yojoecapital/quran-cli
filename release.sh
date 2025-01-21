@@ -45,6 +45,7 @@ if [ "$1" != "YES" ]; then
 fi
 
 # Check for existing tag/release
+git fetch
 echo "Checking for existing tag/release..."
 if git rev-parse "$VERSION" >/dev/null 2>&1; then
   echo "Tag $VERSION exists. Deleting existing tag and release..."
@@ -56,7 +57,11 @@ fi
 echo "Committing version update and creating new tag..."
 git tag "$VERSION"
 git add .
-git commit -m "Release version $VERSION"
+if git diff-index --quiet HEAD --; then
+    echo "No changes to commit."
+else
+    git commit -m "Release version $VERSION"
+fi
 git push origin --tags
 
 # Create new GitHub release
