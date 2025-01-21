@@ -14,5 +14,6 @@ namespace QuranCli
         public static readonly string translationsFileName = "translations.txt";
         public static readonly string databasePath = Path.Join(configurationPath, databaseFileName);
         public static readonly string temporaryPath = Path.Join(Path.GetTempPath(), "quran-cli-resources");
+        public static readonly (int min, int max) searchResultLimit = (1, 10);
     }
 }

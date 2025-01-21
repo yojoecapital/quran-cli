@@ -15,7 +15,7 @@ namespace QuranCli
 {
     public static partial class Program
     {
-        private static readonly string version = "0.0.1-beta";
+        public static readonly string version = "0.0.2-beta";
         private static readonly Option verboseOption = new Option<bool>("--verbose", "Output [INFO] level messages.");
 
         public static int Main(string[] args)
@@ -68,6 +68,27 @@ The selection can be specified as '<chapter>..<chapter>'. For a single chapter, 
             chapterCommand.SetHandler(ChapterHandler.Handle, chaptersSelectionArgument);
             // #endregion
 
+            // #region search
+            var queryArgument = new Argument<string>("query", "The search term.");
+            var resultsOption = new Option<int>("--results", @$"The maximum amount of results to display.
+Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLimit.max}."
+            );
+            resultsOption.SetDefaultValue(3);
+            var searchCommand = new Command("search", "Search for a verse from the Quran.")
+            {
+                queryArgument,
+                resultsOption
+            };
+            searchCommand.SetHandler(SearchHandler.Handle, queryArgument, resultsOption);
+            // #endregion
+
+            // #region version
+            var versionCommand = new Command("version");
+            versionCommand.AddAlias("--version");
+            versionCommand.AddAlias("-v");
+            versionCommand.SetHandler(VersionHandler.Handle);
+            // #endregion
+
             // #region build-db
             var buildDatabaseCommand = new Command("build-db", "Download the resource files and rebuild the SQLite database.");
             buildDatabaseCommand.SetHandler(BuildDatabaseHandler.Handle);
@@ -77,6 +98,8 @@ The selection can be specified as '<chapter>..<chapter>'. For a single chapter, 
             {
                 verseCommand,
                 chapterCommand,
+                searchCommand,
+                versionCommand,
                 buildDatabaseCommand
             };
 
@@ -100,7 +123,7 @@ The selection can be specified as '<chapter>..<chapter>'. For a single chapter, 
                 var client = new HttpClient();
                 client.Download($"{Defaults.resourceUrl}/{Defaults.databaseFileName}", Defaults.databasePath);
             }
-            Logger.verbose = (bool)context.ParseResult.GetValueForOption(verboseOption);
+            Logger.Verbose = (bool)context.ParseResult.GetValueForOption(verboseOption);
         }
 
         private static async Task FinalizeExecution(InvocationContext context, Func<InvocationContext, Task> next)

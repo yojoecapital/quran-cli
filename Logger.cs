@@ -4,11 +4,11 @@ namespace QuranCli
 {
     public static class Logger
     {
-        public static bool verbose;
+        public static bool Verbose { get; set; }
 
         public static void Info(object message)
         {
-            if (!verbose) return;
+            if (!Verbose) return;
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.Error.WriteLine($"[INFO] {message}".PadRight(Console.WindowWidth));
             Console.ResetColor();

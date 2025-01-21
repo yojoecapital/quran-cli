@@ -25,11 +25,11 @@ source .version
 
 echo "Setting version to $VERSION..."
 find . -name "*.csproj" -exec sed -i "s|<Version>.*</Version>|<Version>${VERSION}</Version>|" {} +
-sed -i "s|private static readonly string version = \".*\";|private static readonly string version = \"${VERSION}\";|" Program.cs
+sed -i "s|public static readonly string version = \".*\";|public static readonly string version = \"${VERSION}\";|" Program.cs
 
 echo "Building and publishing project..."
-dotnet publish -c Release -r linux-x64 --self-contained true /p:PublishSingleFile=true
-dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+dotnet publish -c Release -r linux-x64
+dotnet publish -c Release -r win-x64
 
 IFS=',' read -r -a FILE_ARRAY <<< "$FILES"
 FILES_TO_UPLOAD=$(IFS=' '; echo "${FILE_ARRAY[*]}")
