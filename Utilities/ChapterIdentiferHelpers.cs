@@ -18,7 +18,7 @@ namespace QuranCli.Utilities
             return Chapter.SelectByNumber(int.Parse(chapterNumberentifier));
         }
 
-        public static int GetVerseIdByOffset(string chapterNumberentifier, int verseNumber)
+        public static int GetVerseIdByNumbers(string chapterNumberentifier, int verseNumber)
         {
             var chapter = GetChapterByIdentifier(chapterNumberentifier);
             var verseId = chapter.Start + verseNumber - 1;

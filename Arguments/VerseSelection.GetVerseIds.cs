@@ -18,7 +18,7 @@ namespace QuranCli.Arguments
             {
                 var chapterNumberentifier = tokens[0];
                 var verseNumber = int.Parse(tokens[1]);
-                var verseId = ChapterIdentifierHelpers.GetVerseIdByOffset(chapterNumberentifier, verseNumber);
+                var verseId = ChapterIdentifierHelpers.GetVerseIdByNumbers(chapterNumberentifier, verseNumber);
                 return (1, verseId);
             }
             if (rangeType == RangeType.ChapterToEnd)
@@ -30,7 +30,7 @@ namespace QuranCli.Arguments
             {
                 var chapterNumberentifier = tokens[0];
                 var verseNumber = int.Parse(tokens[1]);
-                var verseId = ChapterIdentifierHelpers.GetVerseIdByOffset(chapterNumberentifier, verseNumber);
+                var verseId = ChapterIdentifierHelpers.GetVerseIdByNumbers(chapterNumberentifier, verseNumber);
                 return (verseId, 6236);
             }
             if (rangeType == RangeType.LeftRange)
@@ -40,15 +40,15 @@ namespace QuranCli.Arguments
                 var verseNumber = int.Parse(tokens[2]);
                 var chapter = ChapterIdentifierHelpers.GetChapterByIdentifier(chapterNumberentifier1);
                 var verseId1 = chapter.Start;
-                var verseId2 = ChapterIdentifierHelpers.GetVerseIdByOffset(chapterNumberentifier2, verseNumber);
+                var verseId2 = ChapterIdentifierHelpers.GetVerseIdByNumbers(chapterNumberentifier2, verseNumber);
                 return (verseId1, verseId2);
             }
             if (rangeType == RangeType.ChapterToVerse)
             {
                 var chapterNumberentifier = tokens[0];
                 var verseNumber = int.Parse(tokens[1]);
-                var verseId1 = ChapterIdentifierHelpers.GetVerseIdByOffset(chapterNumberentifier, 1);
-                var verseId2 = ChapterIdentifierHelpers.GetVerseIdByOffset(chapterNumberentifier, verseNumber);
+                var verseId1 = ChapterIdentifierHelpers.GetVerseIdByNumbers(chapterNumberentifier, 1);
+                var verseId2 = ChapterIdentifierHelpers.GetVerseIdByNumbers(chapterNumberentifier, verseNumber);
                 return (verseId1, verseId2);
             }
             if (rangeType == RangeType.RightRange)
@@ -56,8 +56,8 @@ namespace QuranCli.Arguments
                 var chapterNumberentifier = tokens[0];
                 var verseNumber1 = int.Parse(tokens[1]);
                 var verseNumber2 = int.Parse(tokens[2]);
-                var verseId1 = ChapterIdentifierHelpers.GetVerseIdByOffset(chapterNumberentifier, verseNumber1);
-                var verseId2 = ChapterIdentifierHelpers.GetVerseIdByOffset(chapterNumberentifier, verseNumber2);
+                var verseId1 = ChapterIdentifierHelpers.GetVerseIdByNumbers(chapterNumberentifier, verseNumber1);
+                var verseId2 = ChapterIdentifierHelpers.GetVerseIdByNumbers(chapterNumberentifier, verseNumber2);
                 return (verseId1, verseId2);
             }
             if (rangeType == RangeType.ChapterToChapter)
@@ -74,8 +74,8 @@ namespace QuranCli.Arguments
                 var verseNumber1 = int.Parse(tokens[1]);
                 var chapterNumberentifier2 = tokens[2];
                 var verseNumber2 = int.Parse(tokens[3]);
-                var verseId1 = ChapterIdentifierHelpers.GetVerseIdByOffset(chapterNumberentifier1, verseNumber1);
-                var verseId2 = ChapterIdentifierHelpers.GetVerseIdByOffset(chapterNumberentifier2, verseNumber2);
+                var verseId1 = ChapterIdentifierHelpers.GetVerseIdByNumbers(chapterNumberentifier1, verseNumber1);
+                var verseId2 = ChapterIdentifierHelpers.GetVerseIdByNumbers(chapterNumberentifier2, verseNumber2);
                 return (verseId1, verseId2);
             }
             if (mainType == MainType.All) return (1, 6236);
@@ -88,7 +88,7 @@ namespace QuranCli.Arguments
             {
                 var chapterNumberentifier = tokens[0];
                 var verseNumber = int.Parse(tokens[1]);
-                var verseId = ChapterIdentifierHelpers.GetVerseIdByOffset(chapterNumberentifier, verseNumber);
+                var verseId = ChapterIdentifierHelpers.GetVerseIdByNumbers(chapterNumberentifier, verseNumber);
                 return (verseId, verseId);
             }
             throw new Exception("Parse case not found.");

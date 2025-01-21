@@ -28,9 +28,10 @@ namespace QuranCli.Data.Models
             {
                 Number = reader.GetInt32(0),
                 Count = reader.GetInt32(1),
-                Name = reader.GetString(2),
-                Translation = reader.GetString(3),
-                Transliteration = reader.GetString(4)
+                Start = reader.GetInt32(2),
+                Name = reader.GetString(3),
+                Translation = reader.GetString(4),
+                Transliteration = reader.GetString(5)
             };
         }
 
