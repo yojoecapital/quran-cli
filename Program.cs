@@ -6,27 +6,26 @@ using System.CommandLine.Parsing;
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using QuranCli.Commands;
+using QuranCli.Data;
 using QuranCli.Utilities;
 
 namespace QuranCli
 {
-    internal static partial class Program
+    public static partial class Program
     {
         private static readonly string version = "0.0.1-beta";
         private static readonly Option verboseOption = new Option<bool>("--verbose", "Output [INFO] level messages.");
 
-        [STAThread]
         public static int Main(string[] args)
         {
-            Console.InputEncoding = Console.OutputEncoding = Encoding.UTF8;
-
             // #region verse
             var selectionArgument = new Argument<string>(
                 "selection",
                 @"A selection from the Quran.
-The selection can be specified as '<surah>:<ayah>..<surah>:<ayah>'.
-For a single verse, use '<surah>:<ayah>', or for an entire chapter, use '<surah>'."
+The selection can be specified as '<chapter>:<verse>..<chapter>:<verse>'.
+For a single verse, use '<chapter>:<verse>', or for an entire chapter, use '<chapter>'."
             );
             var indexOption = new Option<bool>(
                 ["--index", "-i"],
@@ -52,85 +51,21 @@ These indexes can optionally be used to select a subsection from the selection a
                 translationOption
             };
             verseCommand.SetHandler(VerseHandler.Handle, selectionArgument, indexOption, translationOption, numberOption);
-            verseCommand.AddAlias("ayah");
+            verseCommand.AddAlias("verse");
             // #endregion
 
             // #region chapter
-            var getOption = new Option<SurahField?>(
-                ["--get", "-g"],
-                @"Only get this attribute.
-The attributes include 'number', 'count', 'name', 'translation', and 'transliteration'."
-            );
-            var surahsSelectionArgument = new Argument<string>(
+            var chaptersSelectionArgument = new Argument<string>(
                 "selection",
                 @"A selection of chapters from the Quran.
-The selection can be specified as '<surah>..<surah>'. For a single chapter, use '<surah>'."
+The selection can be specified as '<chapter>..<chapter>'. For a single chapter, use '<chapter>'."
             );
             var chapterCommand = new Command("chapter", "Output information for a chapter or range of chapters from the Quran.")
             {
-                surahsSelectionArgument,
-                getOption
+                chaptersSelectionArgument
             };
-            chapterCommand.AddAlias("surah");
-            chapterCommand.SetHandler(ChapterHandler.Handle, surahsSelectionArgument, getOption);
-            // #endregion
-
-            // #region note
-            var noteArgument = new Argument<string>("note", "Include a note to create or edit.")
-            {
-                Arity = ArgumentArity.ZeroOrOne
-            };
-            var noteCommand = new Command("note", "Output, create, or edit a note on a selection of verses or chapters.")
-            {
-                selectionArgument,
-                noteArgument
-            };
-            noteCommand.SetHandler(NoteHandler.Handle, selectionArgument, noteArgument);
-            // #endregion
-
-            // #region link
-            var selectionOrGroupArgument = new Argument<string>(
-                "selection|group",
-                "Either a selection or group name."
-            );
-            var noteOption = new Option<string>(["--note", "-n"], "Optionally include a note.");
-            var linkCommand = new Command("link", "Create or edit links between verses or groups.")
-            {
-                selectionArgument,
-                selectionOrGroupArgument,
-                noteOption
-            };
-            linkCommand.SetHandler(LinkHandler.Handle, selectionArgument, selectionOrGroupArgument, noteOption);
-            // #endregion
-
-            // #region group
-            var groupArgument = new Argument<string>(
-                "name",
-                "A group name."
-            )
-            {
-                Arity = ArgumentArity.ZeroOrOne
-            };
-            var groupCommand = new Command("group", "Output, create, or edit groups.")
-            {
-                groupArgument,
-                noteOption
-            }; ;
-            groupCommand.SetHandler(GroupHandler.Handle, groupArgument, noteOption);
-            // #endregion
-
-            // #region remove
-            var idToRemoveArgument = new Argument<string[]>(
-                "id(s)",
-                "The ID of the notes, links, or groups to remove."
-            );
-            var removeCommand = new Command("remove", "Remove notes, links, or groups.")
-            {
-                idToRemoveArgument
-            };
-            removeCommand.AddAlias("delete");
-            removeCommand.AddAlias("rm");
-            removeCommand.SetHandler(RemoveHandler.Handle, idToRemoveArgument);
+            chapterCommand.AddAlias("chapter");
+            chapterCommand.SetHandler(ChapterHandler.Handle, chaptersSelectionArgument);
             // #endregion
 
             // #region build-db
@@ -142,24 +77,23 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
             {
                 verseCommand,
                 chapterCommand,
-                noteCommand,
-                linkCommand,
-                groupCommand,
-                removeCommand,
                 buildDatabaseCommand
             };
+
             rootCommand.AddGlobalOption(verboseOption);
             var cli = new CommandLineBuilder(rootCommand)
                 .UseHelp()
                 .UseParseErrorReporting()
                 .UseExceptionHandler(ExceptionHandler)
-                .AddMiddleware(Initialize)
+                .AddMiddleware(Initialize, MiddlewareOrder.Configuration)
+                .AddMiddleware(FinalizeExecution)
                 .Build();
             return cli.Invoke(args);
         }
 
         private static void Initialize(InvocationContext context)
         {
+            Console.InputEncoding = Console.OutputEncoding = Encoding.UTF8;
             Directory.CreateDirectory(Defaults.configurationPath);
             if (!File.Exists(Defaults.databasePath))
             {
@@ -167,6 +101,12 @@ The selection can be specified as '<surah>..<surah>'. For a single chapter, use 
                 client.Download($"{Defaults.resourceUrl}/{Defaults.databaseFileName}", Defaults.databasePath);
             }
             Logger.verbose = (bool)context.ParseResult.GetValueForOption(verboseOption);
+        }
+
+        private static async Task FinalizeExecution(InvocationContext context, Func<InvocationContext, Task> next)
+        {
+            await next(context);
+            ConnectionManager.Close();
         }
 
         private static void ExceptionHandler(Exception ex, InvocationContext context)

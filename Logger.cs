@@ -2,7 +2,7 @@ using System;
 
 namespace QuranCli
 {
-    internal static class Logger
+    public static class Logger
     {
         public static bool verbose;
 

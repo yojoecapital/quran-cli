@@ -3,9 +3,9 @@ using QuranCli.Utilities;
 
 namespace QuranCli.Arguments
 {
-    internal partial class IndexedAyatSelection : AyatSelection
+    public partial class IndexedVerseSelection : VerseSelection
     {
-        private IndexedAyatSelection
+        private IndexedVerseSelection
         (
             MainType mainType,
             RangeType rangeType,
@@ -42,7 +42,7 @@ namespace QuranCli.Arguments
             return builder.ToString();
         }
 
-        public static bool TryParse(string value, out IndexedAyatSelection selection)
+        public static bool TryParse(string value, out IndexedVerseSelection selection)
         {
             selection = null;
             var splitArity = Splitter.GetSplit(value.Trim(), "::", out var split);

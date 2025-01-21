@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace QuranCli.Utilities
 {
-    internal static class Downloader
+    public static class Downloader
     {
         public static void Download(this HttpClient client, string url, string destinationPath)
         {

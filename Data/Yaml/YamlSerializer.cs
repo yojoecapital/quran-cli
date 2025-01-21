@@ -3,88 +3,86 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace QuranCli.Data.Models
+namespace QuranCli.Data.Yaml
 {
-    public abstract class YamlSerializable
+    public static class YamlSerializer
     {
-        protected abstract IEnumerable<(string name, object value)> GetProperties();
-
-        public string ToYaml()
+        public static string Serialze(IYamlSerializable model)
         {
             var builder = new StringBuilder();
-            AppendProperties(builder, string.Empty);
+            AppendProperties(builder, model, string.Empty);
             return builder.ToString();
         }
 
-        public static string ToYaml(IEnumerable<YamlSerializable> models)
+        public static string Serialze(IEnumerable<IYamlSerializable> models)
         {
             if (!models.Any()) return string.Empty;
             var builder = new StringBuilder();
             var firstModel = models.First();
             builder.Append("- ");
             var indent = "  ";
-            firstModel.AppendProperties(builder, indent);
+            AppendProperties(builder, firstModel, indent);
             foreach (var model in models.Skip(1))
             {
                 builder.Append("\n- ");
-                model.AppendProperties(builder, indent);
+                AppendProperties(builder, model, indent);
             }
             return builder.ToString();
         }
 
-        private void AppendProperties(StringBuilder builder, string indent)
+        private static void AppendProperties(StringBuilder builder, IYamlSerializable model, string indent)
         {
-            var properties = GetProperties();
+            var properties = model.GetYamlProperties();
             if (!properties.Any()) return;
-            var (name, value) = properties.First();
-            AppendProperty(builder, name, value, indent);
-            foreach (var property in properties.Skip(1))
+            var property = properties.First();
+            AppendProperty(builder, property, indent);
+            foreach (var subproperty in properties.Skip(1))
             {
                 builder.Append($"\n{indent}");
-                AppendProperty(builder, property.name, property.value, indent);
+                AppendProperty(builder, subproperty, indent);
             }
         }
 
-        private static void AppendProperty(StringBuilder builder, string name, object value, string indent)
+        private static void AppendProperty(StringBuilder builder, YamlProperty property, string indent)
         {
-            if (value is string s)
+            if (property.value is string s)
             {
-                builder.Append($"{name}: {ToYamlString(s, indent)}");
+                builder.Append($"{property.name}: {ToYamlString(s, indent)}");
             }
-            else if (value is YamlSerializable model)
+            else if (property.value is IYamlSerializable model)
             {
                 var nestedIndent = indent + "  ";
-                builder.Append($"{name}:\n{nestedIndent}");
-                model.AppendProperties(builder, nestedIndent);
+                builder.Append($"{property.name}:\n{nestedIndent}");
+                AppendProperties(builder, model, nestedIndent);
             }
-            else if (value is IEnumerable<YamlSerializable> models)
+            else if (property.value is IEnumerable<IYamlSerializable> models)
             {
                 var nestedIndent = indent + "  ";
-                builder.Append($"{name}:");
+                builder.Append($"{property.name}:");
                 foreach (var nestedModel in models)
                 {
                     builder.Append($"\n{indent}- ");
-                    nestedModel.AppendProperties(builder, nestedIndent);
+                    AppendProperties(builder, nestedModel, nestedIndent);
                 }
             }
-            else if (value is IEnumerable<string> strings)
+            else if (property.value is IEnumerable<string> strings)
             {
                 var nestedIndent = indent + "  ";
-                builder.Append($"{name}:");
+                builder.Append($"{property.name}:");
                 foreach (var item in strings)
                 {
                     builder.Append($"\n{indent}- {ToYamlString(item, nestedIndent)}");
                 }
             }
-            else if (value is IEnumerable items)
+            else if (property.value is IEnumerable items)
             {
-                builder.Append($"{name}:");
+                builder.Append($"{property.name}:");
                 foreach (var item in items)
                 {
                     builder.Append($"\n{indent}- {item}");
                 }
             }
-            else builder.Append($"{name}: {value}");
+            else builder.Append($"{property.name}: {property.value}");
         }
 
         private static string ToYamlString(string value, string indent)

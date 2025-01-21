@@ -7,13 +7,13 @@ using QuranCli.Data;
 
 namespace QuranCli.Utilities
 {
-    internal static class StringExtensions
+    public static class StringExtensions
     {
         public static bool IsNumeric(this string s) => s.Length > 0 && s.All(char.IsDigit);
 
-        public static bool IsSurahName(this string s) => s.Length > 0 && s.All(c => char.IsLetter(c) || char.IsWhiteSpace(c) || c == '-');
+        public static bool IsChapterTransliteration(this string s) => s.Length > 0 && s.All(c => char.IsLetter(c) || char.IsWhiteSpace(c) || c == '-');
 
-        public static bool IsSurahIdentifier(this string s) => s.IsNumeric() || s.IsSurahName();
+        public static bool IsChapterIdentifier(this string s) => s.IsNumeric() || s.IsChapterTransliteration();
 
         public static string ExpandSelectionAnnotations(this string text)
         {
@@ -21,11 +21,11 @@ namespace QuranCli.Utilities
             return Regex.Replace(text.Trim(), pattern, match =>
             {
                 var text = match.Groups[1].Value;
-                if (IndexedAyatSelection.TryParse(text, out var selection))
+                if (IndexedVerseSelection.TryParse(text, out var selection))
                 {
-                    if (selection.isSurahSelection) return Repository.Instance.GetSurahDisplayName(selection.surahId1, selection.surahId2);
-                    var ayat = string.Join('\n', selection.GetAyat().Select(ayah => ayah.Verse));
-                    return ayat;
+                    if (selection.isChapterSelection && !selection.IsIndexed) return $"FIXME: ({selection.chapterNumber1}, {selection.chapterNumber2})";
+                    var verses = string.Join('\n', selection.GetVerses().Select(verse => verse.Text));
+                    return verses;
                 }
                 else
                 {

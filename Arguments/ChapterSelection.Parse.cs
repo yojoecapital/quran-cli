@@ -4,9 +4,9 @@ using QuranCli.Utilities;
 
 namespace QuranCli.Arguments
 {
-    internal partial class SurahSelection
+    public partial class ChapterSelection
     {
-        private SurahSelection(Type type, string[] tokens)
+        private ChapterSelection(Type type, string[] tokens)
         {
             this.type = type;
             this.tokens = tokens;
@@ -15,10 +15,10 @@ namespace QuranCli.Arguments
         private enum Type : byte
         {
             All, // 'all'
-            Surah, // <surah>
-            SurahFromStart, // ..<surah>
-            SurahToEnd, // <surah>..
-            SurahToSurah // <surah>..<surah>
+            Chapter, // <chapter>
+            ChapterFromStart, // ..<chapter>
+            ChapterToEnd, // <chapter>..
+            ChapterToChapter // <chapter>..<chapter>
         }
 
         private readonly Type type;
@@ -34,7 +34,7 @@ namespace QuranCli.Arguments
         }
 
 
-        public static bool TryParse(string value, out SurahSelection selection)
+        public static bool TryParse(string value, out ChapterSelection selection)
         {
             selection = null;
             if (!TryGetTokens(value.Trim(), out var type, out var tokens)) return false;
@@ -54,30 +54,30 @@ namespace QuranCli.Arguments
                     type = Type.All;
                     return true;
                 }
-                if (split.First.IsSurahIdentifier())
+                if (split.First.IsChapterIdentifier())
                 {
-                    type = Type.Surah;
+                    type = Type.Chapter;
                     tokens = [split.First];
                     return true;
                 }
             }
             else if (splitArity == Splitter.Arity.Two)
             {
-                if (split.First.Length == 0 && split.Last.IsSurahIdentifier())
+                if (split.First.Length == 0 && split.Last.IsChapterIdentifier())
                 {
-                    type = Type.SurahFromStart;
+                    type = Type.ChapterFromStart;
                     tokens = [split.Last];
                     return true;
                 }
-                if (split.First.IsSurahIdentifier() && split.Last.Length == 0)
+                if (split.First.IsChapterIdentifier() && split.Last.Length == 0)
                 {
-                    type = Type.SurahToEnd;
+                    type = Type.ChapterToEnd;
                     tokens = [split.First];
                     return true;
                 }
-                if (split.First.IsSurahIdentifier() && split.Last.IsSurahIdentifier())
+                if (split.First.IsChapterIdentifier() && split.Last.IsChapterIdentifier())
                 {
-                    type = Type.SurahToSurah;
+                    type = Type.ChapterToChapter;
                     tokens = [split.First, split.Last];
                     return true;
                 }
@@ -85,11 +85,11 @@ namespace QuranCli.Arguments
             return false;
         }
 
-        public static SurahSelection ArgumentParse(ArgumentResult result)
+        public static ChapterSelection ArgumentParse(ArgumentResult result)
         {
             var validSelections = @"Valid selections include:  
-  - <surah>
-  - <surah>..<surah>
+  - <chapter>
+  - <chapter>..<chapter>
   - all";
             if (result.Tokens.Count == 0)
             {

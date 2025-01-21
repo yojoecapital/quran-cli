@@ -1,8 +1,8 @@
 namespace QuranCli.Utilities
 {
-    internal static class Splitter
+    public static class Splitter
     {
-        internal enum Arity : byte
+        public enum Arity : byte
         {
             Empty,
             One, // <value>

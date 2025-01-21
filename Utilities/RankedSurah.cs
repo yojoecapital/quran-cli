@@ -2,9 +2,9 @@ using QuranCli.Data.Models;
 
 namespace QuranCli.Utilities
 {
-    class RankedSurah
+    class RankedChapter
     {
-        public Surah Surah { get; set; }
+        public Chapter Chapter { get; set; }
         public int Distance { get; set; }
     }
 }

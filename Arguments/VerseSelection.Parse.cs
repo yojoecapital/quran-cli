@@ -1,12 +1,13 @@
 using System.Text;
 using QuranCli.Data;
+using QuranCli.Data.Models;
 using QuranCli.Utilities;
 
 namespace QuranCli.Arguments
 {
-    internal partial class AyatSelection
+    public partial class VerseSelection
     {
-        protected AyatSelection
+        protected VerseSelection
         (
             MainType mainType,
             RangeType rangeType,
@@ -18,47 +19,41 @@ namespace QuranCli.Arguments
             this.tokens = tokens;
             if (mainType == MainType.All)
             {
-                surahId1 = 1;
-                surahId2 = 114;
-                isSurahSelection = true;
+                chapterNumber1 = 1;
+                chapterNumber2 = 114;
+                isChapterSelection = true;
             }
-            else if (mainType == MainType.Surah)
+            else if (mainType == MainType.Chapter)
             {
-                surahId1 = surahId2 = GetSurahId(tokens[0]);
-                isSurahSelection = true;
+                chapterNumber1 = chapterNumber2 = ChapterIdentifierHelpers.GetChapterNumberByIdentifier(tokens[0]);
+                isChapterSelection = true;
             }
             else if (mainType == MainType.Range)
             {
-                if (rangeType == RangeType.SurahFromStart)
+                if (rangeType == RangeType.ChapterFromStart)
                 {
-                    surahId1 = 1;
-                    surahId2 = GetSurahId(tokens[0]);
-                    isSurahSelection = true;
+                    chapterNumber1 = 1;
+                    chapterNumber2 = ChapterIdentifierHelpers.GetChapterNumberByIdentifier(tokens[0]);
+                    isChapterSelection = true;
                 }
-                else if (rangeType == RangeType.SurahToEnd)
+                else if (rangeType == RangeType.ChapterToEnd)
                 {
-                    surahId1 = GetSurahId(tokens[0]);
-                    surahId2 = 114;
-                    isSurahSelection = true;
+                    chapterNumber1 = ChapterIdentifierHelpers.GetChapterNumberByIdentifier(tokens[0]);
+                    chapterNumber2 = 114;
+                    isChapterSelection = true;
                 }
-                else if (rangeType == RangeType.SurahToSurah)
+                else if (rangeType == RangeType.ChapterToChapter)
                 {
-                    surahId1 = GetSurahId(tokens[0]);
-                    surahId2 = GetSurahId(tokens[1]);
-                    isSurahSelection = true;
+                    chapterNumber1 = ChapterIdentifierHelpers.GetChapterNumberByIdentifier(tokens[0]);
+                    chapterNumber2 = ChapterIdentifierHelpers.GetChapterNumberByIdentifier(tokens[1]);
+                    isChapterSelection = true;
                 }
             }
         }
 
-        private static int GetSurahId(string surahIdentifier)
-        {
-            if (surahIdentifier.IsSurahName()) return Repository.Instance.GetSurahByName(surahIdentifier).Id;
-            else return int.Parse(surahIdentifier);
-        }
-
-        public readonly int surahId1;
-        public readonly int surahId2;
-        public readonly bool isSurahSelection;
+        public readonly int chapterNumber1;
+        public readonly int chapterNumber2;
+        public readonly bool isChapterSelection;
 
         public virtual string GetLog()
         {
@@ -66,12 +61,12 @@ namespace QuranCli.Arguments
             builder.Append($"Parsed selection as '{mainType}'");
             if (mainType == MainType.All) return builder.Append('.').ToString();
             var tokensString = $" with tokens [{string.Join(", ", tokens)}]";
-            if (mainType == MainType.Ayah || mainType == MainType.Surah) return builder.Append(tokensString).Append('.').ToString();
+            if (mainType == MainType.Verse || mainType == MainType.Chapter) return builder.Append(tokensString).Append('.').ToString();
             var rangeString = $" of '{rangeType}'";
             return builder.Append(rangeString).Append(tokensString).Append('.').ToString();
         }
 
-        public static bool TryParse(string value, out AyatSelection selection)
+        public static bool TryParse(string value, out VerseSelection selection)
         {
             selection = null;
             if (!TryGetTokens(value.Trim(), out var mainType, out var rangeType, out var tokens)) return false;
@@ -87,23 +82,23 @@ namespace QuranCli.Arguments
         protected enum MainType : byte
         {
             All, // "all"
-            Surah, // <surah>
-            Ayah, // <surah>:<ayah>
+            Chapter, // <chapter>
+            Verse, // <chapter>:<verse>
             Range // <position>:<position>
         }
 
         protected enum RangeType : byte
         {
             None,
-            SurahFromStart, // ..<surah>
-            AyahFromStart, // ..<surah>:<ayah>
-            SurahToEnd, // <surah>..
-            AyahToEnd, // <surah>:<ayah>..
-            LeftRange, // <surah>..<surah>:<ayah>
-            SurahToAyah, // <surah>:..<ayah>
-            RightRange, // <surah>:<ayah>..<ayah>
-            SurahToSurah, // <surah>..<surah>
-            AyahToAyah // <surah>:<ayah>..<surah>:<ayah>
+            ChapterFromStart, // ..<chapter>
+            VerseFromStart, // ..<chapter>:<verse>
+            ChapterToEnd, // <chapter>..
+            VerseToEnd, // <chapter>:<verse>..
+            LeftRange, // <chapter>..<chapter>:<verse>
+            ChapterToVerse, // <chapter>:..<verse>
+            RightRange, // <chapter>:<verse>..<verse>
+            ChapterToChapter, // <chapter>..<chapter>
+            VerseToVerse // <chapter>:<verse>..<chapter>:<verse>
         }
 
         protected readonly MainType mainType;
@@ -126,16 +121,16 @@ namespace QuranCli.Arguments
                         mainType = MainType.All;
                         return true;
                     }
-                    if (split.First.IsSurahIdentifier())
+                    if (split.First.IsChapterIdentifier())
                     {
-                        mainType = MainType.Surah;
+                        mainType = MainType.Chapter;
                         tokens = [split.First];
                         return true;
                     }
                 }
-                else if (splitArity == Splitter.Arity.Two && split.First.IsSurahIdentifier() && split.Last.IsNumeric())
+                else if (splitArity == Splitter.Arity.Two && split.First.IsChapterIdentifier() && split.Last.IsNumeric())
                 {
-                    mainType = MainType.Ayah;
+                    mainType = MainType.Verse;
                     tokens = [split.First, split.Last];
                     return true;
                 }
@@ -155,21 +150,21 @@ namespace QuranCli.Arguments
             {
                 if (splitArity2 == Splitter.Arity.One)
                 {
-                    // ..<surah>
-                    if (split2.First.IsSurahIdentifier())
+                    // ..<chapter>
+                    if (split2.First.IsChapterIdentifier())
                     {
                         tokens = [split2.First];
-                        rangeType = RangeType.SurahFromStart;
+                        rangeType = RangeType.ChapterFromStart;
                         return true;
                     }
                 }
                 else if (splitArity2 == Splitter.Arity.Two)
                 {
-                    // ..<surah>:<ayah>
-                    if (split2.First.IsSurahIdentifier() && split2.Last.IsNumeric())
+                    // ..<chapter>:<verse>
+                    if (split2.First.IsChapterIdentifier() && split2.Last.IsNumeric())
                     {
                         tokens = [split2.First, split2.Last];
-                        rangeType = RangeType.AyahFromStart;
+                        rangeType = RangeType.VerseFromStart;
                         return true;
                     }
                 }
@@ -178,29 +173,29 @@ namespace QuranCli.Arguments
             {
                 if (splitArity1 == Splitter.Arity.One)
                 {
-                    // <surah>..
-                    if (split1.First.IsSurahIdentifier())
+                    // <chapter>..
+                    if (split1.First.IsChapterIdentifier())
                     {
                         tokens = [split1.First];
-                        rangeType = RangeType.SurahToEnd;
+                        rangeType = RangeType.ChapterToEnd;
                         return true;
                     }
                 }
                 else if (splitArity1 == Splitter.Arity.Two)
                 {
-                    // <surah>:<ayah>..
-                    if (split1.First.IsSurahIdentifier() && split1.Last.IsNumeric())
+                    // <chapter>:<verse>..
+                    if (split1.First.IsChapterIdentifier() && split1.Last.IsNumeric())
                     {
                         tokens = [split1.First, split1.Last];
-                        rangeType = RangeType.AyahToEnd;
+                        rangeType = RangeType.VerseToEnd;
                         return true;
                     }
                 }
             }
             else if (splitArity1 == Splitter.Arity.One && splitArity2 == Splitter.Arity.Two)
             {
-                // <surah>..<surah>:<ayah>
-                if (split1.First.IsSurahIdentifier() && split2.First.IsSurahIdentifier() && split2.Last.IsNumeric())
+                // <chapter>..<chapter>:<verse>
+                if (split1.First.IsChapterIdentifier() && split2.First.IsChapterIdentifier() && split2.Last.IsNumeric())
                 {
                     tokens = [split1.First, split2.First, split2.Last];
                     rangeType = RangeType.LeftRange;
@@ -209,38 +204,38 @@ namespace QuranCli.Arguments
             }
             else if (splitArity1 == Splitter.Arity.Two && splitArity2 == Splitter.Arity.One)
             {
-                // <surah>:<ayah>..<ayah>
-                if (split1.First.IsSurahIdentifier() && split1.Last.IsNumeric() && split2.First.IsNumeric())
+                // <chapter>:<verse>..<verse>
+                if (split1.First.IsChapterIdentifier() && split1.Last.IsNumeric() && split2.First.IsNumeric())
                 {
                     tokens = [split1.First, split1.Last, split2.First];
                     rangeType = RangeType.RightRange;
                     return true;
                 }
-                // <surah>:..<ayah>
-                if (split1.First.IsSurahIdentifier() && split1.Last.Length == 0 && split2.First.IsNumeric())
+                // <chapter>:..<verse>
+                if (split1.First.IsChapterIdentifier() && split1.Last.Length == 0 && split2.First.IsNumeric())
                 {
                     tokens = [split1.First, split2.First];
-                    rangeType = RangeType.SurahToAyah;
+                    rangeType = RangeType.ChapterToVerse;
                     return true;
                 }
             }
             else if (splitArity1 == Splitter.Arity.One && splitArity2 == Splitter.Arity.One)
             {
-                // <surah>..<surah>
-                if (split1.First.IsSurahIdentifier() && split2.First.IsSurahIdentifier())
+                // <chapter>..<chapter>
+                if (split1.First.IsChapterIdentifier() && split2.First.IsChapterIdentifier())
                 {
                     tokens = [split1.First, split2.First];
-                    rangeType = RangeType.SurahToSurah;
+                    rangeType = RangeType.ChapterToChapter;
                     return true;
                 }
             }
             else if (splitArity1 == Splitter.Arity.Two && splitArity2 == Splitter.Arity.Two)
             {
-                // <surah>:<ayah>..<surah>:<ayah>
-                if (split1.First.IsSurahIdentifier() && split1.Last.IsNumeric() && split2.First.IsSurahIdentifier() && split2.Last.IsNumeric())
+                // <chapter>:<verse>..<chapter>:<verse>
+                if (split1.First.IsChapterIdentifier() && split1.Last.IsNumeric() && split2.First.IsChapterIdentifier() && split2.Last.IsNumeric())
                 {
                     tokens = [split1.First, split1.Last, split2.First, split2.Last];
-                    rangeType = RangeType.AyahToAyah;
+                    rangeType = RangeType.VerseToVerse;
                     return true;
                 }
             }

@@ -6,15 +6,16 @@ using QuranCli.Data.Models;
 
 namespace QuranCli.Utilities
 {
-    internal static class DatabaseBuilder
+    public static class DatabaseBuilder
     {
-        private static readonly string surahsFilePath = Path.Join(Defaults.temporaryPath, Defaults.surahsFileName);
+        private static readonly string chaptersFilePath = Path.Join(Defaults.temporaryPath, Defaults.chaptersFileName);
         private static readonly string translationsFilePath = Path.Join(Defaults.temporaryPath, Defaults.translationsFileName);
-        private static readonly string ayatFilePath = Path.Join(Defaults.temporaryPath, Defaults.ayatFileName);
+        private static readonly string versesFilePath = Path.Join(Defaults.temporaryPath, Defaults.versesFileName);
 
         public static void Build()
         {
-            Repository.Instance.CreateTables();
+            Chapter.CreateTable();
+            Verse.CreateTable();
             Directory.CreateDirectory(Defaults.temporaryPath);
 #if !DEBUG
             DownloadFiles();
@@ -28,55 +29,55 @@ namespace QuranCli.Utilities
         private static void DownloadFiles()
         {
             using var client = new HttpClient();
-            client.Download($"{Defaults.resourceUrl}/{Defaults.surahsFileName}", surahsFilePath);
+            client.Download($"{Defaults.resourceUrl}/{Defaults.chaptersFileName}", chaptersFilePath);
             client.Download($"{Defaults.resourceUrl}/{Defaults.translationsFileName}", translationsFilePath);
-            client.Download($"{Defaults.resourceUrl}/{Defaults.ayatFileName}", ayatFilePath);
+            client.Download($"{Defaults.resourceUrl}/{Defaults.versesFileName}", versesFilePath);
         }
 
         private static void ConsumeFiles()
         {
             // Consume the files
-            using var surahsReader = new StreamReader(surahsFilePath, Encoding.UTF8);
+            using var chaptersReader = new StreamReader(chaptersFilePath, Encoding.UTF8);
             using var translationsReader = new StreamReader(translationsFilePath, Encoding.UTF8);
-            using var versesReader = new StreamReader(ayatFilePath, Encoding.UTF8);
-            int ayahId = 0, ayatLeftInSurah = 0, surahId = 0, totalAyat = 6236;
-            Surah surah = null;
-            string verse, translation, surahLine;
-            while ((verse = versesReader.ReadLine()) != null && (translation = translationsReader.ReadLine()) != null)
+            using var versesReader = new StreamReader(versesFilePath, Encoding.UTF8);
+            int verseId = 0, versesLeftInChapter = 0, chapterNumber = 0, totalVerses = 6236;
+            Chapter chapter = null;
+            string text, translation, chapterLine;
+            while ((text = versesReader.ReadLine()) != null && (translation = translationsReader.ReadLine()) != null)
             {
-                if (ayatLeftInSurah == 0 && (surahLine = surahsReader.ReadLine()) != null)
+                if (versesLeftInChapter == 0 && (chapterLine = chaptersReader.ReadLine()) != null)
                 {
-                    surahId++;
-                    surah = GetSurah(surahId, surahLine);
-                    ayatLeftInSurah = surah.AyahCount;
-                    Repository.Instance.Create(surah);
+                    chapterNumber++;
+                    chapter = GetChapter(chapterNumber, chapterLine);
+                    versesLeftInChapter = chapter.Count;
+                    chapter.Insert();
                 }
-                ayahId++;
-                ayatLeftInSurah--;
-                var ayah = new Ayah()
+                verseId++;
+                versesLeftInChapter--;
+                var verse = new Verse()
                 {
-                    Id = ayahId,
-                    SurahId = surahId,
-                    AyahNumber = surah.AyahCount - ayatLeftInSurah,
-                    Verse = verse,
+                    Id = verseId,
+                    Chapter = chapterNumber,
+                    Number = chapter.Count - versesLeftInChapter,
+                    Text = text,
                     Translation = translation
                 };
-                Repository.Instance.Create(ayah);
-                Logger.Percent(ayahId, totalAyat);
+                verse.Insert();
+                Logger.Percent(verseId, totalVerses);
             }
         }
 
-        private static Surah GetSurah(int lineNumber, string line)
+        private static Chapter GetChapter(int lineNumber, string line)
         {
             var parts = line.Split(',');
-            return new Surah()
+            return new Chapter()
             {
-                Id = lineNumber,
-                AyahCount = int.Parse(parts[0]),
-                StartAyahId = int.Parse(parts[1]),
+                Number = lineNumber,
+                Count = int.Parse(parts[0]),
+                Start = int.Parse(parts[1]),
                 Name = parts[2],
-                TransliterationName = parts[3],
-                EnglishName = parts[4]
+                Transliteration = parts[3],
+                Translation = parts[4]
             };
         }
     }

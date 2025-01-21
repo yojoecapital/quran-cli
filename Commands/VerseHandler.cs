@@ -2,37 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using QuranCli.Arguments;
-using QuranCli.Data;
 using QuranCli.Data.Models;
 
 namespace QuranCli.Commands
 {
-    internal static class VerseHandler
+    public static class VerseHandler
     {
         public static void Handle(string selectionString, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
         {
-            if (!IndexedAyatSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
+            if (!IndexedVerseSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
             Logger.Info(selection.GetLog());
             var index = 0;
             if (selection.IsIndexed && !selection.IsFromStart) index = selection.From;
-            foreach (var line in GetLines(selection.GetAyat(), shouldIndex, shouldTranslate, shouldIncludeNumbers, index)) Logger.Message(line);
-            Repository.DisposeOfInstance();
+            foreach (var line in GetLines(selection.GetVerses(), shouldIndex, shouldTranslate, shouldIncludeNumbers, index)) Logger.Message(line);
         }
 
-        public static IEnumerable<string> GetLines(IEnumerable<Ayah> ayat, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers, int index)
+        public static IEnumerable<string> GetLines(IEnumerable<Verse> verses, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers, int index)
         {
-            foreach (var ayah in ayat)
+            foreach (var verse in verses)
             {
-                string verse;
+                string text;
                 if (shouldIndex)
                 {
-                    index = GetNextIndex(ayah.Verse, index, out var indexedLine);
-                    verse = indexedLine;
+                    index = GetNextIndex(verse.Text, index, out var indexedLine);
+                    text = indexedLine;
                 }
-                else verse = ayah.Verse;
-                if (shouldIncludeNumbers) yield return $"{verse} ({ayah.AyahNumber})";
-                else yield return verse;
-                if (shouldTranslate) yield return ayah.Translation;
+                else text = verse.Text;
+                if (shouldIncludeNumbers) yield return $"{verse} ({verse.Number})";
+                else yield return text;
+                if (shouldTranslate) yield return verse.Translation;
             }
         }
 
