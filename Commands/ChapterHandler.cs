@@ -1,7 +1,5 @@
 using System;
 using QuranCli.Arguments;
-using QuranCli.Data;
-using QuranCli.Data.Models;
 using QuranCli.Data.Yaml;
 
 namespace QuranCli.Commands
@@ -13,7 +11,7 @@ namespace QuranCli.Commands
             if (!ChapterSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
             Logger.Info(selection.GetLog());
             var chapters = selection.GetChapters();
-            Logger.Message(YamlSerializer.Serialze(chapters));
+            YamlProcessor.Write(chapters);
         }
     }
 }
