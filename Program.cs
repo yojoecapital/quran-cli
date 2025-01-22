@@ -51,7 +51,7 @@ These indexes can optionally be used to select a subsection from the selection a
                 translationOption
             };
             verseCommand.SetHandler(VerseHandler.Handle, selectionArgument, indexOption, translationOption, numberOption);
-            verseCommand.AddAlias("verse");
+            verseCommand.AddAlias("vs");
             // #endregion
 
             // #region chapter
@@ -64,7 +64,7 @@ The selection can be specified as '<chapter>..<chapter>'. For a single chapter, 
             {
                 chaptersSelectionArgument
             };
-            chapterCommand.AddAlias("chapter");
+            chapterCommand.AddAlias("ch");
             chapterCommand.SetHandler(ChapterHandler.Handle, chaptersSelectionArgument);
             // #endregion
 
@@ -91,11 +91,12 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 Arity = ArgumentArity.ZeroOrOne
             };
             var idOption = new Option<int?>("--id", "The ID of a note.");
-            var listNoteCommand = new Command("ls", "List notes filtered by a selection or by an ID.")
+            var listNoteCommand = new Command("list", "List notes filtered by a selection or by an ID.")
             {
                 noteSelectionArgument,
                 idOption
             };
+            listNoteCommand.AddAlias("ls");
             listNoteCommand.SetHandler(ListNoteHandler.Handle, noteSelectionArgument, idOption);
             // #endregion
 
