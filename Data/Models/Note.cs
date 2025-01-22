@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
+using Microsoft.Data.Sqlite;
 using QuranCli.Data.Yaml;
+using QuranCli.Utilities;
 
 namespace QuranCli.Data.Models
 {
@@ -9,6 +12,15 @@ namespace QuranCli.Data.Models
         public string Text { get; set; }
 
         private static readonly string propertiesString = $"{nameof(Id)}, {nameof(Text)}";
+
+        private static Note PopulateFrom(SqliteDataReader reader)
+        {
+            return new Note()
+            {
+                Id = reader.GetInt32(0),
+                Text = reader.GetString(1)
+            };
+        }
 
         public static void CreateTable()
         {
@@ -37,9 +49,48 @@ namespace QuranCli.Data.Models
             command.ExecuteNonQuery();
         }
 
+        public void Update()
+        {
+            var command = ConnectionManager.Connection.CreateCommand();
+            command.CommandText = @$"
+                UPDATE {nameof(Note)}
+                SET {nameof(Text)} = @{nameof(Text)}
+                WHERE {nameof(Id)} = @{nameof(Id)};
+            ";
+            command.Parameters.AddWithValue($"@{nameof(Id)}", Id);
+            command.Parameters.AddWithValue($"@{nameof(Text)}", Text);
+            command.ExecuteNonQuery();
+        }
+
+        public Note SelectById(int id)
+        {
+            var command = ConnectionManager.Connection.CreateCommand();
+            command.CommandText = @$"
+                SELECT {propertiesString}
+                FROM {nameof(Note)}
+                WHERE {nameof(Id)} = @{nameof(id)};
+            ";
+            command.Parameters.AddWithValue($"@{nameof(id)}", id);
+            using var reader = command.ExecuteReader();
+            if (reader.Read()) return PopulateFrom(reader);
+            throw new Exception($"No note found for ID {id}");
+        }
+
+        public void DeleteById(int id)
+        {
+            var command = ConnectionManager.Connection.CreateCommand();
+            command.CommandText = @$"
+                DELETE FROM {nameof(Note)}
+                WHERE {nameof(Id)} = @{nameof(id)};
+            ";
+            command.Parameters.AddWithValue($"@{nameof(id)}", id);
+            command.ExecuteNonQuery();
+        }
+
         public IEnumerable<YamlProperty> GetYamlProperties()
         {
-            throw new System.NotImplementedException();
+            yield return new(nameof(Id), Id);
+            yield return new(nameof(Text), MarkdownProcessor.GetColoredStrings(Text));
         }
     }
 }

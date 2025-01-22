@@ -94,17 +94,13 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             buildDatabaseCommand.SetHandler(BuildDatabaseHandler.Handle);
             // #endregion
 
-            var testCommand = new Command("test");
-            testCommand.SetHandler(TestHandler.Handle);
-
             var rootCommand = new RootCommand($"The {Defaults.applicationName} is a tool to output and annotate verses from the Noble book.")
             {
                 verseCommand,
                 chapterCommand,
                 searchCommand,
                 versionCommand,
-                buildDatabaseCommand,
-                testCommand
+                buildDatabaseCommand
             };
 
             rootCommand.AddGlobalOption(verboseOption);

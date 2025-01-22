@@ -9,6 +9,13 @@ namespace QuranCli.Arguments
     {
         public (int verseId1, int verseId2) GetVerseIds()
         {
+            var (verseId1, verseId2) = GetParsedVerseIds();
+            if (verseId1 > verseId2) throw new Exception($"Verse ID {verseId1} should not be greater than {verseId2}");
+            return (verseId1, verseId2);
+        }
+
+        private (int verseId1, int verseId2) GetParsedVerseIds()
+        {
             if (rangeType == RangeType.ChapterFromStart)
             {
                 var chapter = Chapter.SelectByNumber(chapterNumber2);
