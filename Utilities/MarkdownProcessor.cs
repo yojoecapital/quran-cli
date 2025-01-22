@@ -88,7 +88,7 @@ namespace QuranCli.Utilities
             {
                 foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
                 var (id1, id2) = selection.GetVerseIds();
-                yield return new(Verse.GetDisplayName(id1, id2), ConsoleColor.Green);
+                yield return new($"#[{Verse.GetDisplayName(id1, id2)}]", ConsoleColor.Green);
                 foreach (var coloredString in GetColoredStringsFromLine(after)) yield return coloredString;
             }
             else if (MatchesBetween(line, "{", "}", out before, out match, out after) && IndexedVerseSelection.TryParse(match[1..^1], out var indexedSelection))
