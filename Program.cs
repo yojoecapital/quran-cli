@@ -15,7 +15,7 @@ namespace QuranCli
 {
     public static partial class Program
     {
-        public static readonly string version = "0.1.0-beta";
+        public static readonly string version = "1.0.0-beta";
         private static readonly Option verboseOption = new Option<bool>("--verbose", "Output [INFO] level messages.");
 
         public static int Main(string[] args)
@@ -86,10 +86,12 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             var noteSelectionArgument = new Argument<string>(
                 "selection",
                 "A selection from the Quran to filter notes on."
-            );
-            noteSelectionArgument.SetDefaultValue(null);
-            var idOption = new Option<int?>("--id", "TODO");
-            var listNoteCommand = new Command("ls", "TODO")
+            )
+            {
+                Arity = ArgumentArity.ZeroOrOne
+            };
+            var idOption = new Option<int?>("--id", "The ID of a note.");
+            var listNoteCommand = new Command("ls", "List notes filtered by a selection or by an ID.")
             {
                 noteSelectionArgument,
                 idOption
@@ -98,45 +100,47 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             // #endregion
 
             // #region note add
-            var pathArgument = new Argument<string>("path", "TODO")
+            var textArgument = new Argument<string>("text", "The content of the note.")
             {
                 Arity = ArgumentArity.ZeroOrOne
             };
-            var addNoteCommand = new Command("add", "TODO")
+            var addNoteCommand = new Command("add", "Add a new from the command line argument, standard input, or from your default text editor.")
             {
-                pathArgument
+                textArgument
             };
-            addNoteCommand.SetHandler(AddNoteHandler.Handle, pathArgument);
+            addNoteCommand.SetHandler(AddNoteHandler.Handle, textArgument);
             // #endregion
 
             // #region note edit
-            var idArgument = new Argument<int>("id", "TODO");
-            var editNoteCommand = new Command("edit", "TODO")
+            var idArgument = new Argument<int>("id", "The ID of a note.");
+            var editNoteCommand = new Command("edit", "Edit an existing note.")
             {
                 idArgument,
-                pathArgument
+                textArgument
             };
-            editNoteCommand.SetHandler(EditNoteHandler.Handle, idArgument, pathArgument);
+            editNoteCommand.SetHandler(EditNoteHandler.Handle, idArgument, textArgument);
             // #endregion
 
             // #region note ref
-            var getReferencesCommand = new Command("ref", "TODO")
+            var getReferencesCommand = new Command("references", "Output the verses referenced by a note.")
             {
                 idArgument
             };
+            getReferencesCommand.AddAlias("ref");
             getReferencesCommand.SetHandler(GetReferencesHandler.Handle, idArgument);
             // #endregion
 
             // #region note rm
-            var removeNoteCommand = new Command("rm", "TODO")
+            var removeNoteCommand = new Command("remove", "Remove a note.")
             {
                 idArgument
             };
+            removeNoteCommand.AddAlias("rm");
             removeNoteCommand.SetHandler(RemoveNoteHandler.Handle, idArgument);
             // #endregion
 
             // #region note
-            var noteCommand = new Command("note", "TODO")
+            var noteCommand = new Command("note", "Subcommands for managing notes.")
             {
                 listNoteCommand,
                 addNoteCommand,

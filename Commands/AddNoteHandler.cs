@@ -10,26 +10,23 @@ namespace QuranCli.Commands
 {
     public static class AddNoteHandler
     {
-        public static void Handle(string path)
+        public static void Handle(string text)
         {
-            string text;
             if (Console.IsInputRedirected)
             {
                 text = Console.In.ReadToEnd();
             }
-            else if (!string.IsNullOrEmpty(path))
+            else if (string.IsNullOrEmpty(text))
             {
-                text = File.ReadAllText(path);
-            }
-            else
-            {
-                text = EditorHelper.OpenEditorAndReadInput(@"<!-- you can type your notes here -->
-<!-- use '{<selection>}' to expand to a verse selection -->
-<!-- use '#<selection>' to give the note a tag -->
-<!-- once finished, save and close the editor -->"
+                text = EditorHelper.OpenEditorAndReadInput(@"<!-- Type your notes here                                        -->
+<!-- You can use '{<selection>}' to expand to a verse selection. -->
+<!-- You can use '#<selection>' to give the note a tag.          -->
+<!-- Comments like these will be ignored.                        -->
+<!-- Once finished, save and close the editor.                   -->"
                 );
             }
             text = MarkdownProcessor.FilterOutComments(text);
+            if (string.IsNullOrWhiteSpace(text)) throw new Exception("Note is empty");
             var references = MarkdownProcessor.GetReferences(text).ToArray();
             Logger.Info($"Found {references.Length} reference(s).");
             using var translation = ConnectionManager.Connection.BeginTransaction();

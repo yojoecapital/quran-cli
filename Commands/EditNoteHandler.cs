@@ -10,19 +10,14 @@ namespace QuranCli.Commands
 {
     public static class EditNoteHandler
     {
-        public static void Handle(int id, string path)
+        public static void Handle(int id, string text)
         {
             var note = Note.SelectById(id);
-            string text;
             if (Console.IsInputRedirected)
             {
                 text = Console.In.ReadToEnd();
             }
-            else if (!string.IsNullOrEmpty(path))
-            {
-                text = File.ReadAllText(path);
-            }
-            else
+            else if (string.IsNullOrEmpty(text))
             {
                 text = EditorHelper.OpenEditorAndReadInput(note.Text);
             }

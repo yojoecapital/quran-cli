@@ -6,9 +6,9 @@ namespace QuranCli.Utilities
 {
     public static class EditorHelper
     {
-        public static string OpenEditorAndReadInput(string initialText = "")
+        public static string OpenEditorAndReadInput(string initialText = "", string extension = "md")
         {
-            string tempFile = Path.GetTempFileName();
+            string tempFile = $"{Path.GetTempFileName()}.{extension}";
             string editor = Environment.GetEnvironmentVariable("EDITOR")
                 ?? Environment.GetEnvironmentVariable("VISUAL")
                 ?? GetDefaultEditor();
