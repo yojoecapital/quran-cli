@@ -19,6 +19,7 @@ namespace QuranCli.Commands
             Chapter.CreateTable();
             Verse.CreateTable();
             Note.CreateTable();
+            Reference.CreateTable();
             Directory.CreateDirectory(Defaults.temporaryPath);
 #if !DEBUG
             DownloadFiles();

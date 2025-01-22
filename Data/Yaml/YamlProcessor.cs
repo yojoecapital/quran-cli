@@ -105,10 +105,11 @@ namespace QuranCli.Data.Yaml
             if (string.IsNullOrEmpty(value)) process("\"\"");
             else if (value.Contains(Environment.NewLine))
             {
+                var nestedIndent = $"\n{indent}  ";
                 process("|");
                 foreach (var line in value.Split(Environment.NewLine))
                 {
-                    process($"\n{indent}  {line}");
+                    process($"{nestedIndent}{line}");
                 }
             }
             else if (string.IsNullOrWhiteSpace(value)) process($"\"{value}\"");
@@ -121,14 +122,12 @@ namespace QuranCli.Data.Yaml
             if (!value.Any() || value.All(part => string.IsNullOrEmpty(part.text))) process("\"\"");
             else
             {
-                process("|");
+                var nestedIndent = $"\n{indent}  ";
+                process($"|{nestedIndent}");
                 foreach (var part in value)
                 {
                     if (part.color.HasValue) Console.ForegroundColor = part.color.Value;
-                    foreach (var line in part.text.Split(Environment.NewLine))
-                    {
-                        process($"\n{indent}  {line}");
-                    }
+                    process(part.text.Replace(Environment.NewLine, nestedIndent));
                     Console.ResetColor();
                 }
             }

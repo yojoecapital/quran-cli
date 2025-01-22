@@ -27,12 +27,12 @@ namespace QuranCli.Data.Models
             var command = ConnectionManager.Connection.CreateCommand();
             command.CommandText = @$"
                 CREATE TABLE IF NOT EXISTS {nameof(Note)} (
-                    {nameof(Id)} INTEGER PRIMARY KEY,
+                    {nameof(Id)} INTEGER PRIMARY KEY AUTOINCREMENT,
                     {nameof(Text)} TEXT NOT NULL
                 );
             ";
 #if DEBUG
-            Logger.Message(command.CommandText);
+            Logger.Info(command.CommandText);
 #endif
             command.ExecuteNonQuery();
         }
@@ -41,12 +41,12 @@ namespace QuranCli.Data.Models
         {
             var command = ConnectionManager.Connection.CreateCommand();
             command.CommandText = @$"
-                INSERT INTO {nameof(Note)} ({propertiesString}) 
-                VALUES (@{nameof(Id)}, @{nameof(Text)});
+                INSERT INTO {nameof(Note)} ({nameof(Text)}) 
+                VALUES (@{nameof(Text)});
+                SELECT last_insert_rowid();
             ";
-            command.Parameters.AddWithValue($"@{nameof(Id)}", Id);
             command.Parameters.AddWithValue($"@{nameof(Text)}", Text);
-            command.ExecuteNonQuery();
+            Id = (int)(long)command.ExecuteScalar();
         }
 
         public void Update()

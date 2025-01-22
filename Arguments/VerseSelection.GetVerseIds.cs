@@ -1,5 +1,4 @@
 using System;
-using QuranCli.Data;
 using QuranCli.Data.Models;
 using QuranCli.Utilities;
 
@@ -89,7 +88,7 @@ namespace QuranCli.Arguments
             if (mainType == MainType.Chapter)
             {
                 var chapter = Chapter.SelectByNumber(chapterNumber1);
-                return (chapter.End, chapter.Start);
+                return (chapter.Start, chapter.End);
             }
             if (mainType == MainType.Verse)
             {

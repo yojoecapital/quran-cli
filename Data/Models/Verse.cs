@@ -41,7 +41,7 @@ namespace QuranCli.Data.Models
                 );
             ";
 #if DEBUG
-            Logger.Message(command.CommandText);
+            Logger.Info(command.CommandText);
 #endif
             command.ExecuteNonQuery();
         }

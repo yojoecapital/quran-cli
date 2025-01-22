@@ -82,8 +82,27 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             searchCommand.SetHandler(SearchHandler.Handle, queryArgument, limitOption);
             // #endregion
 
+            // #region note add
+            var pathArgument = new Argument<string>("path", "TODO")
+            {
+                Arity = ArgumentArity.ZeroOrOne
+            };
+            var addNoteCommand = new Command("add", "TODO")
+            {
+                pathArgument
+            };
+            addNoteCommand.SetHandler(AddNoteHandler.Handle, pathArgument);
+            // #endregion
+
+            // #region note
+            var noteCommand = new Command("note", "TODO")
+            {
+                addNoteCommand
+            };
+            // #endregion
+
             // #region version
-            var versionCommand = new Command("version");
+            var versionCommand = new Command("version", "Display the current version.");
             versionCommand.AddAlias("--version");
             versionCommand.AddAlias("-v");
             versionCommand.SetHandler(VersionHandler.Handle);
@@ -99,6 +118,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 verseCommand,
                 chapterCommand,
                 searchCommand,
+                noteCommand,
                 versionCommand,
                 buildDatabaseCommand
             };

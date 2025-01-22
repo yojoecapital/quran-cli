@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using QuranCli.Arguments;
 using QuranCli.Data.Models;
 
@@ -9,40 +11,71 @@ namespace QuranCli.Utilities
     {
         public static IEnumerable<ColoredString> GetColoredStrings(string text)
         {
-            foreach (var line in text.Split(Environment.NewLine))
+            var lines = text.Split(Environment.NewLine);
+            if (lines.Length > 0)
             {
-                if (IsHeader(line)) yield return new(line, ConsoleColor.Magenta);
-                else
-                {
-                    foreach (var coloredString in GetColoredStringsFromLine(line)) yield return coloredString;
-                }
+                foreach (var coloredString in GetColoredStringsFromLine(lines[0])) yield return coloredString;
+            }
+            foreach (var line in lines.Skip(1))
+            {
                 yield return new(Environment.NewLine, null);
+                foreach (var coloredString in GetColoredStringsFromLine(line)) yield return coloredString;
             }
         }
 
-        public static IEnumerable<(int id1, int id2)> GetReferences(string text)
+        public static IEnumerable<Reference> GetReferences(string text)
         {
             foreach (var line in text.Split(Environment.NewLine))
             {
-                if (IsHeader(line)) continue;
                 foreach (var reference in GetReferencesFromLine(line)) yield return reference;
             }
         }
 
-        private static IEnumerable<(int id1, int id2)> GetReferencesFromLine(string line)
+        public static string FilterOutComments(string text)
         {
-            if (line.Length == 0) yield break;
+            var builder = new StringBuilder();
+            foreach (var line in text.Split(Environment.NewLine))
+            {
+                FilterOutComments(builder, line);
+                builder.Append(Environment.NewLine);
+            }
+            return builder.ToString().Trim();
+        }
+        private static void FilterOutComments(StringBuilder builder, string line)
+        {
+            if (line.Length == 0) return;
+            else if (StrictlyMatchesBetween(line, "<!--", "-->", out var before, out var _, out var after))
+            {
+                FilterOutComments(builder, before);
+                FilterOutComments(builder, after);
+            }
+            else builder.Append(line);
+        }
+
+        private static IEnumerable<Reference> GetReferencesFromLine(string line)
+        {
+            if (line.Length == 0 || IsHeader(line)) yield break;
             else if (MatchesStart(line, "#", out var before, out var match, out var after) && VerseSelection.TryParse(match[1..], out var selection))
             {
                 foreach (var reference in GetReferencesFromLine(before)) yield return reference;
-                yield return selection.GetVerseIds();
+                var (verseId1, verseId2) = selection.GetVerseIds();
+                yield return new()
+                {
+                    VerseId1 = verseId1,
+                    VerseId2 = verseId2
+                };
                 foreach (var reference in GetReferencesFromLine(after)) yield return reference;
 
             }
             else if (MatchesBetween(line, "{", "}", out before, out match, out after) && IndexedVerseSelection.TryParse(match[1..^1], out var indexedSelection))
             {
                 foreach (var reference in GetReferencesFromLine(before)) yield return reference;
-                yield return indexedSelection.GetVerseIds();
+                var (verseId1, verseId2) = indexedSelection.GetVerseIds();
+                yield return new()
+                {
+                    VerseId1 = verseId1,
+                    VerseId2 = verseId2
+                };
                 foreach (var reference in GetReferencesFromLine(after)) yield return reference;
             }
         }
@@ -50,6 +83,7 @@ namespace QuranCli.Utilities
         private static IEnumerable<ColoredString> GetColoredStringsFromLine(string line)
         {
             if (line.Length == 0) yield break;
+            if (IsHeader(line)) yield return new(line, ConsoleColor.Magenta);
             else if (MatchesStart(line, "#", out var before, out var match, out var after) && VerseSelection.TryParse(match[1..], out var selection))
             {
                 foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
@@ -107,6 +141,19 @@ namespace QuranCli.Utilities
                 !IsWordCharacter(match[start.Length]) ||
                 !IsWordCharacter(match[match.Length - end.Length - 1])
             ) return false;
+            before = input[..startIndex];
+            after = input[(endIndex + end.Length)..];
+            return true;
+        }
+
+        private static bool StrictlyMatchesBetween(string input, string start, string end, out string before, out string match, out string after)
+        {
+            before = match = after = input;
+            var startIndex = input.IndexOf(start);
+            if (startIndex == -1) return false;
+            var endIndex = input.IndexOf(end, startIndex + start.Length);
+            if (endIndex == -1) return false;
+            match = input[startIndex..(endIndex + end.Length)];
             before = input[..startIndex];
             after = input[(endIndex + end.Length)..];
             return true;

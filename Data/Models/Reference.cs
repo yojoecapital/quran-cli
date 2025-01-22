@@ -31,7 +31,7 @@ namespace QuranCli.Data.Models
             var command = ConnectionManager.Connection.CreateCommand();
             command.CommandText = @$"
                 CREATE TABLE IF NOT EXISTS {nameof(Reference)} (
-                    {nameof(Id)} INTEGER PRIMARY KEY,
+                    {nameof(Id)} INTEGER PRIMARY KEY AUTOINCREMENT,
                     {nameof(NoteId)} INTEGER NOT NULL,
                     {nameof(VerseId1)} INTEGER NOT NULL,
                     {nameof(VerseId2)} INTEGER NOT NULL,
@@ -42,7 +42,7 @@ namespace QuranCli.Data.Models
                 CREATE INDEX idx_{nameof(Reference)}_{nameof(NoteId)} ON {nameof(Reference)}({nameof(NoteId)});
             ";
 #if DEBUG
-            Logger.Message(command.CommandText);
+            Logger.Info(command.CommandText);
 #endif
             command.ExecuteNonQuery();
         }
@@ -51,14 +51,14 @@ namespace QuranCli.Data.Models
         {
             var command = ConnectionManager.Connection.CreateCommand();
             command.CommandText = @$"
-                INSERT OR IGNORE INTO {nameof(Reference)} ({propertiesString}) 
-                VALUES (@{nameof(Id)}, @{nameof(VerseId1)}, @{nameof(VerseId2)}, @{nameof(NoteId)});
+                INSERT OR IGNORE INTO {nameof(Reference)} ({nameof(VerseId1)}, {nameof(VerseId2)}, {nameof(NoteId)}) 
+                VALUES (@{nameof(VerseId1)}, @{nameof(VerseId2)}, @{nameof(NoteId)});
+                SELECT last_insert_rowid();
             ";
-            command.Parameters.AddWithValue($"@{nameof(Id)}", Id);
             command.Parameters.AddWithValue($"@{nameof(VerseId1)}", VerseId1);
             command.Parameters.AddWithValue($"@{nameof(VerseId2)}", VerseId2);
             command.Parameters.AddWithValue($"@{nameof(NoteId)}", NoteId);
-            command.ExecuteNonQuery();
+            Id = (int)(long)command.ExecuteScalar();
         }
 
         public static IEnumerable<Reference> SelectBetween(int verseId, int verseId2)
