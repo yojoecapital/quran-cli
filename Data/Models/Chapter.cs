@@ -129,5 +129,12 @@ namespace QuranCli.Data.Models
                 .OrderBy(ranks => ranks.Distance);
             return rankings.First().Chapter;
         }
+
+        public static string GetDisplayName(int number1, int number2)
+        {
+            if (number1 == number2) return SelectByNumber(number1).Name;
+            if (number1 == 1 && number2 == 114) return "القرآن الكريم";
+            return $"{SelectByNumber(number1).Name} → {SelectByNumber(number2).Name}";
+        }
     }
 }

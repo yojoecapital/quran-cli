@@ -69,6 +69,20 @@ namespace QuranCli.Data.Models
             command.ExecuteNonQuery();
         }
 
+        public static Verse SelectById(int id)
+        {
+            var command = ConnectionManager.Connection.CreateCommand();
+            command.CommandText = @$"
+                SELECT {propertiesString}
+                FROM {nameof(Verse)}
+                WHERE {nameof(Id)} = @{nameof(id)};
+            ";
+            command.Parameters.AddWithValue($"@{nameof(id)}", id);
+            using var reader = command.ExecuteReader();
+            if (reader.Read()) return PopulateFrom(reader);
+            throw new Exception($"No verse found for ID {id}");
+        }
+
         public static Verse SelectByNumber(int chapterNumber, int verseNumber)
         {
             var command = ConnectionManager.Connection.CreateCommand();
@@ -120,6 +134,30 @@ namespace QuranCli.Data.Models
             ";
             using var reader = command.ExecuteReader();
             while (reader.Read()) yield return PopulateFrom(reader);
+        }
+
+
+        public static string GetDisplayName(int id)
+        {
+            var verse = SelectById(id);
+            var chapter = Models.Chapter.SelectByNumber(verse.Chapter);
+            return $"{chapter.Transliteration} {verse.Number}";
+        }
+
+        public static string GetDisplayName(int id1, int id2)
+        {
+            if (id1 == id2) return GetDisplayName(id1);
+            var verse1 = SelectById(id1);
+            var chapter1 = Models.Chapter.SelectByNumber(verse1.Chapter);
+            var verse2 = SelectById(id2);
+            var chapter2 = Models.Chapter.SelectByNumber(verse2.Chapter);
+            if (chapter1.Number == chapter2.Number)
+            {
+                if (verse1.Id == chapter1.Start && verse2.Id == chapter2.End) return chapter1.Transliteration;
+                return $"{chapter1.Transliteration} {verse1.Number} → {verse2.Number}";
+            }
+            if (verse1.Id == chapter1.Start && verse2.Id == chapter2.End) return $"{chapter1.Transliteration} → {chapter2.Transliteration}";
+            return $"{chapter1.Transliteration} {verse1.Number} → {chapter2.Transliteration} {verse2.Number}";
         }
     }
 }

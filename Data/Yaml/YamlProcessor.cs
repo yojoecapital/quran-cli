@@ -58,12 +58,6 @@ namespace QuranCli.Data.Yaml
                 process($"{property.name}: ");
                 ProcessYamlString(process, s, indent);
             }
-            else if (property.value is ColoredString cs)
-            {
-                // FIXME
-                process($"{property.name}: ");
-                ProcessColoredString(process, cs, indent);
-            }
             else if (property.value is IYamlSerializable model)
             {
                 var nestedIndent = indent + "  ";
@@ -90,11 +84,10 @@ namespace QuranCli.Data.Yaml
                     ProcessYamlString(process, item, nestedIndent);
                 }
             }
-            else if (property.value is ColoredString[] coloredStrings)
+            else if (property.value is IEnumerable<ColoredString> coloredStrings)
             {
-                // FIXME
                 process($"{property.name}: ");
-                foreach (var item in coloredStrings) ProcessColoredString(process, item, indent);
+                ProcessColoredString(process, coloredStrings, indent);
             }
             else if (property.value is IEnumerable items)
             {
@@ -110,24 +103,35 @@ namespace QuranCli.Data.Yaml
         private static void ProcessYamlString(Action<string> process, string value, string indent)
         {
             if (string.IsNullOrEmpty(value)) process("\"\"");
-            else if (string.IsNullOrWhiteSpace(value)) process($"\"{new string(' ', value.Length)}\"");
-            else if (value.Contains('\n'))
+            else if (value.Contains(Environment.NewLine))
             {
                 process("|");
-                foreach (var line in value.Split('\n'))
+                foreach (var line in value.Split(Environment.NewLine))
                 {
                     process($"\n{indent}  {line}");
                 }
             }
+            else if (string.IsNullOrWhiteSpace(value)) process($"\"{value}\"");
             else if (NeedsEscaping(value)) process(EscapeSingleLinedString(value));
             else process(value);
         }
 
-        private static void ProcessColoredString(Action<string> process, ColoredString value, string indent)
+        private static void ProcessColoredString(Action<string> process, IEnumerable<ColoredString> value, string indent)
         {
-            Console.ForegroundColor = value.color;
-            // ProcessYamlString(process, value.text, indent);
-            Console.ResetColor();
+            if (!value.Any() || value.All(part => string.IsNullOrEmpty(part.text))) process("\"\"");
+            else
+            {
+                process("|");
+                foreach (var part in value)
+                {
+                    if (part.color.HasValue) Console.ForegroundColor = part.color.Value;
+                    foreach (var line in part.text.Split(Environment.NewLine))
+                    {
+                        process($"\n{indent}  {line}");
+                    }
+                    Console.ResetColor();
+                }
+            }
         }
 
         private static bool NeedsEscaping(string value)

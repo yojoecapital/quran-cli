@@ -70,16 +70,16 @@ The selection can be specified as '<chapter>..<chapter>'. For a single chapter, 
 
             // #region search
             var queryArgument = new Argument<string>("query", "The search term.");
-            var resultsOption = new Option<int>("--results", @$"The maximum amount of results to display.
+            var limitOption = new Option<int>("--limit", @$"The maximum amount of results to display.
 Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLimit.max}."
             );
-            resultsOption.SetDefaultValue(3);
+            limitOption.SetDefaultValue(3);
             var searchCommand = new Command("search", "Search for a verse from the Quran.")
             {
                 queryArgument,
-                resultsOption
+                limitOption
             };
-            searchCommand.SetHandler(SearchHandler.Handle, queryArgument, resultsOption);
+            searchCommand.SetHandler(SearchHandler.Handle, queryArgument, limitOption);
             // #endregion
 
             // #region version
@@ -94,13 +94,17 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             buildDatabaseCommand.SetHandler(BuildDatabaseHandler.Handle);
             // #endregion
 
+            var testCommand = new Command("test");
+            testCommand.SetHandler(TestHandler.Handle);
+
             var rootCommand = new RootCommand($"The {Defaults.applicationName} is a tool to output and annotate verses from the Noble book.")
             {
                 verseCommand,
                 chapterCommand,
                 searchCommand,
                 versionCommand,
-                buildDatabaseCommand
+                buildDatabaseCommand,
+                testCommand
             };
 
             rootCommand.AddGlobalOption(verboseOption);
