@@ -203,6 +203,6 @@ namespace QuranCli.Utilities
             return true;
         }
 
-        private static bool IsWordCharacter(char c) => char.IsLetterOrDigit(c) || char.IsPunctuation(c) || c == '-';
+        private static bool IsWordCharacter(char c) => !char.IsWhiteSpace(c);
     }
 }
