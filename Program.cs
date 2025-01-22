@@ -100,15 +100,12 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             // #endregion
 
             // #region note add
-            var textArgument = new Argument<string>("text", "The content of the note.")
-            {
-                Arity = ArgumentArity.ZeroOrOne
-            };
+            var messageOption = new Option<string>(["--message", "-m"], "The message content of the note.");
             var addNoteCommand = new Command("add", "Add a new from the command line argument, standard input, or from your default text editor.")
             {
-                textArgument
+                messageOption
             };
-            addNoteCommand.SetHandler(AddNoteHandler.Handle, textArgument);
+            addNoteCommand.SetHandler(AddNoteHandler.Handle, messageOption);
             // #endregion
 
             // #region note edit
@@ -116,9 +113,9 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             var editNoteCommand = new Command("edit", "Edit an existing note.")
             {
                 idArgument,
-                textArgument
+                messageOption
             };
-            editNoteCommand.SetHandler(EditNoteHandler.Handle, idArgument, textArgument);
+            editNoteCommand.SetHandler(EditNoteHandler.Handle, idArgument, messageOption);
             // #endregion
 
             // #region note ref
