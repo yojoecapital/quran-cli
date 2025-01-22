@@ -82,6 +82,21 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             searchCommand.SetHandler(SearchHandler.Handle, queryArgument, limitOption);
             // #endregion
 
+            // #region note ls
+            var noteSelectionArgument = new Argument<string>(
+                "selection",
+                "A selection from the Quran to filter notes on."
+            );
+            noteSelectionArgument.SetDefaultValue(null);
+            var idOption = new Option<int?>("--id", "TODO");
+            var listNoteCommand = new Command("ls", "TODO")
+            {
+                noteSelectionArgument,
+                idOption
+            };
+            listNoteCommand.SetHandler(ListNoteHandler.Handle, noteSelectionArgument, idOption);
+            // #endregion
+
             // #region note add
             var pathArgument = new Argument<string>("path", "TODO")
             {
@@ -94,10 +109,40 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             addNoteCommand.SetHandler(AddNoteHandler.Handle, pathArgument);
             // #endregion
 
+            // #region note edit
+            var idArgument = new Argument<int>("id", "TODO");
+            var editNoteCommand = new Command("edit", "TODO")
+            {
+                idArgument,
+                pathArgument
+            };
+            editNoteCommand.SetHandler(EditNoteHandler.Handle, idArgument, pathArgument);
+            // #endregion
+
+            // #region note ref
+            var getReferencesCommand = new Command("ref", "TODO")
+            {
+                idArgument
+            };
+            getReferencesCommand.SetHandler(GetReferencesHandler.Handle, idArgument);
+            // #endregion
+
+            // #region note rm
+            var removeNoteCommand = new Command("rm", "TODO")
+            {
+                idArgument
+            };
+            removeNoteCommand.SetHandler(RemoveNoteHandler.Handle, idArgument);
+            // #endregion
+
             // #region note
             var noteCommand = new Command("note", "TODO")
             {
-                addNoteCommand
+                listNoteCommand,
+                addNoteCommand,
+                editNoteCommand,
+                getReferencesCommand,
+                removeNoteCommand
             };
             // #endregion
 

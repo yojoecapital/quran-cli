@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using Microsoft.Data.Sqlite;
 using QuranCli.Data.Yaml;
-using QuranCli.Utilities;
 
 namespace QuranCli.Data.Models
 {
@@ -36,7 +34,7 @@ namespace QuranCli.Data.Models
                     {nameof(VerseId1)} INTEGER NOT NULL,
                     {nameof(VerseId2)} INTEGER NOT NULL,
                     CHECK ({nameof(VerseId1)} <= {nameof(VerseId2)}),
-                    UNIQUE ({nameof(VerseId1)}, {nameof(VerseId2)}),
+                    UNIQUE ({nameof(NoteId)}, {nameof(VerseId1)}, {nameof(VerseId2)}),
                     FOREIGN KEY({nameof(NoteId)}) REFERENCES {nameof(Note)}({nameof(Note.Id)})
                 );
                 CREATE INDEX idx_{nameof(Reference)}_{nameof(NoteId)} ON {nameof(Reference)}({nameof(NoteId)});
@@ -86,5 +84,17 @@ namespace QuranCli.Data.Models
             command.ExecuteNonQuery();
         }
 
+        public static IEnumerable<Reference> SelectByNoteId(int noteId)
+        {
+            var command = ConnectionManager.Connection.CreateCommand();
+            command.CommandText = @$"
+                SELECT {propertiesString}
+                FROM {nameof(Reference)}
+                WHERE {nameof(NoteId)} = @{nameof(noteId)}
+            ";
+            command.Parameters.AddWithValue($"@{nameof(noteId)}", noteId);
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) yield return PopulateFrom(reader);
+        }
     }
 }

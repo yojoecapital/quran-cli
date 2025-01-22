@@ -8,10 +8,11 @@ using QuranCli.Utilities;
 
 namespace QuranCli.Commands
 {
-    public static class AddNoteHandler
+    public static class EditNoteHandler
     {
-        public static void Handle(string path)
+        public static void Handle(int id, string path)
         {
+            var note = Note.SelectById(id);
             string text;
             if (Console.IsInputRedirected)
             {
@@ -23,18 +24,14 @@ namespace QuranCli.Commands
             }
             else
             {
-                text = EditorHelper.OpenEditorAndReadInput(@"<!-- you can type your notes here -->
-<!-- use '{<selection>}' to expand to a verse selection -->
-<!-- use '#<selection>' to give the note a tag -->
-<!-- once finished, save and close the editor -->"
-                );
+                text = EditorHelper.OpenEditorAndReadInput(note.Text);
             }
-            text = MarkdownProcessor.FilterOutComments(text);
+            note.Text = MarkdownProcessor.FilterOutComments(text);
             var references = MarkdownProcessor.GetReferences(text).ToArray();
             Logger.Info($"Found {references.Length} reference(s).");
             using var translation = ConnectionManager.Connection.BeginTransaction();
-            var note = new Note() { Text = text };
-            note.Insert();
+            Reference.DeleteByNoteId(note.Id);
+            note.Update();
             foreach (var reference in references)
             {
                 reference.NoteId = note.Id;

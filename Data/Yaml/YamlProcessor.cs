@@ -21,6 +21,16 @@ namespace QuranCli.Data.Yaml
             Console.WriteLine();
         }
 
+        public static void Write(IEnumerable<string> strings)
+        {
+            foreach (var item in strings)
+            {
+                Console.Write("- ");
+                ProcessYamlString(Console.Write, item, string.Empty);
+                Console.WriteLine();
+            }
+        }
+
         public static void Process(Action<string> process, IEnumerable<IYamlSerializable> models)
         {
             if (!models.Any()) return;

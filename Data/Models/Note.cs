@@ -62,7 +62,7 @@ namespace QuranCli.Data.Models
             command.ExecuteNonQuery();
         }
 
-        public Note SelectById(int id)
+        public static Note SelectById(int id)
         {
             var command = ConnectionManager.Connection.CreateCommand();
             command.CommandText = @$"
@@ -76,7 +76,18 @@ namespace QuranCli.Data.Models
             throw new Exception($"No note found for ID {id}");
         }
 
-        public void DeleteById(int id)
+        public static IEnumerable<Note> SelectAll()
+        {
+            var command = ConnectionManager.Connection.CreateCommand();
+            command.CommandText = @$"
+                SELECT {propertiesString}
+                FROM {nameof(Note)};
+            ";
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) yield return PopulateFrom(reader);
+        }
+
+        public static void DeleteById(int id)
         {
             var command = ConnectionManager.Connection.CreateCommand();
             command.CommandText = @$"
