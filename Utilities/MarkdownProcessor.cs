@@ -100,7 +100,7 @@ namespace QuranCli.Utilities
                 }
                 else
                 {
-                    foreach (var verse in indexedSelection.GetVerses())
+                    foreach (var verse in indexedSelection.GetVerses().Take(Defaults.maxVersesInExpansion))
                     {
                         yield return new($"{verse.Text} ({verse.Number})", ConsoleColor.Green);
                     }

@@ -15,5 +15,11 @@ namespace QuranCli
         public static readonly string databasePath = Path.Join(configurationPath, databaseFileName);
         public static readonly string temporaryPath = Path.Join(Path.GetTempPath(), "quran-cli-resources");
         public static readonly (int min, int max) searchResultLimit = (1, 10);
+        public static readonly int maxVersesInExpansion = 10;
+        public static readonly string addNoteMessage = @"<!-- Type your notes here.                                       -->
+<!-- You can use '{<selection>}' to expand to a verse selection. -->
+<!-- You can use '#<selection>' to give the note a tag.          -->
+<!-- Comments like these will be ignored.                        -->
+<!-- Once finished, save and close the editor.                   -->";
     }
 }

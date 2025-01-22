@@ -18,12 +18,7 @@ namespace QuranCli.Commands
             }
             else if (string.IsNullOrEmpty(text))
             {
-                text = EditorHelper.OpenEditorAndReadInput(@"<!-- Type your notes here.                                       -->
-<!-- You can use '{<selection>}' to expand to a verse selection. -->
-<!-- You can use '#<selection>' to give the note a tag.          -->
-<!-- Comments like these will be ignored.                        -->
-<!-- Once finished, save and close the editor.                   -->"
-                );
+                text = EditorHelper.OpenEditorAndReadInput(Defaults.addNoteMessage);
             }
             text = MarkdownProcessor.FilterOutComments(text);
             if (string.IsNullOrWhiteSpace(text)) throw new Exception("Note is empty");
