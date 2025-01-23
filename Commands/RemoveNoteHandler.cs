@@ -6,14 +6,17 @@ namespace QuranCli.Commands
 {
     public static class RemoveNoteHandler
     {
-        public static void Handle(int id)
+        public static void Handle(int[] ids)
         {
-            var note = Note.SelectById(id);
             using var translation = ConnectionManager.Connection.BeginTransaction();
-            Reference.DeleteByNoteId(note.Id);
-            Note.DeleteById(note.Id);
+            foreach (var id in ids)
+            {
+                var note = Note.SelectById(id);
+                Reference.DeleteByNoteId(note.Id);
+                Note.DeleteById(note.Id);
+                YamlProcessor.Write(note);
+            }
             translation.Commit();
-            YamlProcessor.Write(note);
         }
     }
 }

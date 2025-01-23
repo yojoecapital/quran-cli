@@ -129,12 +129,13 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             // #endregion
 
             // #region note rm
+            var idsArgument = new Argument<int[]>("id", "The ID(s) of a note.");
             var removeNoteCommand = new Command("remove", "Remove a note.")
             {
-                idArgument
+                idsArgument
             };
             removeNoteCommand.AddAlias("rm");
-            removeNoteCommand.SetHandler(RemoveNoteHandler.Handle, idArgument);
+            removeNoteCommand.SetHandler(RemoveNoteHandler.Handle, idsArgument);
             // #endregion
 
             // #region note
