@@ -65,7 +65,8 @@ namespace QuranCli.Data.Models
             command.CommandText = @$"
                 SELECT {propertiesString}
                 FROM {nameof(Reference)}
-                WHERE {nameof(VerseId1)} <= @{nameof(verseId2)} AND {nameof(VerseId2)} >= @{nameof(verseId)};
+                WHERE {nameof(VerseId1)} <= @{nameof(verseId2)} AND {nameof(VerseId2)} >= @{nameof(verseId)}
+                ORDER BY {nameof(VerseId1)};
             ";
             command.Parameters.AddWithValue($"@{nameof(verseId)}", verseId);
             command.Parameters.AddWithValue($"@{nameof(verseId2)}", verseId2);
@@ -78,7 +79,7 @@ namespace QuranCli.Data.Models
             var command = ConnectionManager.Connection.CreateCommand();
             command.CommandText = @$"
                 DELETE FROM {nameof(Reference)}
-                WHERE {nameof(NoteId)} = @{nameof(noteId)}
+                WHERE {nameof(NoteId)} = @{nameof(noteId)};
             ";
             command.Parameters.AddWithValue($"@{nameof(noteId)}", noteId);
             command.ExecuteNonQuery();
@@ -91,6 +92,7 @@ namespace QuranCli.Data.Models
                 SELECT {propertiesString}
                 FROM {nameof(Reference)}
                 WHERE {nameof(NoteId)} = @{nameof(noteId)}
+                ORDER BY {nameof(VerseId1)};
             ";
             command.Parameters.AddWithValue($"@{nameof(noteId)}", noteId);
             using var reader = command.ExecuteReader();
