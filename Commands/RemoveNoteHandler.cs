@@ -1,3 +1,4 @@
+using System.Linq;
 using QuranCli.Data;
 using QuranCli.Data.Models;
 using QuranCli.Data.Yaml;
@@ -9,14 +10,17 @@ namespace QuranCli.Commands
         public static void Handle(int[] ids)
         {
             using var translation = ConnectionManager.Connection.BeginTransaction();
-            foreach (var id in ids)
-            {
-                var note = Note.SelectById(id);
-                Reference.DeleteByNoteId(note.Id);
-                Note.DeleteById(note.Id);
-                YamlProcessor.Write(note);
-            }
+            var notes = ids.Select(Remove);
             translation.Commit();
+            YamlProcessor.Write(notes);
+        }
+
+        public static Note Remove(int id)
+        {
+            var note = Note.SelectById(id);
+            Reference.DeleteByNoteId(note.Id);
+            Note.DeleteById(note.Id);
+            return note;
         }
     }
 }
