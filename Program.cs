@@ -70,7 +70,7 @@ The selection can be specified as '<chapter>..<chapter>'. For a single chapter, 
 
             // #region search
             var queryArgument = new Argument<string[]>("query", "The search terms.");
-            var limitOption = new Option<int>("--limit", @$"The maximum amount of results to display.
+            var limitOption = new Option<int>(["--limit", "-l"], @$"The maximum amount of results to display.
 Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLimit.max}."
             );
             limitOption.SetDefaultValue(3);
