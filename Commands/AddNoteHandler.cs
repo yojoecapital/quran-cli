@@ -10,7 +10,7 @@ namespace QuranCli.Commands
 {
     public static class AddNoteHandler
     {
-        public static void Handle(string text)
+        public static void Handle(string text, bool force)
         {
             if (Console.IsInputRedirected)
             {
@@ -23,6 +23,7 @@ namespace QuranCli.Commands
             text = MarkdownProcessor.FilterOutComments(text);
             if (string.IsNullOrWhiteSpace(text)) throw new Exception("Note is empty");
             var references = MarkdownProcessor.GetReferences(text).ToArray();
+            if (!force && references.Length == 0) throw new Exception("To create a note with no references, use '--force'");
             Logger.Info($"Found {references.Length} reference(s).");
             using var translation = ConnectionManager.Connection.BeginTransaction();
             var note = new Note() { Text = text };

@@ -7,6 +7,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using QuranCli.Arguments;
 using QuranCli.Commands;
 using QuranCli.Data;
 using QuranCli.Utilities;
@@ -92,23 +93,28 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 Arity = ArgumentArity.ZeroOrOne
             };
             var idOption = new Option<int?>("--id", "The ID of a note.");
+            var listByOption = new Option<ListByOption>("--by", "Filter notes by tags, macros, or both");
+            listByOption.SetDefaultValue(ListByOption.Macro);
             var listNoteCommand = new Command("list", "List notes filtered by a selection or by an ID.")
             {
                 noteSelectionArgument,
-                idOption
+                idOption,
+                listByOption
             };
             listNoteCommand.AddAlias("ls");
-            listNoteCommand.SetHandler(ListNoteHandler.Handle, noteSelectionArgument, idOption);
+            listNoteCommand.SetHandler(ListNoteHandler.Handle, noteSelectionArgument, idOption, listByOption);
             // #endregion
 
             // #region note add
             var messageOption = new Option<string>(["--message", "-m"], "The message content of the note.");
+            var forceOption = new Option<bool>(["--force", "-f"], "Force the note when it has no references included.");
             var addNoteCommand = new Command("add", "Add a new from the command line argument, standard input, or from your default text editor.")
             {
-                messageOption
+                messageOption,
+                forceOption
             };
             addNoteCommand.AddAlias("+");
-            addNoteCommand.SetHandler(AddNoteHandler.Handle, messageOption);
+            addNoteCommand.SetHandler(AddNoteHandler.Handle, messageOption, forceOption);
             // #endregion
 
             // #region note edit
@@ -116,10 +122,11 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             var editNoteCommand = new Command("edit", "Edit an existing note.")
             {
                 idArgument,
-                messageOption
+                messageOption,
+                forceOption
             };
             editNoteCommand.AddAlias("e");
-            editNoteCommand.SetHandler(EditNoteHandler.Handle, idArgument, messageOption);
+            editNoteCommand.SetHandler(EditNoteHandler.Handle, idArgument, messageOption, forceOption);
             // #endregion
 
             // #region note ref

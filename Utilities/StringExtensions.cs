@@ -15,25 +15,6 @@ namespace QuranCli.Utilities
 
         public static bool IsChapterIdentifier(this string s) => s.IsNumeric() || s.IsChapterTransliteration();
 
-        public static string ExpandSelectionAnnotations(this string text)
-        {
-            var pattern = @"\{\{(.*?)\}\}";
-            return Regex.Replace(text.Trim(), pattern, match =>
-            {
-                var text = match.Groups[1].Value;
-                if (IndexedVerseSelection.TryParse(text, out var selection))
-                {
-                    if (selection.isChapterSelection && !selection.IsIndexed) return $"FIXME: ({selection.chapterNumber1}, {selection.chapterNumber2})";
-                    var verses = string.Join('\n', selection.GetVerses().Select(verse => verse.Text));
-                    return verses;
-                }
-                else
-                {
-                    return match.Value;
-                }
-            });
-        }
-
         public static int ComputeLevenshteinDistance(string s, string t)
         {
             int m = s.Length;

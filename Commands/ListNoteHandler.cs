@@ -9,7 +9,7 @@ namespace QuranCli.Commands
 {
     public static class ListNoteHandler
     {
-        public static void Handle(string selectionString, int? id)
+        public static void Handle(string selectionString, int? id, ListByOption listByOption)
         {
             if (selectionString == null)
             {
@@ -19,12 +19,20 @@ namespace QuranCli.Commands
                     YamlProcessor.Write(note);
                     return;
                 }
-                YamlProcessor.Write(Note.SelectAll());
-                return;
+                if (listByOption == ListByOption.Both)
+                {
+                    YamlProcessor.Write(Note.SelectAll());
+                    return;
+                }
+                // if there is a --by option, then filter with tags
+                selectionString = "all";
             }
             if (!VerseSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
             var (verseId1, verseId2) = selection.GetVerseIds();
-            var references = Reference.SelectBetween(verseId1, verseId2);
+            IEnumerable<Reference> references;
+            if (listByOption == ListByOption.Tag) references = Reference.SelectBetween(verseId1, verseId2, true);
+            else if (listByOption == ListByOption.Macro) references = Reference.SelectBetween(verseId1, verseId2, false);
+            else references = Reference.SelectBetween(verseId1, verseId2);
             if (id.HasValue)
             {
                 foreach (var reference in references)

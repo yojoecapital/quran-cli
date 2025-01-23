@@ -62,7 +62,8 @@ namespace QuranCli.Utilities
                 yield return new()
                 {
                     VerseId1 = verseId1,
-                    VerseId2 = verseId2
+                    VerseId2 = verseId2,
+                    IsTag = true
                 };
                 foreach (var reference in GetReferencesFromLine(after)) yield return reference;
 
@@ -74,7 +75,8 @@ namespace QuranCli.Utilities
                 yield return new()
                 {
                     VerseId1 = verseId1,
-                    VerseId2 = verseId2
+                    VerseId2 = verseId2,
+                    IsTag = false
                 };
                 foreach (var reference in GetReferencesFromLine(after)) yield return reference;
             }
@@ -100,8 +102,8 @@ namespace QuranCli.Utilities
                 }
                 else
                 {
-                    var expansion = string.Join(' ', indexedSelection.GetVerses().Take(Defaults.maxVersesInExpansion).Select(verse => $"{verse.Text} ({verse.Number}) "));
-                    yield return new(expansion, ConsoleColor.Green);
+                    var macro = string.Join(' ', indexedSelection.GetVerses().Take(Defaults.maxVersesInMacro).Select(verse => $"{verse.Text} ({verse.Number}) "));
+                    yield return new(macro, ConsoleColor.Green);
                 }
                 foreach (var coloredString in GetColoredStringsFromLine(after)) yield return coloredString;
             }

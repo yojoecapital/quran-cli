@@ -7,7 +7,7 @@ I'm excited to announce the official release of the Quran CLI. This version is s
 - `search <query>`: search for a verse from the Quran
 - `note [command]`: you can create and manage notes
   - these notes are indexed based on what verses you reference
-  - you can reference verses with expansions like `{<selection>}` (which will expand to the selected verse or chapter) or hashtags like `#<selection>`
+  - you can reference verses with macros like `{<selection>}` (which will expand to the selected verse or chapter) or hashtags like `#<selection>`
   - you can then filter on these references to quickly scan your notes
   - notes use basic markdown syntax and console output is color-coded accordingly
   - for more help on notes, use the `--help` flag
