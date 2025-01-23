@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using QuranCli.Data;
 using QuranCli.Data.Models;
@@ -10,7 +11,7 @@ namespace QuranCli.Commands
         public static void Handle(int[] ids)
         {
             using var translation = ConnectionManager.Connection.BeginTransaction();
-            var notes = ids.Select(Remove);
+            var notes = ids.Select(Remove).ToArray();
             translation.Commit();
             YamlProcessor.Write(notes);
         }

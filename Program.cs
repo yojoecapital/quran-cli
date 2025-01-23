@@ -129,7 +129,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             // #endregion
 
             // #region note rm
-            var idsArgument = new Argument<int[]>("id", "The ID(s) of a note.");
+            var idsArgument = new Argument<int[]>("id", "The ID of a note.");
             var removeNoteCommand = new Command("remove", "Remove a note.")
             {
                 idsArgument
