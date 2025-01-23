@@ -106,6 +106,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             {
                 messageOption
             };
+            addNoteCommand.AddAlias("+");
             addNoteCommand.SetHandler(AddNoteHandler.Handle, messageOption);
             // #endregion
 
@@ -116,6 +117,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 idArgument,
                 messageOption
             };
+            editNoteCommand.AddAlias("e");
             editNoteCommand.SetHandler(EditNoteHandler.Handle, idArgument, messageOption);
             // #endregion
 
@@ -134,6 +136,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 idArgument
             };
             removeNoteCommand.AddAlias("rm");
+            removeNoteCommand.AddAlias("-");
             removeNoteCommand.SetHandler(RemoveNoteHandler.Handle, idArgument);
             // #endregion
 
@@ -146,6 +149,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 getReferencesCommand,
                 removeNoteCommand
             };
+            noteCommand.AddAlias("nt");
             // #endregion
 
             // #region build-db
