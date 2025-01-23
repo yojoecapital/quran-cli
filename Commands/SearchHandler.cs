@@ -9,8 +9,9 @@ namespace QuranCli.Commands
 {
     public static class SearchHandler
     {
-        public static void Handle(string term, int limit)
+        public static void Handle(string[] terms, int limit)
         {
+            var term = string.Join(' ', terms);
             if (limit < Defaults.searchResultLimit.min || limit > Defaults.searchResultLimit.max)
             {
                 throw new Exception($"The results argument should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLimit.max}");
