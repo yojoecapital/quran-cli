@@ -84,11 +84,32 @@ namespace QuranCli.Utilities
         {
             if (line.Length == 0) yield break;
             if (IsHeader(line)) yield return new(line, ConsoleColor.Magenta);
-            else if (MatchesStart(line, "#", out var before, out var match, out var after) && VerseSelection.TryParse(match[1..], out var selection))
+            else if (MatchesStart(line, "!#", out var before, out var match, out var after) && VerseSelection.TryParse(match[1..], out var ignoredSelection))
+            {
+                foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
+                var (id1, id2) = ignoredSelection.GetVerseIds();
+                yield return new($"#[{Verse.GetDisplayName(id1, id2)}]", null);
+                foreach (var coloredString in GetColoredStringsFromLine(after)) yield return coloredString;
+            }
+            else if (MatchesStart(line, "#", out before, out match, out after) && VerseSelection.TryParse(match[1..], out var selection))
             {
                 foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
                 var (id1, id2) = selection.GetVerseIds();
                 yield return new($"#[{Verse.GetDisplayName(id1, id2)}]", ConsoleColor.Green);
+                foreach (var coloredString in GetColoredStringsFromLine(after)) yield return coloredString;
+            }
+            else if (MatchesBetween(line, "!{", "}", out before, out match, out after) && IndexedVerseSelection.TryParse(match[1..^1], out var ignoredIndexedSelection))
+            {
+                foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
+                if (ignoredIndexedSelection.isChapterSelection && !ignoredIndexedSelection.IsIndexed)
+                {
+                    yield return new(Chapter.GetDisplayName(ignoredIndexedSelection.chapterNumber1, ignoredIndexedSelection.chapterNumber2), null);
+                }
+                else
+                {
+                    var expansion = string.Join(' ', ignoredIndexedSelection.GetVerses().Take(Defaults.maxVersesInExpansion).Select(verse => $"{verse.Text} ({verse.Number}) "));
+                    yield return new(expansion, null);
+                }
                 foreach (var coloredString in GetColoredStringsFromLine(after)) yield return coloredString;
             }
             else if (MatchesBetween(line, "{", "}", out before, out match, out after) && IndexedVerseSelection.TryParse(match[1..^1], out var indexedSelection))
