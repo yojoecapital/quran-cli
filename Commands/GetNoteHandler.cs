@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using QuranCli.Data.Models;
 using QuranCli.Data.Yaml;
@@ -17,6 +18,7 @@ namespace QuranCli.Commands
                 }
                 catch { }
             }
+            if (list.Count == 0) throw new Exception("No notes found");
             YamlProcessor.Write(list);
         }
     }
