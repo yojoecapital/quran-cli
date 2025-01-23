@@ -79,6 +79,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 queryArgument,
                 limitOption
             };
+            searchCommand.AddAlias("s");
             searchCommand.SetHandler(SearchHandler.Handle, queryArgument, limitOption);
             // #endregion
 
