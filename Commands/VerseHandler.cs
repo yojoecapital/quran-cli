@@ -14,7 +14,7 @@ namespace QuranCli.Commands
             Logger.Info(selection.GetLog());
             var index = 0;
             if (selection.IsIndexed && !selection.IsFromStart) index = selection.From;
-            foreach (var line in GetLines(selection.GetVerses(), shouldIndex, shouldTranslate, shouldIncludeNumbers, index)) Logger.Message(line);
+            foreach (var line in GetLines(selection.GetVerses(), shouldIndex, shouldTranslate, shouldIncludeNumbers, index)) Console.WriteLine(line);
         }
 
         public static IEnumerable<string> GetLines(IEnumerable<Verse> verses, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers, int index)

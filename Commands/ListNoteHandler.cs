@@ -9,16 +9,10 @@ namespace QuranCli.Commands
 {
     public static class ListNoteHandler
     {
-        public static void Handle(string selectionString, int? id, ListByOption listByOption)
+        public static void Handle(string selectionString, ListByOption listByOption)
         {
             if (selectionString == null)
             {
-                if (id.HasValue)
-                {
-                    var note = Note.SelectById(id.Value);
-                    YamlProcessor.Write(note);
-                    return;
-                }
                 if (listByOption == ListByOption.Both)
                 {
                     YamlProcessor.Write(Note.SelectAll());
@@ -33,23 +27,7 @@ namespace QuranCli.Commands
             if (listByOption == ListByOption.Tag) references = Reference.SelectBetween(verseId1, verseId2, true);
             else if (listByOption == ListByOption.Macro) references = Reference.SelectBetween(verseId1, verseId2, false);
             else references = Reference.SelectBetween(verseId1, verseId2);
-            if (id.HasValue)
-            {
-                foreach (var reference in references)
-                {
-                    if (reference.NoteId == id)
-                    {
-                        var note = Note.SelectById(reference.NoteId);
-                        YamlProcessor.Write(note);
-                        return;
-                    }
-                }
-                throw new Exception($"No note found for ID {id} in this selection");
-            }
-            else
-            {
-                YamlProcessor.Write(references.DistinctBy(reference => reference.NoteId).Select(reference => Note.SelectById(reference.NoteId)));
-            }
+            YamlProcessor.Write(references.DistinctBy(reference => reference.NoteId).Select(reference => Note.SelectById(reference.NoteId)));
         }
     }
 }

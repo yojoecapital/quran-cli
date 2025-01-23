@@ -92,17 +92,27 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             {
                 Arity = ArgumentArity.ZeroOrOne
             };
-            var idOption = new Option<int?>("--id", "The ID of a note.");
             var listByOption = new Option<ListByOption>("--by", "Filter notes by tags, macros, or both");
             listByOption.SetDefaultValue(ListByOption.Macro);
             var listNoteCommand = new Command("list", "List notes filtered by a selection or by an ID.")
             {
                 noteSelectionArgument,
-                idOption,
                 listByOption
             };
             listNoteCommand.AddAlias("ls");
-            listNoteCommand.SetHandler(ListNoteHandler.Handle, noteSelectionArgument, idOption, listByOption);
+            listNoteCommand.SetHandler(ListNoteHandler.Handle, noteSelectionArgument, listByOption);
+            // #endregion
+
+            // #region note id
+            var idsArgument = new Argument<int[]>("id", "The ID of a note.")
+            {
+                Arity = ArgumentArity.OneOrMore
+            };
+            var getNoteCommand = new Command("get", "Get a note by its ID")
+            {
+                idsArgument
+            };
+            getNoteCommand.SetHandler(GetNoteHandler.Handle, idsArgument);
             // #endregion
 
             // #region note add
@@ -139,10 +149,6 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             // #endregion
 
             // #region note rm
-            var idsArgument = new Argument<int[]>("id", "The ID of a note.")
-            {
-                Arity = ArgumentArity.OneOrMore
-            };
             var removeNoteCommand = new Command("remove", "Remove a note.")
             {
                 idsArgument
@@ -156,6 +162,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             var noteCommand = new Command("note", "Subcommands for managing notes.")
             {
                 listNoteCommand,
+                getNoteCommand,
                 addNoteCommand,
                 editNoteCommand,
                 getReferencesCommand,
