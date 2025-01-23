@@ -69,8 +69,8 @@ The selection can be specified as '<chapter>..<chapter>'. For a single chapter, 
             // #endregion
 
             // #region search
-            var queryArgument = new Argument<string>("query", "The search term.");
-            var limitOption = new Option<int>("--limit", @$"The maximum amount of results to display.
+            var queryArgument = new Argument<string[]>("query", "The search terms.");
+            var limitOption = new Option<int>(["--limit", "-l"], @$"The maximum amount of results to display.
 Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLimit.max}."
             );
             limitOption.SetDefaultValue(3);
@@ -79,6 +79,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 queryArgument,
                 limitOption
             };
+            searchCommand.AddAlias("s");
             searchCommand.SetHandler(SearchHandler.Handle, queryArgument, limitOption);
             // #endregion
 
@@ -131,13 +132,17 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             // #endregion
 
             // #region note rm
+            var idsArgument = new Argument<int[]>("id", "The ID of a note.")
+            {
+                Arity = ArgumentArity.OneOrMore
+            };
             var removeNoteCommand = new Command("remove", "Remove a note.")
             {
-                idArgument
+                idsArgument
             };
             removeNoteCommand.AddAlias("rm");
             removeNoteCommand.AddAlias("-");
-            removeNoteCommand.SetHandler(RemoveNoteHandler.Handle, idArgument);
+            removeNoteCommand.SetHandler(RemoveNoteHandler.Handle, idsArgument);
             // #endregion
 
             // #region note
