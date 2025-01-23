@@ -11,7 +11,12 @@ namespace QuranCli.Commands
     {
         public static void Handle(string[] terms, int limit)
         {
-            var term = string.Join(' ', terms);
+            string term;
+            if (Console.IsInputRedirected)
+            {
+                term = Console.In.ReadToEnd();
+            }
+            else term = string.Join(' ', terms);
             if (limit < Defaults.searchResultLimit.min || limit > Defaults.searchResultLimit.max)
             {
                 throw new Exception($"The results argument should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLimit.max}");
