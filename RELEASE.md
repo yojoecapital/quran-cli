@@ -1,18 +1,41 @@
-I'm excited to announce the official release of the Quran CLI. This version is stable and ready for use, أنشاء الله. It brings key features for interacting with the Quran and managing notes related to specific verses or chapters.
+## Changes
 
-## Features
+- notes are a bit more strict with how they handle references
+- there are 2 kinds of references the user can make in a note:
+  - a macro like `{<selection>}` which will expand to the selected verses when the note renders
+  - or a tag like `#<selection>` which will display the name of the selection
+- notes must include at least one reference. To force a note with no references to be made, use `--force`
+- `note list` now can take the option `--by` to filter your input selection by either `macro`, `tag`, or `both`
+- you can use `note get` to get notes by their IDs
 
-- `verse <selection>`: display a verse or range of verses from the Quran
-- `chapter <selection>`: output information for a chapter or range of chapters from the Quran
-- `search <query>`: search for a verse from the Quran
-- `note [command]`: you can create and manage notes
-  - these notes are indexed based on what verses you reference
-  - you can reference verses with macros like `{<selection>}` (which will expand to the selected verse or chapter) or hashtags like `#<selection>`
-  - you can then filter on these references to quickly scan your notes
-  - notes use basic markdown syntax and console output is color-coded accordingly
-  - for more help on notes, use the `--help` flag
+### Examples
+
+#### References being used in a note
+
+```markdown
+# This is an example note
+
+- this is an *example* of a tag: #al-mulk
+- this renders to #[Al-Mulk]
+- this is an *example* of a selection: {67:30}
+- this renders to قل أرأيتم إن أصبح ماؤكم غورا فمن يأتيكم بماء معين
+```
+
+#### Using `note list`
+
+```bash
+quran note list
+# this will list all the notes that have macro references (--by has a default of macro)
+quran note list --by both
+# this will list all the notes
+quran note list --by tag
+# this will list all the notes that have tags
+quran note list al-baqara --by tag
+# this will list all the notes that have tags in Al-Baqara
+```
 
 ### Database Download
+
 The Quran CLI will download a pre-built database to `~/.config/quran-cli/data.db`.  You can also access the database at https://yojoecapital.github.io/quran-cli/.
 
 ### Installation
