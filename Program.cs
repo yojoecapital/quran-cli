@@ -15,7 +15,7 @@ namespace QuranCli
 {
     public static partial class Program
     {
-        public static readonly string version = "1.0.0-beta";
+        public static readonly string version = "1.0.0";
         private static readonly Option verboseOption = new Option<bool>("--verbose", "Output [INFO] level messages.");
 
         public static int Main(string[] args)
@@ -148,13 +148,6 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             };
             // #endregion
 
-            // #region version
-            var versionCommand = new Command("version", "Display the current version.");
-            versionCommand.AddAlias("--version");
-            versionCommand.AddAlias("-v");
-            versionCommand.SetHandler(VersionHandler.Handle);
-            // #endregion
-
             // #region build-db
             var buildDatabaseCommand = new Command("build-db", "Download the resource files and rebuild the SQLite database.");
             buildDatabaseCommand.SetHandler(BuildDatabaseHandler.Handle);
@@ -166,22 +159,22 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 chapterCommand,
                 searchCommand,
                 noteCommand,
-                versionCommand,
                 buildDatabaseCommand
             };
 
             rootCommand.AddGlobalOption(verboseOption);
             var cli = new CommandLineBuilder(rootCommand)
+                .AddMiddleware(InitializeHandler)
                 .UseHelp()
+                .AddMiddleware(VersionHandler)
                 .UseParseErrorReporting()
                 .UseExceptionHandler(ExceptionHandler)
-                .AddMiddleware(Initialize, MiddlewareOrder.Configuration)
                 .AddMiddleware(FinalizeExecution)
                 .Build();
             return cli.Invoke(args);
         }
 
-        private static void Initialize(InvocationContext context)
+        private static Task InitializeHandler(InvocationContext context, Func<InvocationContext, Task> next)
         {
             Console.InputEncoding = Console.OutputEncoding = Encoding.UTF8;
             Directory.CreateDirectory(Defaults.configurationPath);
@@ -191,6 +184,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 client.Download($"{Defaults.resourceUrl}/{Defaults.databaseFileName}", Defaults.databasePath);
             }
             Logger.Verbose = (bool)context.ParseResult.GetValueForOption(verboseOption);
+            return next(context);
         }
 
         private static async Task FinalizeExecution(InvocationContext context, Func<InvocationContext, Task> next)
@@ -206,6 +200,19 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             Console.WriteLine(ex.StackTrace);
 #endif
             context.ExitCode = 1;
+        }
+
+        private static Task VersionHandler(InvocationContext context, Func<InvocationContext, Task> next)
+        {
+            var tokens = context.ParseResult.Tokens;
+            if (tokens.Count != 1) return next(context);
+            var firstToken = tokens[0].ToString();
+            if (firstToken == "-v" || firstToken == "--version" || firstToken == "version")
+            {
+                Logger.Message(version);
+                return Task.CompletedTask;
+            }
+            return next(context);
         }
     }
 }
