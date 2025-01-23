@@ -9,7 +9,7 @@ The Quran CLI is a command-line tool for exploring, annotating, and linking vers
 You can execute the following command to install the beta release.
 
 ```bash
-curl -L -o /tmp/quran https://github.com/yojoecapital/quran-cli/releases/download/1.0.0-beta/quran && chmod 755 /tmp/quran && sudo mv /tmp/quran /usr/local/bin/
+curl -L -o /tmp/quran https://github.com/yojoecapital/quran-cli/releases/latest/download/quran && chmod 755 /tmp/quran && sudo mv /tmp/quran /usr/local/bin/
 ```
 
 ## Usage
