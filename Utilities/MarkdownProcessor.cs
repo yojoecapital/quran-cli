@@ -90,7 +90,7 @@ namespace QuranCli.Utilities
             {
                 foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
                 var (id1, id2) = selection.GetVerseIds();
-                yield return new($"#[{Verse.GetDisplayName(id1, id2)}]", ConsoleColor.Green);
+                yield return new($"#[{Verse.GetDisplayName(id1, id2)}]", ConsoleColor.Yellow);
                 foreach (var coloredString in GetColoredStringsFromLine(after)) yield return coloredString;
             }
             else if (MatchesBetween(line, "{", "}", out before, out match, out after) && IndexedVerseSelection.TryParse(match[1..^1], out var indexedSelection))
@@ -110,19 +110,13 @@ namespace QuranCli.Utilities
             else if (MatchesBetween(line, "**", "**", out before, out match, out after))
             {
                 foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
-                yield return new(match, ConsoleColor.Yellow);
+                yield return new(match, ConsoleColor.Cyan);
                 foreach (var coloredString in GetColoredStringsFromLine(after)) yield return coloredString;
             }
             else if (MatchesBetween(line, "*", "*", out before, out match, out after))
             {
                 foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
                 yield return new(match, ConsoleColor.Blue);
-                foreach (var coloredString in GetColoredStringsFromLine(after)) yield return coloredString;
-            }
-            else if (MatchesBetween(line, "`", "`", out before, out match, out after))
-            {
-                foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
-                yield return new(match, ConsoleColor.Cyan);
                 foreach (var coloredString in GetColoredStringsFromLine(after)) yield return coloredString;
             }
             else yield return new(line, null);
