@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using QuranCli.Arguments;
-using QuranCli.Data;
 
 namespace QuranCli.Utilities
 {
@@ -14,6 +10,8 @@ namespace QuranCli.Utilities
         public static bool IsChapterTransliteration(this string s) => s.Length > 0 && s.All(c => char.IsLetter(c) || char.IsWhiteSpace(c) || c == '-');
 
         public static bool IsChapterIdentifier(this string s) => s.IsNumeric() || s.IsChapterTransliteration();
+
+        public static bool IsPageIdentifier(this string s) => s[0] == 'p' && s[1..].IsNumeric();
 
         public static int ComputeLevenshteinDistance(string s, string t)
         {

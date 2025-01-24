@@ -58,11 +58,10 @@ namespace QuranCli.Utilities
             else if (MatchesStart(line, "#", out var before, out var match, out var after) && VerseSelection.TryParse(match[1..], out var selection))
             {
                 foreach (var reference in GetReferencesFromLine(before)) yield return reference;
-                var (verseId1, verseId2) = selection.GetVerseIds();
                 yield return new()
                 {
-                    VerseId1 = verseId1,
-                    VerseId2 = verseId2,
+                    VerseId1 = selection.VerseId1,
+                    VerseId2 = selection.VerseId2,
                     IsTag = true
                 };
                 foreach (var reference in GetReferencesFromLine(after)) yield return reference;
@@ -71,11 +70,10 @@ namespace QuranCli.Utilities
             else if (MatchesBetween(line, "{", "}", out before, out match, out after) && IndexedVerseSelection.TryParse(match[1..^1], out var indexedSelection))
             {
                 foreach (var reference in GetReferencesFromLine(before)) yield return reference;
-                var (verseId1, verseId2) = indexedSelection.GetVerseIds();
                 yield return new()
                 {
-                    VerseId1 = verseId1,
-                    VerseId2 = verseId2,
+                    VerseId1 = indexedSelection.VerseId1,
+                    VerseId2 = indexedSelection.VerseId2,
                     IsTag = false
                 };
                 foreach (var reference in GetReferencesFromLine(after)) yield return reference;
@@ -89,16 +87,17 @@ namespace QuranCli.Utilities
             else if (MatchesStart(line, "#", out var before, out var match, out var after) && VerseSelection.TryParse(match[1..], out var selection))
             {
                 foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
-                var (id1, id2) = selection.GetVerseIds();
+                var id1 = selection.VerseId1;
+                var id2 = selection.VerseId2;
                 yield return new($"#[{Verse.GetDisplayName(id1, id2)}]", ConsoleColor.Yellow);
                 foreach (var coloredString in GetColoredStringsFromLine(after)) yield return coloredString;
             }
             else if (MatchesBetween(line, "{", "}", out before, out match, out after) && IndexedVerseSelection.TryParse(match[1..^1], out var indexedSelection))
             {
                 foreach (var coloredString in GetColoredStringsFromLine(before)) yield return coloredString;
-                if (indexedSelection.isChapterSelection && !indexedSelection.IsIndexed)
+                if (indexedSelection.IsChapterSelection && !indexedSelection.IsIndexed)
                 {
-                    yield return new(Chapter.GetDisplayName(indexedSelection.chapterNumber1, indexedSelection.chapterNumber2), ConsoleColor.Green);
+                    yield return new(Chapter.GetDisplayName(indexedSelection.ChapterNumber1, indexedSelection.ChapterNumber2), ConsoleColor.Green);
                 }
                 else
                 {

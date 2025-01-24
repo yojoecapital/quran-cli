@@ -11,7 +11,6 @@ namespace QuranCli.Commands
         public static void Handle(string selectionString, bool shouldIndex, bool shouldTranslate, bool shouldIncludeNumbers)
         {
             if (!IndexedVerseSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
-            Logger.Info(selection.GetLog());
             var index = 0;
             if (selection.IsIndexed && !selection.IsFromStart) index = selection.From;
             foreach (var line in GetLines(selection.GetVerses(), shouldIndex, shouldTranslate, shouldIncludeNumbers, index)) Console.WriteLine(line);

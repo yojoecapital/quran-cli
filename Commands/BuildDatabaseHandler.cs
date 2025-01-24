@@ -2,7 +2,6 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using QuranCli.Data.Models;
-using QuranCli.Data.Yaml;
 using QuranCli.Utilities;
 
 namespace QuranCli.Commands
@@ -76,14 +75,20 @@ namespace QuranCli.Commands
             int pageNumber = 1;
             while ((text = pagesReader.ReadLine()) != null)
             {
-                var page = new Page()
+                var lineParts = text.Split(',');
+                if (lineParts.Length == 2)
                 {
-                    Number = pageNumber,
-                    VerseId = int.Parse(text)
-                };
-                page.Insert();
+                    var page = new Page()
+                    {
+                        Number = pageNumber,
+                        Start = int.Parse(lineParts[0]),
+                        End = int.Parse(lineParts[1])
+                    };
+                    page.Insert();
+                }
                 pageNumber++;
             }
+
         }
 
         private static Chapter GetChapter(int lineNumber, string line)

@@ -9,7 +9,6 @@ namespace QuranCli.Commands
         public static void Handle(string selectionString)
         {
             if (!ChapterSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
-            Logger.Info(selection.GetLog());
             var chapters = selection.GetChapters();
             YamlProcessor.Write(chapters);
         }

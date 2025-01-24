@@ -1,10 +1,10 @@
 using System;
-using QuranCli.Data;
+using System.Diagnostics.Contracts;
 using QuranCli.Data.Models;
 
 namespace QuranCli.Utilities
 {
-    public static class ChapterIdentifierHelpers
+    public static class SelectionHelpers
     {
         public static int GetChapterNumberByIdentifier(string chapterNumberentifier)
         {
@@ -26,10 +26,10 @@ namespace QuranCli.Utilities
             return verseId;
         }
 
-        public static Verse GetVerseByOffset(string chapterNumberentifier, int verseNumber)
+        public static Page GetPageByIdentifier(string pageIdentifier)
         {
-            var chapterNumber = GetChapterNumberByIdentifier(chapterNumberentifier);
-            return Verse.SelectByNumber(chapterNumber, verseNumber);
+            var pageNumber = int.Parse(pageIdentifier[1..]);
+            return Page.SelectByNumber(pageNumber);
         }
     }
 }

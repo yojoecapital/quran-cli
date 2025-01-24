@@ -6,16 +6,18 @@ namespace QuranCli.Data.Models
     public class Page : IModel
     {
         public int Number { get; set; }
-        public int VerseId { get; set; }
+        public int Start { get; set; }
+        public int End { get; set; }
 
-        private static readonly string propertiesString = $"{nameof(Number)}, {nameof(VerseId)}";
+        private static readonly string propertiesString = $"{nameof(Number)}, {nameof(Start)}, {nameof(End)}";
 
         private static Page PopulateFrom(SqliteDataReader reader)
         {
             return new Page()
             {
                 Number = reader.GetInt32(0),
-                VerseId = reader.GetInt32(1)
+                Start = reader.GetInt32(1),
+                End = reader.GetInt32(2)
             };
         }
 
@@ -25,8 +27,10 @@ namespace QuranCli.Data.Models
             command.CommandText = @$"
                 CREATE TABLE IF NOT EXISTS {nameof(Page)} (
                     {nameof(Number)} INTEGER PRIMARY KEY AUTOINCREMENT,
-                    {nameof(VerseId)} INTEGER NOT NULL,
-                    FOREIGN KEY({nameof(VerseId)}) REFERENCES {nameof(Verse)}({nameof(Verse.Id)})
+                    {nameof(Start)} INTEGER NOT NULL,
+                    {nameof(End)} INTEGER NOT NULL,
+                    FOREIGN KEY({nameof(Start)}) REFERENCES {nameof(Verse)}({nameof(Verse.Id)}),
+                    FOREIGN KEY({nameof(End)}) REFERENCES {nameof(Verse)}({nameof(Verse.Id)})
                 );
             ";
 #if DEBUG
@@ -40,10 +44,11 @@ namespace QuranCli.Data.Models
             var command = ConnectionManager.Connection.CreateCommand();
             command.CommandText = @$"
                 INSERT OR IGNORE INTO {nameof(Page)} ({propertiesString}) 
-                VALUES (@{nameof(Number)}, @{nameof(VerseId)});
+                VALUES (@{nameof(Number)}, @{nameof(Start)}, @{nameof(End)});
             ";
             command.Parameters.AddWithValue($"@{nameof(Number)}", Number);
-            command.Parameters.AddWithValue($"@{nameof(VerseId)}", VerseId);
+            command.Parameters.AddWithValue($"@{nameof(Start)}", Start);
+            command.Parameters.AddWithValue($"@{nameof(End)}", End);
             command.ExecuteNonQuery();
         }
 

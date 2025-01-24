@@ -7,18 +7,17 @@ namespace QuranCli.Arguments
     {
         private IndexedVerseSelection
         (
-            MainType mainType,
-            RangeType rangeType,
-            string[] tokens,
             bool isIndexed,
             int? from,
             int? to
-        ) : base(mainType, rangeType, tokens)
+        )
         {
             IsIndexed = isIndexed;
             this.from = from;
             this.to = to;
         }
+
+        private IndexedVerseSelection() { }
 
         public bool IsIndexed { get; private set; }
         private readonly int? from;
@@ -28,42 +27,17 @@ namespace QuranCli.Arguments
         public int To => to.Value;
         public bool IsToEnd => !to.HasValue;
 
-        public override string GetLog() => base.GetLog() + ' ' + GetIndexLog();
-
-        private string GetIndexLog()
-        {
-            if (!IsIndexed) return string.Empty;
-            var builder = new StringBuilder("Indexed from ");
-            if (IsFromStart) builder.Append("start ");
-            else builder.Append($"'{From}' ");
-            builder.Append("to ");
-            if (IsToEnd) builder.Append("end.");
-            else builder.Append($"'{To}'.");
-            return builder.ToString();
-        }
-
         public static bool TryParse(string value, out IndexedVerseSelection selection)
         {
             selection = null;
             var splitArity = Splitter.GetSplit(value.Trim(), "::", out var split);
-            int? from = null, to = null;
-            bool isIndexed = false;
-            if (!TryGetTokens(split.First, out var mainType, out var rangeType, out var tokens)) return false;
             if (splitArity == Splitter.Arity.Two)
             {
-                if (!TryGetIndexRange(split.Last, out from, out to)) return false;
-                isIndexed = true;
+                if (!TryGetIndexRange(split.Last, out var from, out var to)) return false;
+                selection = new(true, from, to);
             }
-            selection = new
-            (
-                mainType,
-                rangeType,
-                tokens,
-                isIndexed,
-                from,
-                to
-            );
-            return true;
+            else selection = new();
+            return selection.TryGetVerseIds(split.First);
         }
 
         private static bool TryGetIndexRange(string value, out int? from, out int? to)

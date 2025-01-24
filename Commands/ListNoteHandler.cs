@@ -22,7 +22,8 @@ namespace QuranCli.Commands
                 selectionString = "all";
             }
             if (!VerseSelection.TryParse(selectionString, out var selection)) throw new Exception("Could not parse selection");
-            var (verseId1, verseId2) = selection.GetVerseIds();
+            var verseId1 = selection.VerseId1;
+            var verseId2 = selection.VerseId2;
             IEnumerable<Reference> references;
             if (listByOption == ListByOption.Tag) references = Reference.SelectBetween(verseId1, verseId2, true);
             else if (listByOption == ListByOption.Macro) references = Reference.SelectBetween(verseId1, verseId2, false);
