@@ -1,42 +1,17 @@
 ## Changes
 
-- notes are a bit more strict with how they handle references
-- there are 2 kinds of references the user can make in a note:
-  - a macro like `{<selection>}` which will expand to the selected verses when the note renders
-  - or a tag like `#<selection>` which will display the name of the selection
-- notes must include at least one reference. To force a note with no references to be made, use `--force`
-- `note list` now can take the option `--by` to filter your input selection by either `macro`, `tag`, or `both`
-- you can use `note get` to get notes by their IDs
+You can now select by pages in the `<selection>` argument by use `p\d+`. This can be used in the `verse` command as well as in notes.
 
 ### Examples
 
-#### References being used in a note
-
-```markdown
-# This is an example note
-
-- this is an *example* of a tag: #al-mulk
-- this renders to #[Al-Mulk]
-- this is an *example* of a selection: {67:30}
-- this renders to قل أرأيتم إن أصبح ماؤكم غورا فمن يأتيكم بماء معين
-```
-
-#### Using `note list`
-
 ```bash
-quran note list
-# this will list all the notes that have macro references (--by has a default of macro)
-quran note list --by both
-# this will list all the notes
-quran note list --by tag
-# this will list all the notes that have tags
-quran note list al-baqara --by tag
-# this will list all the notes that have tags in Al-Baqara
+quran verse p1
+# returns all the verses on page 1
+quran verse p1..p3
+# returns all the verses between pages 1 and 3
+quran verse p600..
+# returns all the verses from page 600 to the end (604)
 ```
-
-### Database Download
-
-The Quran CLI will download a pre-built database to `~/.config/quran-cli/data.db`.  You can also access the database at https://yojoecapital.github.io/quran-cli/.
 
 ### Installation
 
