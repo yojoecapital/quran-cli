@@ -101,7 +101,7 @@ namespace QuranCli.Data.Models
             command.Parameters.AddWithValue($"@{nameof(number)}", number);
             using var reader = command.ExecuteReader();
             if (reader.Read()) return PopulateFrom(reader);
-            throw new Exception($"No chapter found for {number}");
+            throw new Exception($"No chapter found for '{number}'");
         }
         public static IEnumerable<Chapter> SelectBetweenNumbers(int number1, int number2)
         {

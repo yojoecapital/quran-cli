@@ -73,7 +73,7 @@ namespace QuranCli.Data.Models
             command.Parameters.AddWithValue($"@{nameof(id)}", id);
             using var reader = command.ExecuteReader();
             if (reader.Read()) return PopulateFrom(reader);
-            throw new Exception($"No note found for ID {id}");
+            throw new Exception($"No note found for ID '{id}'");
         }
 
         public static IEnumerable<Note> SelectAll()

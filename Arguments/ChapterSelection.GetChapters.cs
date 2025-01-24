@@ -37,7 +37,7 @@ namespace QuranCli.Arguments
                 var chapterNumberentifier2 = tokens[1];
                 var chapterNumber1 = ChapterIdentifierHelpers.GetChapterNumberByIdentifier(chapterNumberentifier1);
                 var chapterNumber2 = ChapterIdentifierHelpers.GetChapterNumberByIdentifier(chapterNumberentifier2);
-                if (chapterNumber1 > chapterNumber2) throw new Exception($"Chapter number {chapterNumber1} should not be greater than {chapterNumber2}");
+                if (chapterNumber1 > chapterNumber2) throw new Exception($"Chapter number '{chapterNumber1}' should not be greater than '{chapterNumber2}'");
                 return Chapter.SelectBetweenNumbers(chapterNumber1, chapterNumber2);
             }
             throw new Exception("Parse case not found");

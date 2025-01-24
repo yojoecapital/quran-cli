@@ -80,7 +80,7 @@ namespace QuranCli.Data.Models
             command.Parameters.AddWithValue($"@{nameof(id)}", id);
             using var reader = command.ExecuteReader();
             if (reader.Read()) return PopulateFrom(reader);
-            throw new Exception($"No verse found for ID {id}");
+            throw new Exception($"No verse found for ID '{id}'");
         }
 
         public static Verse SelectByNumber(int chapterNumber, int verseNumber)
@@ -95,7 +95,7 @@ namespace QuranCli.Data.Models
             command.Parameters.AddWithValue($"@{nameof(verseNumber)}", verseNumber);
             using var reader = command.ExecuteReader();
             if (reader.Read()) return PopulateFrom(reader);
-            throw new Exception($"No verse found for {chapterNumber}:{verseNumber}");
+            throw new Exception($"No verse found for '{chapterNumber}:{verseNumber}'");
         }
 
         public static IEnumerable<Verse> SelectByNumber(int chapterNumber)

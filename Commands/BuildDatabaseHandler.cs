@@ -12,12 +12,14 @@ namespace QuranCli.Commands
         private static readonly string chaptersFilePath = Path.Join(Defaults.temporaryPath, Defaults.chaptersFileName);
         private static readonly string translationsFilePath = Path.Join(Defaults.temporaryPath, Defaults.translationsFileName);
         private static readonly string versesFilePath = Path.Join(Defaults.temporaryPath, Defaults.versesFileName);
+        private static readonly string pagesFilePath = Path.Join(Defaults.temporaryPath, Defaults.pagesFileName);
 
         public static void Handle()
         {
             File.Delete(Defaults.databasePath);
             Chapter.CreateTable();
             Verse.CreateTable();
+            Page.CreateTable();
             Note.CreateTable();
             Reference.CreateTable();
             Directory.CreateDirectory(Defaults.temporaryPath);
@@ -36,6 +38,7 @@ namespace QuranCli.Commands
             client.Download($"{Defaults.resourceUrl}/{Defaults.chaptersFileName}", chaptersFilePath);
             client.Download($"{Defaults.resourceUrl}/{Defaults.translationsFileName}", translationsFilePath);
             client.Download($"{Defaults.resourceUrl}/{Defaults.versesFileName}", versesFilePath);
+            client.Download($"{Defaults.resourceUrl}/{Defaults.pagesFileName}", pagesFilePath);
         }
 
         private static void ConsumeFiles()
@@ -68,6 +71,18 @@ namespace QuranCli.Commands
                 };
                 verse.Insert();
                 Logger.Percent(verseId, totalVerses);
+            }
+            using var pagesReader = new StreamReader(pagesFilePath, Encoding.UTF8);
+            int pageNumber = 1;
+            while ((text = pagesReader.ReadLine()) != null)
+            {
+                var page = new Page()
+                {
+                    Number = pageNumber,
+                    VerseId = int.Parse(text)
+                };
+                page.Insert();
+                pageNumber++;
             }
         }
 

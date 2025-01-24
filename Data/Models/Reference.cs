@@ -38,7 +38,9 @@ namespace QuranCli.Data.Models
                     {nameof(IsTag)} INTEGER NOT NULL,
                     CHECK ({nameof(VerseId1)} <= {nameof(VerseId2)}),
                     UNIQUE ({nameof(NoteId)}, {nameof(VerseId1)}, {nameof(VerseId2)}),
-                    FOREIGN KEY({nameof(NoteId)}) REFERENCES {nameof(Note)}({nameof(Note.Id)})
+                    FOREIGN KEY({nameof(NoteId)}) REFERENCES {nameof(Note)}({nameof(Note.Id)}),
+                    FOREIGN KEY({nameof(VerseId1)}) REFERENCES {nameof(Verse)}({nameof(Verse.Id)}),
+                    FOREIGN KEY({nameof(VerseId2)}) REFERENCES {nameof(Verse)}({nameof(Verse.Id)})
                 );
                 CREATE INDEX idx_{nameof(Reference)}_{nameof(NoteId)} ON {nameof(Reference)}({nameof(NoteId)});
             ";

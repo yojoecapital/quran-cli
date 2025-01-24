@@ -9,7 +9,7 @@ namespace QuranCli.Arguments
         public (int verseId1, int verseId2) GetVerseIds()
         {
             var (verseId1, verseId2) = GetParsedVerseIds();
-            if (verseId1 > verseId2) throw new Exception($"Verse ID {verseId1} should not be greater than {verseId2}");
+            if (verseId1 > verseId2) throw new Exception($"Verse ID '{verseId1}' should not be greater than '{verseId2}'");
             return (verseId1, verseId2);
         }
 

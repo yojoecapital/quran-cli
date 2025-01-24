@@ -1,6 +1,4 @@
 using System.Text;
-using QuranCli.Data;
-using QuranCli.Data.Models;
 using QuranCli.Utilities;
 
 namespace QuranCli.Arguments
@@ -104,6 +102,9 @@ namespace QuranCli.Arguments
         protected readonly MainType mainType;
         protected readonly RangeType rangeType;
         protected readonly string[] tokens;
+
+        public int VerseId1 { get; private set; }
+        public int VerseId2 { get; private set; }
 
         protected static bool TryGetTokens(string value, out MainType mainType, out RangeType rangeType, out string[] tokens)
         {
