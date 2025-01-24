@@ -12,8 +12,12 @@
 <p>This is a precompiled SQLite database that the CLI pulls during installation.</p>
 <h3 id='quran-verses'><a href='verses.txt'>Quran verses</a></h3>
 <p>This is a plain text file where each line is an Ayah from the Quran.</p>
-<h3 id='quran-pages'><a href='pages.csv'>Quran Pages</a></h3>
-<p>This CSV file contains pairs of Quran pages: the first column is the starting page, and the second column is the ending page, with the last page pointing to <strong>6236</strong> as the endpoint in the <strong>Quran Verses</strong> file.</p>
+<h3 id='quran-pages'><a href='pages.csv'>Quran pages</a></h3>
+<p>
+    This CSV file contains pairs of Quran verse IDs pointing to lines in the <strong>Quran verses</strong> file. 
+    Each line represents a page in the Quran with 604 total pages.
+    the first column is the starting verse on the page and the second column is the ending verse.
+</p>
 <h3 id='chapters-metadata'><a href='chapters.csv'>Chapers metadata</a></h3>
 <p>This is a CSV file organized as:</p>
 <ul>
