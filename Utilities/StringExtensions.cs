@@ -31,5 +31,11 @@ namespace QuranCli.Utilities
             }
             return d[m, n];
         }
+
+        public static string Strip(this string input)
+        {
+            var output = new string([.. input.Where(c => !char.IsPunctuation(c))]);
+            return output.ToLower();
+        }
     }
 }

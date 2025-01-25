@@ -28,7 +28,7 @@ namespace QuranCli.Commands
             if (string.IsNullOrEmpty(selectionString))
             {
                 var notes = Note.SelectAll();
-                matches = Process.ExtractTop(new() { Text = term }, notes, note => note.Text, limit: limit).Select(match => new Match<Note>()
+                matches = Process.ExtractTop(new() { Text = term.Strip() }, notes, note => note.Text.Strip(), limit: limit).Select(match => new Match<Note>()
                 {
                     Result = match.Value,
                     Score = match.Score
@@ -40,7 +40,7 @@ namespace QuranCli.Commands
                 var verseId1 = selection.VerseId1;
                 var verseId2 = selection.VerseId2;
                 var notes = Reference.SelectBetween(verseId1, verseId1).DistinctBy(reference => reference.NoteId).Select(reference => Note.SelectById(reference.NoteId));
-                matches = Process.ExtractTop(new() { Text = term }, notes, note => note.Text, limit: limit).Select(match => new Match<Note>()
+                matches = Process.ExtractTop(new() { Text = term.Strip() }, notes, note => note.Text.Strip(), limit: limit).Select(match => new Match<Note>()
                 {
                     Result = match.Value,
                     Score = match.Score

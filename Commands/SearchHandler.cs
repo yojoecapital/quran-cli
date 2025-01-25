@@ -32,7 +32,7 @@ namespace QuranCli.Commands
                 verses = selection.GetVerses();
             }
             IEnumerable<Match<Verse>> matches;
-            if (useTranslation) matches = Process.ExtractTop(new() { Translation = term }, verses, verse => verse.Translation, limit: limit).Select(match => new Match<Verse>()
+            if (useTranslation) matches = Process.ExtractTop(new() { Translation = term.Strip() }, verses, verse => verse.Translation.Strip(), limit: limit).Select(match => new Match<Verse>()
             {
                 Result = match.Value,
                 Score = match.Score
