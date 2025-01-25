@@ -52,8 +52,7 @@ namespace QuranCli.Arguments
                 }
                 else if (splitArity == Splitter.Arity.Two && split.First.IsChapterIdentifier() && split.Last.IsNumeric())
                 {
-                    VerseId1 = int.Parse(split.First);
-                    VerseId2 = int.Parse(split.Last);
+                    VerseId1 = VerseId2 = SelectionHelpers.GetVerseIdByNumbers(split.First, int.Parse(split.Last));
                     return true;
                 }
             }
