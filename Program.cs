@@ -16,7 +16,7 @@ namespace QuranCli
 {
     public static partial class Program
     {
-        public static readonly string version = "1.1.1";
+        public static readonly string version = "1.2.0";
         private static readonly Option verboseOption = new Option<bool>("--verbose", "Output [INFO] level messages.");
 
         public static int Main(string[] args)
