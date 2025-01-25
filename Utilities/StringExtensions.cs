@@ -11,7 +11,7 @@ namespace QuranCli.Utilities
 
         public static bool IsChapterIdentifier(this string s) => s.IsNumeric() || s.IsChapterTransliteration();
 
-        public static bool IsPageIdentifier(this string s) => s[0] == 'p' && s[1..].IsNumeric();
+        public static bool IsPageOrJuzIdentifier(this string s) => (s[0] == 'p' || s[0] == 'j') && s[1..].IsNumeric();
 
         public static int ComputeLevenshteinDistance(string s, string t)
         {

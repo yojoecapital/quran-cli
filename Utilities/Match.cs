@@ -4,14 +4,14 @@ using QuranCli.Data.Yaml;
 
 namespace QuranCli.Utilities
 {
-    public class MatchedVerse : IYamlSerializable
+    public class Match<T> : IYamlSerializable where T : IModel
     {
-        public Verse Verse { get; set; }
+        public T Result { get; set; }
         public int Score { get; set; }
 
         public IEnumerable<YamlProperty> GetYamlProperties()
         {
-            yield return new(nameof(Verse), Verse);
+            yield return new(nameof(Result), Result);
             yield return new(nameof(Score), Score);
         }
     }

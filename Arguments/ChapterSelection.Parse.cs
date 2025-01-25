@@ -13,7 +13,7 @@ namespace QuranCli.Arguments
         public static bool TryParse(string value, out ChapterSelection selection)
         {
             selection = new();
-            return selection.TryGetTokens(value);
+            return selection.TryGetTokens(value.Trim().ToLower());
         }
 
         private bool TryGetTokens(string value)
@@ -21,7 +21,7 @@ namespace QuranCli.Arguments
             var splitArity = Splitter.GetSplit(value, "..", out var split);
             if (splitArity == Splitter.Arity.One)
             {
-                if (split.First.ToLower().Equals("all"))
+                if (split.First.Equals("all"))
                 {
                     ChapterNumber1 = 1;
                     ChapterNumber2 = 114;

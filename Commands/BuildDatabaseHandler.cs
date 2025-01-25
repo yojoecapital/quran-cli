@@ -49,6 +49,7 @@ namespace QuranCli.Commands
             int verseId = 0, versesLeftInChapter = 0, chapterNumber = 0, totalVerses = 6236;
             Chapter chapter = null;
             string text, translation, chapterLine;
+            Logger.Message("Working on verses and chapters...");
             while ((text = versesReader.ReadLine()) != null && (translation = translationsReader.ReadLine()) != null)
             {
                 if (versesLeftInChapter == 0 && (chapterLine = chaptersReader.ReadLine()) != null)
@@ -73,6 +74,7 @@ namespace QuranCli.Commands
             }
             using var pagesReader = new StreamReader(pagesFilePath, Encoding.UTF8);
             int pageNumber = 1;
+            Logger.Message("Working on pages...");
             while ((text = pagesReader.ReadLine()) != null)
             {
                 var lineParts = text.Split(',');

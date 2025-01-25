@@ -26,10 +26,39 @@ namespace QuranCli.Utilities
             return verseId;
         }
 
-        public static Page GetPageByIdentifier(string pageIdentifier)
+        public static (int verseId1, int verseId2) GetVerseIdsByPageOrJuzIdentifier(string pageOrJuzIdentifier)
         {
-            var pageNumber = int.Parse(pageIdentifier[1..]);
-            return Page.SelectByNumber(pageNumber);
+            if (pageOrJuzIdentifier[0] == 'j')
+            {
+                var juzNumber = int.Parse(pageOrJuzIdentifier[1..]);
+                if (juzNumber < 1 || juzNumber > 30) throw new Exception($"Invalid Juz number 'j{juzNumber}'");
+                int start, end;
+                if (juzNumber == 1)
+                {
+                    start = 1;
+                    end = 21;
+                }
+                else if (juzNumber == 30)
+                {
+                    start = 582;
+                    end = 604;
+                }
+                else
+                {
+                    start = 2 + (juzNumber - 1) * 20;
+                    end = start + 20;
+                }
+                var startPage = Page.SelectByNumber(start);
+                var endPage = Page.SelectByNumber(end);
+                Logger.Info(endPage.Number);
+                return (startPage.Start, endPage.End);
+            }
+            else
+            {
+                var pageNumber = int.Parse(pageOrJuzIdentifier[1..]);
+                var page = Page.SelectByNumber(pageNumber);
+                return (page.Start, page.End);
+            }
         }
     }
 }

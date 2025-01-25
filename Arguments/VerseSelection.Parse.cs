@@ -13,7 +13,7 @@ namespace QuranCli.Arguments
         public static bool TryParse(string value, out VerseSelection selection)
         {
             selection = new();
-            return selection.TryGetVerseIds(value);
+            return selection.TryGetVerseIds(value.Trim().ToLower());
         }
 
         public int VerseId1 { get; private set; }
@@ -27,18 +27,18 @@ namespace QuranCli.Arguments
                 splitArity = Splitter.GetSplit(split.First, ":", out split);
                 if (splitArity == Splitter.Arity.One)
                 {
-                    if (split.First.ToLower().Equals("all"))
+                    if (split.First.Equals("all"))
                     {
                         SetChapterNumbers(1, 114);
                         VerseId1 = 1;
                         VerseId2 = 6236;
                         return true;
                     }
-                    if (split.First.IsPageIdentifier())
+                    if (split.First.IsPageOrJuzIdentifier())
                     {
-                        var page = SelectionHelpers.GetPageByIdentifier(split.First);
-                        VerseId1 = page.Start;
-                        VerseId2 = page.End;
+                        var (verseId1, verseId2) = SelectionHelpers.GetVerseIdsByPageOrJuzIdentifier(split.First);
+                        VerseId1 = verseId1;
+                        VerseId2 = verseId2;
                         return true;
                     }
                     if (split.First.IsChapterIdentifier())
@@ -76,11 +76,10 @@ namespace QuranCli.Arguments
                 if (splitArity2 == Splitter.Arity.One)
                 {
                     // ..<page>
-                    if (split2.First.IsPageIdentifier())
+                    if (split2.First.IsPageOrJuzIdentifier())
                     {
-                        var page = SelectionHelpers.GetPageByIdentifier(split2.First);
                         VerseId1 = 1;
-                        VerseId2 = page.End;
+                        VerseId2 = SelectionHelpers.GetVerseIdsByPageOrJuzIdentifier(split2.First).verseId2;
                         return true;
                     }
                     // ..<chapter>
@@ -109,10 +108,9 @@ namespace QuranCli.Arguments
                 if (splitArity1 == Splitter.Arity.One)
                 {
                     // <page>..
-                    if (split1.First.IsPageIdentifier())
+                    if (split1.First.IsPageOrJuzIdentifier())
                     {
-                        var page = SelectionHelpers.GetPageByIdentifier(split1.First);
-                        VerseId1 = page.Start;
+                        VerseId1 = SelectionHelpers.GetVerseIdsByPageOrJuzIdentifier(split1.First).verseId1;
                         VerseId2 = 6236;
                         return true;
                     }
@@ -140,10 +138,9 @@ namespace QuranCli.Arguments
             else if (splitArity1 == Splitter.Arity.One && splitArity2 == Splitter.Arity.Two)
             {
                 // <page>..<chapter>:<verse>
-                if (split1.First.IsPageIdentifier() && split2.First.IsChapterIdentifier() && split2.Last.IsNumeric())
+                if (split1.First.IsPageOrJuzIdentifier() && split2.First.IsChapterIdentifier() && split2.Last.IsNumeric())
                 {
-                    var page = SelectionHelpers.GetPageByIdentifier(split1.First);
-                    VerseId1 = page.Start;
+                    VerseId1 = SelectionHelpers.GetVerseIdsByPageOrJuzIdentifier(split1.First).verseId1;
                     VerseId2 = SelectionHelpers.GetVerseIdByNumbers(split2.First, int.Parse(split2.Last));
                     return true;
                 }
@@ -159,10 +156,10 @@ namespace QuranCli.Arguments
             else if (splitArity1 == Splitter.Arity.Two && splitArity2 == Splitter.Arity.One)
             {
                 // <chapter>:<verse>..<page>
-                if (split1.First.IsChapterIdentifier() && split1.Last.IsNumeric() && split2.First.IsPageIdentifier())
+                if (split1.First.IsChapterIdentifier() && split1.Last.IsNumeric() && split2.First.IsPageOrJuzIdentifier())
                 {
                     VerseId1 = SelectionHelpers.GetVerseIdByNumbers(split1.First, int.Parse(split1.Last));
-                    VerseId2 = SelectionHelpers.GetPageByIdentifier(split2.First).End;
+                    VerseId2 = SelectionHelpers.GetVerseIdsByPageOrJuzIdentifier(split2.First).verseId2;
                     return true;
                 }
                 // <chapter>:<verse>..<verse>
@@ -184,12 +181,10 @@ namespace QuranCli.Arguments
             }
             else if (splitArity1 == Splitter.Arity.One && splitArity2 == Splitter.Arity.One)
             {
-                if (split1.First.IsPageIdentifier() && split2.First.IsPageIdentifier())
+                if (split1.First.IsPageOrJuzIdentifier() && split2.First.IsPageOrJuzIdentifier())
                 {
-                    var page1 = SelectionHelpers.GetPageByIdentifier(split1.First);
-                    var page2 = SelectionHelpers.GetPageByIdentifier(split2.First);
-                    VerseId1 = page1.Start;
-                    VerseId2 = page2.End;
+                    VerseId1 = SelectionHelpers.GetVerseIdsByPageOrJuzIdentifier(split1.First).verseId1;
+                    VerseId2 = SelectionHelpers.GetVerseIdsByPageOrJuzIdentifier(split2.First).verseId2;
                     return true;
                 }
                 // <chapter>..<chapter>

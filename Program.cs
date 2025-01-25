@@ -74,14 +74,21 @@ The selection can be specified as '<chapter>..<chapter>'. For a single chapter, 
             var limitOption = new Option<int>(["--limit", "-l"], @$"The maximum amount of results to display.
 Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLimit.max}."
             );
+            var selectionOption = new Option<string>(["--selection", "-s"], @$"Further filter down by a selection from the Quran.");
+            var useTranslationOption = new Option<bool>(
+                ["--translation", "-t"],
+                "Search for verses by translation."
+            );
             limitOption.SetDefaultValue(3);
             var searchCommand = new Command("search", "Search for a verse from the Quran.")
             {
                 queryArgument,
-                limitOption
+                limitOption,
+                selectionOption,
+                useTranslationOption
             };
             searchCommand.AddAlias("s");
-            searchCommand.SetHandler(SearchHandler.Handle, queryArgument, limitOption);
+            searchCommand.SetHandler(SearchHandler.Handle, queryArgument, limitOption, selectionOption, useTranslationOption);
             // #endregion
 
             // #region note ls
@@ -113,6 +120,17 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 idsArgument
             };
             getNoteCommand.SetHandler(GetNoteHandler.Handle, idsArgument);
+            // #endregion
+
+            // #region note search
+            var searchNoteCommand = new Command("search", "Search for a note by its message content.")
+            {
+                queryArgument,
+                limitOption,
+                selectionOption
+            };
+            searchNoteCommand.SetHandler(SearchNoteHandler.Handle, queryArgument, limitOption, selectionOption);
+            searchNoteCommand.AddAlias("s");
             // #endregion
 
             // #region note add
@@ -163,6 +181,7 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
             {
                 listNoteCommand,
                 getNoteCommand,
+                searchNoteCommand,
                 addNoteCommand,
                 editNoteCommand,
                 getReferencesCommand,

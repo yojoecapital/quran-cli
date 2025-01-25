@@ -30,7 +30,7 @@ namespace QuranCli.Arguments
         public static bool TryParse(string value, out IndexedVerseSelection selection)
         {
             selection = null;
-            var splitArity = Splitter.GetSplit(value.Trim(), "::", out var split);
+            var splitArity = Splitter.GetSplit(value.Trim().ToLower(), "::", out var split);
             if (splitArity == Splitter.Arity.Two)
             {
                 if (!TryGetIndexRange(split.Last, out var from, out var to)) return false;
