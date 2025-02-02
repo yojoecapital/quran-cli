@@ -1,57 +1,25 @@
 ## Changes
 
-- the `<selection>` argument gives a couple more ways of selecting. This can be used in the `verse` command, in notes, or in searches
-  - select by pages by using `p<number>`
-  - select by Juz by using `j<number>`
-- the `search` command has some new features too
-  - search by translation by passing the `--translation` flag
-  - filter your search to a particular spot by passing a selection option like `--selection <selection>`
-- search your notes' text with `note search`
+You can pass the `--index` flag to the `search` command to output verses along with their indexes.
 
 ### Examples
 
-#### Using pages in selections
-
 ```bash
-quran verse p1
-# returns all the verses on page 1
-quran verse p1..p3
-# returns all the verses between pages 1 and 3
-quran verse p600..
-# returns all the verses from page 600 to the end (604)
-quran verse j1
-# returns all the verses in Juz 1
-quran verse j1..j2
-# returns all the verses between Juz 1 and 2
-quran verse p10..j2
-# returns all the verses between page 10 and Juz 2
+echo وَلا تضرونه ش | quran search --index --limit 1
 ```
 
-#### Searching
-
-Both of these commands will return this verse:
+The above command will return this result:
 
 ```yaml
-- result:
-    chapter: 2
-    number: 156
-    text: الذين إذا أصابتهم مصيبة قالوا إنا لله وإنا إليه راجعون
-    translation: 'Who, when disaster strikes them, say, "Indeed we belong to Allah, and indeed to Him we will return'
-  score: 82
+ - result:
+    chapter: 11
+    number: 57
+    text: فإن [0] تولوا [1] فقد [2] أبلغتكم [3] ما [4] أرسلت [5] به [6] إليكم [7] ويستخلف [8] ربي [9] قوما [10] غيركم [11] ولا [12] تضرونه [13] شيئا [14] إن [15] ربي [16] على [17] كل [18] شيء [19] حفيظ [20]
+    translation: 'But if they turn away, [say], "I have already conveyed that with which I was sent to you. My Lord will give succession to a people other than you, and you will not harm Him at all. Indeed my Lord is, over all things, Guardian'
+  score: 77
+
 ```
 
-##### By translation
-
-```bash
-quran search Those who when disaster strikes, they say Indeed we belong to Allah and we will return to Him! --translation --limit 1
-```
-
-##### Filtering by selection
-
-```bash
-# note that you can also pipe input to the 'search' command
-echo انا لله وانا اليه راجعون| quran search --selection al-baqara --limit 1
-```
 
 ### Installation
 

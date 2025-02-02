@@ -30,7 +30,7 @@ For a single verse, use '<chapter>:<verse>', or for an entire chapter, use '<cha
             );
             var indexOption = new Option<bool>(
                 ["--index", "-i"],
-                @"Display indexes above each word in the verses.
+                @"Display indexes alongside each word in the verses.
 These indexes can optionally be used to select a subsection from the selection argument in the format '<selection>::<index>..<index>'."
             );
             var translationOption = new Option<bool>(
@@ -85,10 +85,11 @@ Should be between {Defaults.searchResultLimit.min} and {Defaults.searchResultLim
                 queryArgument,
                 limitOption,
                 selectionOption,
-                useTranslationOption
+                useTranslationOption,
+                indexOption
             };
             searchCommand.AddAlias("s");
-            searchCommand.SetHandler(SearchHandler.Handle, queryArgument, limitOption, selectionOption, useTranslationOption);
+            searchCommand.SetHandler(SearchHandler.Handle, queryArgument, limitOption, selectionOption, useTranslationOption, indexOption);
             // #endregion
 
             // #region note ls

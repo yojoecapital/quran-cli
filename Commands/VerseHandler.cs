@@ -36,7 +36,7 @@ namespace QuranCli.Commands
         private static int GetNextIndex(string input, int start, out string result)
         {
             var words = input.Split(' ');
-            result = string.Join(" ", words.Select((word, index) => $"{word} [{start + index}]"));
+            result = string.Join(' ', words.Select((word, index) => $"{word} [{start + index}]"));
             return start + words.Length;
         }
 

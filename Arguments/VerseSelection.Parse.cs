@@ -129,8 +129,9 @@ namespace QuranCli.Arguments
                     // <chapter>:<verse>..
                     if (split1.First.IsChapterIdentifier() && split1.Last.IsNumeric())
                     {
-                        VerseId1 = SelectionHelpers.GetVerseIdByNumbers(split1.First, int.Parse(split1.Last));
-                        VerseId2 = 6236;
+                        var chapter = SelectionHelpers.GetChapterByIdentifier(split1.First);
+                        VerseId1 = chapter.Start + int.Parse(split1.Last) - 1;
+                        VerseId2 = chapter.End;
                         return true;
                     }
                 }

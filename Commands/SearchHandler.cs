@@ -11,7 +11,7 @@ namespace QuranCli.Commands
 {
     public static class SearchHandler
     {
-        public static void Handle(string[] terms, int limit, string selectionString, bool useTranslation)
+        public static void Handle(string[] terms, int limit, string selectionString, bool useTranslation, bool shouldIndex)
         {
             string term;
             if (Console.IsInputRedirected)
@@ -42,7 +42,18 @@ namespace QuranCli.Commands
                 Result = match.Value,
                 Score = match.Score
             });
-            YamlProcessor.Write(matches);
+            if (shouldIndex) YamlProcessor.Write(IndexMatches(matches));
+            else YamlProcessor.Write(matches);
+        }
+
+        private static IEnumerable<Match<Verse>> IndexMatches(IEnumerable<Match<Verse>> matches)
+        {
+            foreach (var match in matches)
+            {
+                var words = match.Result.Text.Split(' ');
+                match.Result.Text = string.Join(' ', words.Select((word, index) => $"{word} [{index}]"));
+                yield return match;
+            }
         }
     }
 }
